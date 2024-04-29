@@ -1,0 +1,19 @@
+ラウンド終了!
+SCPの勝利
+財団の勝利
+カオスの勝利
+引き分け
+収容違反を起こしたSCPが施設を占拠、緊急対応が急がれている。
+安全を脅かす脅威はすべて排除され、サイト-02は再び安全を取り戻した。
+財団陣営の存在が排除され、反乱軍は今後の指令に備えて待機している。
+サイト-02は完全に支配下にあるが、犠牲がないわけではない。勝者は未定だ。
+[summary_d_escaped] 人のDクラス職員が脱走
+[summary_s_escaped] 人の研究員が生存
+Alpha Warheadの爆発により [summary_warhead_kills] の存在が終了された。
+この作戦では、Alpha Warheadは起爆されなかった。 
+作戦経過時間 [summary_round_minutes] 分 [summary_round_seconds] 秒
+[summary_scp_terminated] のSCPの存在が排除された。
+次のラウンドの開始まで [summary_next_round_countdown] 秒
+SCPにより [summary_scpfrags]人が排除された。
+フラミンゴの勝利
+他チームは全滅。フラミンゴの完全勝利が達成された。

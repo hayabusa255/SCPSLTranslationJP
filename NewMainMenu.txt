@@ -1,0 +1,95 @@
+﻿ニュース
+サーバー
+設定
+やめる
+ソーシャルメディア
+インターネット
+お気に入り
+公式
+履歴
+フレンド
+サーバーを検索
+サーバーを作成
+再接続
+直接接続
+更新
+空のゲームを隠す
+満員のゲームを隠す
+ホワイトリスト外
+ビデオ
+オーディオ
+操作
+ゲームプレイ
+その他
+ウィンドウモード
+Exclusive Fullscreen
+Borderless Window
+Maximized Window
+Windowed
+V-Sync
+FPS上限
+オフ
+Texture Quality
+Decals
+Shadows
+Shadow Resolution
+Shadow Distance
+Motion Blur
+Color Correction
+Anti Aliasing
+Render Lights
+Master Volume
+Sound Effects
+ボイスチャット
+メニューミュージック
+Interface Volume
+メニューテーマ
+高速イントロフェード
+ヘッドボブ
+トグルスプリント
+正確なHP値の表示
+リッチプレゼンス
+パブリックロビー
+トグル検索
+SCP-079 - 表示モードの切り替え
+SCP-079 - Post-Processing
+言語
+メインメニュー
+接続
+戻る
+この変更にはメニューの再読み込みが必要です。\nメニューを再読み込みしますか?
+はい
+いいえ
+本当にやめますか？
+Screen Resolution
+IPを隠す
+おかえりなさい, {username}!
+クレジット
+認証中
+中央サーバーに接続中...
+<color=green>接続が確立されました</color>
+<color=red>接続失敗 (詳細はコンソールを確認してください)</color>
+<color=red>Steamの認証に失敗 (詳細はコンソールを確認してください)</color>
+<color=red>Discordの認証に失敗 (詳細はコンソールを確認してください)</color>
+無効
+秒
+Ragdoll Cleanup Time
+Display Steam Profile
+プレイヤーリストのアイコンをクリックすることで、プレイヤーがあなたのSteamプロフィールを閲覧できるようになります。
+Do Not Track (DNT)
+Forbids the server to use your data (IP address, user ID, etc.) in purposes not related to the server security.
+Graphics API
+ゲーム内から直接サーバーを立てることはできなくなりました。\n現在SCP:SLのサーバーを立てる方法は3つあります:\n- SCP:SL dedicated serverをダウンロードして、自身のPCで動かす。(Steam AppID: 996560)\n- VPSまたは、サーバーホスティング業者からサーバーを借り、SCP:SL dedicated server をそこで動かす。\n- SCP:SLを公式にサポートしている、サーバーホスティング業者からサーバーを借りる。 (eg. ZAP Hosting)\n\n以下のリンクより詳細な情報を確認できます。\n公式ディスコードのtech supportでお手伝いできます。 (公式Discordはメインメニューのアイコンより参加できます。)
+とにかく作成する
+詳細を読む
+サーバーを借りる
+キャンセル
+秒
+For playing our game!
+スポーン時にタスクバーを光らせる
+アンビエントオクルージョン
+ボリュームライト
+ブルーム
+トグル字幕
+作戦ガイド
+サーバーを借りる

@@ -1,0 +1,10 @@
+<color=green>閉</color>
+<color=#07A2FF>開</color>
+<color=orange>開閉中</color>
+<color=red>閉鎖</color>
+<color=red>エラー</color>
+<color=red>アクセス拒否</color>
+<color=green>アクセス許可</color>
+<color=#07A2FF>キーカードが必要</color>
+<color=orange>通過してください</color>
+<color=orange>閉鎖します</color>

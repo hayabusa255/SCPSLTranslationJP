@@ -1,0 +1,18 @@
+{
+  "Name": "日本語",
+  "Authors": [
+    "hayabusa255", 
+    "Akinasu333",
+     "torokuro_"
+  ],
+  "InterfaceLocales": [
+    "ja-JP",
+    "jp"
+  ],
+  "SystemLocales": [
+    "ja-jp"
+  ],
+  "ForcedFontOrder": [
+
+  ]
+}

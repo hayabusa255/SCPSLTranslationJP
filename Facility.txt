@@ -1,0 +1,49 @@
+VOICE VOLUME
+はい
+FORCE START
+SCP-106 RE-CONTAINMENT\nPROCEDURE OVERRIDE
+Invert Y-axis
+概要
+キャンセル
+イ ン ベ ン ト リ
+BRIGHTNESS
+設定
+切断
+ALPHA WARHEADは使用不可
+アクセス拒否
+ボイスチャット
+インベントリーが満杯
+MOUSE SENSITIVITY
+HACKING
+PICKING UP...
+Increasing brightness <b>significantly worsens the mood </b>of the game.\nTry to set this value to as low as you can.\n<b>The default value is recommended.</b>
+[1] OPEN/CLOSE DOOR\n[2] LOCK DOOR*\n\n*Locking the door uses special ability
+DOOR HAS BEEN LOCK-DOWN BY SCP-079
+フルスクリーンモード
+本当にサーバーから退出しますか？
+Basic options. Full list of settings in the menu.
+プレイヤーを待機中。
+SUMMARY
+続ける
+MAIN VOLUME
+名の接続
+あなたは研究員として脱出し、機動部隊に加わりました。
+あなたはDクラス職員として脱出し、カオスインサージェンシーに加わりました。
+あなたは
+脱出にかかった時間[escape_minutes]分[escape_seconds]秒
+[time]後に[item]を再び使うことができます。
+<color=yellow><b>F1</b></color>で詳細なヘルプを表示します。
+あなたは拘束されました。\n<size=40>指示に従うか、助けを求めてください。</size>
+あなたは九尾狐に収容されました。\n施設内の脅威が一つ減ったので、彼らの作戦が容易になりました。
+あなたはカオス・インサージェンシーにより研究員として捕虜にされました。\n彼らはあなたの情報をもとに利益を得ました。
+ラウンド開始まで<color=yellow>{0}</color>秒
+ラウンド開始<color=#FF5050>ポーズ中</color>
+AIMING SENS. REDUCTION
+[key]を押して投げるのをやめる
+ADS Toggle
+観戦者をミュートする
+ノイズ軽減を有効化(推奨)
+自動(システムのデフォルト)
+マイクが検出されません!
+入力デバイス
+[key]を押してろうそくを消す

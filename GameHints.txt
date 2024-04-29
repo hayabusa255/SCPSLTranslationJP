@@ -1,0 +1,6 @@
+﻿<color=red>アクセス拒否</color>
+<color=yellow>[type]弾</color>の弾数制限に達しました。(<color=yellow>[max_type_count]が上限</color>)。
+<b>すでに</b> <color=yellow>[type]弾</color>の弾数上限に達しています。 (<color=yellow>[max_type_count]が上限</color>)。
+<color=yellow>[type]</color>の上限に達しました。 (<color=yellow>[max_type_count]が上限</color>)。
+<b>すでに</b><color=yellow>[type]</color>の上限に達しています。 (<color=yellow>[max_type_count]が上限</color>)。
+<color=yellow>[max_item_count]個</color>のアイテムのみ持つことができます。
