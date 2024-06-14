@@ -38,8 +38,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release view ${{ github.event.release.tag_name }} --json body -q .body > old_body.txt
-          echo "
+          existing_body=$(gh release view ${{ github.event.release.tag_name }} --json body -q .body)
+          echo "${existing_body}
+          
           ## インストール方法
           1. **${{ env.TAG }}.zipをダウンロード**：
           ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
@@ -49,8 +50,8 @@ jobs:
           3. **ゲーム内設定から言語を変更する**：
               ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
 
-              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。" >> old_body.txt
-          gh release edit ${{ github.event.release.tag_name }} --notes-file old_body.txt
+              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。" > new_body.txt
+          gh release edit ${{ github.event.release.tag_name }} --notes-file new_body.txt
 
       - name: Delete source ZIP asset
         uses: actions/github-script@v6
