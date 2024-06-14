@@ -36,28 +36,21 @@ jobs:
           asset_content_type: application/zip
 
       - name: Update release description
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: ${{ github.event.release.id }},
-              body: `${{ github.event.release.body }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release view ${{ github.event.release.tag_name }} --json body -q .body > old_body.txt
+          echo "## インストール方法
+          1. **${{ env.TAG }}.zipをダウンロード**：
+          ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
+          2. **ディレクトリにフォルダごと入れる**：
+              \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` にフォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
+              ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
+          3. **ゲーム内設定から言語を変更する**：
+              ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
 
-              ## インストール方法
-              1. **${{ env.TAG }}.zipをダウンロード**：をダウンロード**：
-              ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
-              2. **ディレクトリにフォルダごと入れる**：
-                  \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` にフォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
-                  ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
-              3. **ゲーム内設定から言語を変更する**：
-                  ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
-                  
-                  翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
-              `
-            })
+              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。" > install_instructions.txt
+          gh release edit ${{ github.event.release.tag_name }} --notes-file old_body.txt --notes-file install_instructions.txt
 
       - name: Delete source ZIP asset
         uses: actions/github-script@v6
