@@ -19,11 +19,11 @@ jobs:
 
       - name: Get tag name
         id: tag_name
-        run: echo ::set-output name=TAG::${{ github.event.release.tag_name }}
+        run: echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
       - name: Create ZIP file excluding specific files
         run: |
-          zip -r ${{ steps.tag_name.outputs.TAG }}.zip . -x "LICENSE" -x ".gitattributes" -x "README.md" -x ".git/*" -x ".github/*"
+          zip -r ${{ env.TAG }}.zip . -x "LICENSE" -x ".gitattributes" -x "README.md" -x ".git/*" -x ".github/*"
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -31,11 +31,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./${{ steps.tag_name.outputs.TAG }}.zip
-          asset_name: ${{ steps.tag_name.outputs.TAG }}.zip
+          asset_path: ./${{ env.TAG }}.zip
+          asset_name: ${{ env.TAG }}.zip
           asset_content_type: application/zip
 
-      - name: Add installation instructions to release
+      - name: Update release description
         uses: actions/github-script@v6
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
@@ -47,7 +47,7 @@ jobs:
               body: `${{ github.event.release.body }}
 
               ## インストール方法
-              1. **${{ steps.tag_name.outputs.TAG }}.zipをダウンロード**：
+              1. **${{ env.TAG }}.zipをダウンロード**：をダウンロード**：
               ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
               2. **ディレクトリにフォルダごと入れる**：
                   \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` にフォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
@@ -58,3 +58,27 @@ jobs:
                   翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
               `
             })
+
+      - name: Delete source ZIP asset
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const release = releases.data.find(r => r.id === ${{ github.event.release.id }});
+            const assets = await github.rest.repos.listReleaseAssets({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: release.id,
+            });
+            const sourceAsset = assets.data.find(a => a.name === 'Source code (zip)');
+            if (sourceAsset) {
+              await github.rest.repos.deleteReleaseAsset({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                asset_id: sourceAsset.id,
+              });
+            }
