@@ -12,7 +12,7 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
 - 定期的なアップデートと改善
 
 ## インストール方法
-1. **リリースされたバージョンのSource.zipをダウンロード**：
+1. **リリースされたバージョンのバージョンタグ.zipをダウンロード**：
     ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/c7567758-eb84-4899-9d78-4ee2467a7965)
 
 2. **ディレクトリにフォルダごと入れる**：
