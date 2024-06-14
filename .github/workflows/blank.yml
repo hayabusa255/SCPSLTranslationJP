@@ -1,9 +1,8 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -12,28 +11,19 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.release.tag_name }}
 
       - name: Create ZIP file excluding specific files
         run: |
-          zip -r ${{ github.ref_name }}.zip . -x "LICENSE" -x ".gitattributes" -x "README.md" -x ".github/workflows/*"
-
-      - name: Create a release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
+          zip -r ${{ github.event.release.tag_name }}.zip . -x "LICENSE" -x ".gitattributes" -x "README.md" -x ".github/workflows/*"
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./${{ github.ref_name }}.zip
-          asset_name: ${{ github.ref_name }}.zip
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./${{ github.event.release.tag_name }}.zip
+          asset_name: ${{ github.event.release.tag_name }}.zip
           asset_content_type: application/zip
