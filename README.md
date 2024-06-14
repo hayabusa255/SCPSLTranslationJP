@@ -4,6 +4,7 @@
 
 ![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP) ![License](https://img.shields.io/github/license/hayabusa255/SCPSLTranslationJP)
 
+[![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)]()
 ## 概要
 SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこそ！このプロジェクトは、ゲーム内のすべてのテキストを日本語に翻訳し、日本のプレイヤーがより快適にゲームを楽しめるようにすることを目的としています。
 
