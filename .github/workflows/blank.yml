@@ -43,18 +43,18 @@ jobs:
 
           ## インストール方法
           1. **${{ env.TAG }}.zipをダウンロード**：
-          ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
-          2.**${{ env.TAG }}.zipを解凍する。**：
-　　　　　　　 **必ず**解凍してください。
+             ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
+          2. **${{ env.TAG }}.zipを解凍する**：
+             必ず解凍してください。
           3. **ディレクトリに解凍した${{ env.TAG }}フォルダごと入れる**：
-              \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` に**解凍**した${{ env.TAG }}フォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
-              ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
-              
-              ![image](https://cdn.wikiwiki.jp/to/w/scpsl/FAQ/::attach/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202023-09-10%20164322.png?rev=fa8748a3e2e5ad64e6c518908e3d01d1&t=20230910164350)
+             \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` に解凍した${{ env.TAG }}フォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
+             ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
+             
+             ![image](https://cdn.wikiwiki.jp/to/w/scpsl/FAQ/::attach/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202023-09-10%20164322.png?rev=fa8748a3e2e5ad64e6c518908e3d01d1&t=20230910164350)
           4. **ゲーム内設定から言語を変更する**：
-              ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
+             ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
 
-              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。"
+             翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。"
           gh release edit ${{ github.event.release.tag_name }} --notes "${updated_body}"
 
       - name: Delete source ZIP asset
