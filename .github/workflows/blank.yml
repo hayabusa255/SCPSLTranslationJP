@@ -39,7 +39,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release view ${{ github.event.release.tag_name }} --json body -q .body > old_body.txt
-          echo "## インストール方法
+          echo "
+          ## インストール方法
           1. **${{ env.TAG }}.zipをダウンロード**：
           ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
           2. **ディレクトリにフォルダごと入れる**：
@@ -48,29 +49,26 @@ jobs:
           3. **ゲーム内設定から言語を変更する**：
               ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
 
-              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。" > install_instructions.txt
-          gh release edit ${{ github.event.release.tag_name }} --notes-file old_body.txt --notes-file install_instructions.txt
+              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。" >> old_body.txt
+          gh release edit ${{ github.event.release.tag_name }} --notes-file old_body.txt
 
       - name: Delete source ZIP asset
         uses: actions/github-script@v6
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const releases = await github.rest.repos.listReleases({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-            const release = releases.data.find(r => r.id === ${{ github.event.release.id }});
+            const release_id = ${{ github.event.release.id }};
             const assets = await github.rest.repos.listReleaseAssets({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              release_id: release.id,
+              release_id: release_id,
             });
-            const sourceAsset = assets.data.find(a => a.name === 'Source code (zip)');
-            if (sourceAsset) {
-              await github.rest.repos.deleteReleaseAsset({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                asset_id: sourceAsset.id,
-              });
+            for (const asset of assets.data) {
+              if (asset.name.startsWith('Source code')) {
+                await github.rest.repos.deleteReleaseAsset({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  asset_id: asset.id,
+                });
+              }
             }
