@@ -39,8 +39,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           existing_body=$(gh release view ${{ github.event.release.tag_name }} --json body -q .body)
-          echo "${existing_body}" > old_body.txt
-          echo "
+          updated_body="${existing_body}
 
           ## インストール方法
           1. **${{ env.TAG }}.zipをダウンロード**：
@@ -51,9 +50,8 @@ jobs:
           3. **ゲーム内設定から言語を変更する**：
               ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
 
-              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。" > install_instructions.txt
-          cat old_body.txt install_instructions.txt > new_body.txt
-          gh release edit ${{ github.event.release.tag_name }} --notes-file new_body.txt
+              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。"
+          gh release edit ${{ github.event.release.tag_name }} --notes "${updated_body}"
 
       - name: Delete source ZIP asset
         uses: actions/github-script@v6
