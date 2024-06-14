@@ -9,7 +9,7 @@
 
 ディスコードサーバーではサポートが受けられたり、翻訳のコラボレーターなどを募集しています。興味ある方は是非！
 
-  <a href="(https://discord.gg/r9U2Z3qSqg)"><img src="https://us-tuna-sounds-images.voicemod.net/2634755f-8d80-4c70-80d3-b9d258d09843-1687074955383.png" width="80px;" /></a>
+  <a href="([https://discord.gg/r9U2Z3qSqg])"><img src="https://us-tuna-sounds-images.voicemod.net/2634755f-8d80-4c70-80d3-b9d258d09843-1687074955383.png" width="80px;" /></a>
 
 ## 概要
 SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこそ！このプロジェクトは、ゲーム内のすべてのテキストを日本語に翻訳し、日本のプレイヤーがより快適にゲームを楽しめるようにすることを目的としています。
