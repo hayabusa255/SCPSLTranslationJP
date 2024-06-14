@@ -45,7 +45,7 @@ jobs:
           1. **${{ env.TAG }}.zipをダウンロード**：
           ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
           2.**${{ env.TAG }}.zipを解凍する。**:
-　　　　　　　**必ず**解凍してください。
+　　　　　　　必ず解凍してください。
           3. **ディレクトリに解凍した${{ env.TAG }}フォルダごと入れる**：
               \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` に**解凍**した${{ env.TAG }}フォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
               ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
