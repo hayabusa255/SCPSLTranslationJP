@@ -22,7 +22,7 @@ jobs:
 
       - name: Create ZIP file excluding specific files
         run: |
-          zip -r ${{ env.TAG }}.zip . -x "LICENSE" -x ".gitattributes" -x "README.md" -x ".git/*" -x ".github/*"
+            zip -r ${{ env.TAG }}.zip JP/*.txt -x "LICENSE" -x ".gitattributes" -x "README.md" -x ".git/*" -x ".github/*"
 
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
