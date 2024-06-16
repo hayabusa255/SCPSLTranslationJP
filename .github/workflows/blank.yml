@@ -22,7 +22,7 @@ jobs:
 
       - name: Create ZIP file with txt files in jp folder
         run: |
-          cd jp
+          cd JP
           zip -r ../${{ env.TAG }}.zip *.txt
           cd ..
 
