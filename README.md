@@ -21,13 +21,13 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
 
 ## インストール方法
 1. **リリースされたバージョンのバージョンタグ.zipをダウンロード**：
-      ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)
+      [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)]()
 2. **ディレクトリにフォルダごと入れる**：
     `\SteamLibrary\steamapps\common\SCP Secret Laboratory\Translations` にフォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
-    ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
+    [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)]()
 
 3. **ゲーム内設定から言語を変更する**：
-    ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
+    [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)]()
     
     翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
 
