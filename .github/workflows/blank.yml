@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+     
       - name: Check out repository
         uses: actions/checkout@v3
         with:
@@ -26,6 +27,25 @@ jobs:
           zip -r ../${{ env.TAG }}.zip *.txt
           cd ..
 
+      - name: Get previous release assets
+        id: get_previous_assets
+        run: |
+          previous_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          previous_release_id=$(gh release view $previous_tag --json id | jq -r '.id')
+          previous_assets=$(gh release download $previous_tag --pattern "SCPSL.exe" --target . --json name,url)
+          echo "::set-output name=assets::${previous_assets}"
+
+      - name: Upload SCPSL.exe as release asset
+        id: upload_assets
+        run: |
+          previous_assets="${{ steps.get_previous_assets.outputs.assets }}"
+          for asset in $previous_assets; do
+            asset_name=$(echo $asset | jq -r '.name')
+            asset_url=$(echo $asset | jq -r '.url')
+            wget $asset_url -O SCPSL.exe
+            echo "Uploading SCPSL.exe as release asset..."
+            gh release upload ${{ github.event.release.tag_name }} SCPSL.exe
+            
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
         env:
