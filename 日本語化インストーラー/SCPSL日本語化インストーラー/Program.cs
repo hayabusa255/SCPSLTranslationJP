@@ -25,17 +25,25 @@ static async Task Main(string[] args)
         if (!IsAdministrator())
         {
 
-            //別プロセスで本アプリを起動する
-            Process.Start(new ProcessStartInfo
+            try
             {
-                FileName = Process.GetCurrentProcess().MainModule.FileName,
-                UseShellExecute = true,
-                Verb = "RunAs",
-            });
 
 
-            Environment.Exit(0);
-        
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = Process.GetCurrentProcess().MainModule.FileName,
+                    UseShellExecute = true,
+                    Verb = "RunAs",
+                });
+
+
+                Environment.Exit(0);
+            } catch (Exception ex)
+            {
+                Log.Error("管理者権限での実行が必要です。アプリケーションを再起動し、管理者として実行してください。 キーを押して終了します。");
+                Console.ReadKey();
+                Environment.Exit(1);
+            }
 
         }
            
@@ -185,27 +193,26 @@ static async Task Main(string[] args)
             }
         }
     }
-    private static void DeleteOldTranslations(string lastesttag)
+    private static async void DeleteOldTranslations(string lastesttag)
     {
         var client = GitHubClient;
-        var releases = client.Repository.Release.GetAll("hayabusa255", "SCPSLTranslationJP").Result;
+        var releases =  client.Repository.Release.GetAll("hayabusa255", "SCPSLTranslationJP").Result;
         var oldVersions = releases.Select(r => r.TagName).ToList();
         oldVersions.Remove(lastesttag);
         oldVersions.Add("jp");
 
 
         DirectoryInfo directoryInfo = new DirectoryInfo(TargetDirectory);
-        foreach (DirectoryInfo dir in directoryInfo.GetDirectories())
+        foreach (DirectoryInfo dir in directoryInfo.GetDirectories().Where(d => oldVersions.Contains(d.Name)))
         {
-            if (oldVersions.Contains(dir.Name))
-            {
+
                 Log.Info($"古いバージョンの翻訳ファイル{dir.Name}が見つかりました。これを削除しますか？ (Y/N): ");
                 var userInput = Console.ReadLine()?.ToString();
                 if (userInput == "y" || userInput =="Y")
                 {
                     try
                     {
-                        dir.Delete(true);
+                        dir.Delete();
                         Log.Info($"古いバージョンの翻訳ファイル '{dir.Name}' を削除しました。");
                     }
                     catch (Exception ex)
@@ -220,7 +227,7 @@ static async Task Main(string[] args)
             }
         }
     }
-}
+
 public class Log
 {
     public static void Info(string text)
