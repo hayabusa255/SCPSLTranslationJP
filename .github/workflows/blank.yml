@@ -17,18 +17,7 @@ jobs:
         with:
           ref: ${{ github.event.release.tag_name }}
           
-      - name: Download SCPSL日本語インストーラー.exe from Mega.nz
-        run: |
-          wget -O SCPSL日本語インストーラー.exe "https://mega.nz/#!DVMXQSLQ!6VgsXBAOHr8og3UkTIH0Kd6Jn_QHKL9zNGXrcgSY_mw"
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./SCPSL日本語インストーラー.exe
-          asset_name: SCPSL日本語インストーラー.exe
-          asset_content_type: application/octet-stream
+     
       - name: Get tag name
         run: echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
