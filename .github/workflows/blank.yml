@@ -80,9 +80,9 @@ jobs:
 
              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
           ## インストーラーを使ってのインストール方法
-          1. **SCPSL.exeをダウンロード** 
+          1. **SCPSL.exeをダウンロード** ：
             ![SCPSL.exe Download](${{ steps.upload_assets.outputs.browser_download_url }})
-          2. **SCPSL.exeを実行**
+          2. **SCPSL.exeを実行**：
             SCPSL.exeをダブルクリックします。
             ![SCPSL.exe](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/a69c5917-356e-464e-ade4-c4008316bede)
             クリックするとこのような画面が表示されます。詳細情報より、実行を選択して実行します。
