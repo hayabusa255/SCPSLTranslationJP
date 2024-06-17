@@ -21,7 +21,7 @@ jobs:
       - name: Get tag name
         run: echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
 
-      - name: Create ZIP file with txt files in jp folder
+      - name: Create ZIP file with txt files in JP folder
         run: |
           cd JP
           zip -r ../${{ env.TAG }}.zip *.txt
@@ -31,20 +31,22 @@ jobs:
         id: get_previous_assets
         run: |
           previous_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          previous_release_id=$(gh release view $previous_tag --json id | jq -r '.id')
-          previous_assets=$(gh release download $previous_tag --pattern "SCPSL.exe" --target . --json name,url)
+          previous_release_id=$(gh release view $previous_tag --json id -q '.id')
+          previous_assets=$(gh release view $previous_release_id --json assets)
           echo "::set-output name=assets::${previous_assets}"
 
       - name: Upload SCPSL.exe as release asset
-        id: upload_assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         run: |
-          previous_assets="${{ steps.get_previous_assets.outputs.assets }}"
-          for asset in $previous_assets; do
-            asset_name=$(echo $asset | jq -r '.name')
-            asset_url=$(echo $asset | jq -r '.url')
+          previous_assets='${{ steps.get_previous_assets.outputs.assets }}'
+          asset_url=$(echo "$previous_assets" | jq -r '.[] | select(.name == "SCPSL.exe") | .url')
+          if [[ -n $asset_url ]]; then  
             wget $asset_url -O SCPSL.exe
-            echo "Uploading SCPSL.exe as release asset..."
             gh release upload ${{ github.event.release.tag_name }} SCPSL.exe
+          else
+            echo "SCPSL.exe not found in previous release assets"  
+          fi
             
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
@@ -63,56 +65,55 @@ jobs:
           existing_body=$(gh release view ${{ github.event.release.tag_name }} --json body -q .body)
           updated_body="${existing_body}
 
-          ## インストール方法
+          ## インストール方法 
           1. **${{ env.TAG }}.zipをダウンロード**：
-             [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/47f1eb3f-0004-4834-801a-248fd2f8a4d0)]()
-          2. **${{ env.TAG }}.zipを解凍する**：
+             ![Zip Download](${{ steps.upload_zip.outputs.browser_download_url }})
+          2. **${{ env.TAG }}.zipを解凍する**：  
              必ず解凍してください。
           3. **ディレクトリに解凍した${{ env.TAG }}フォルダごと入れる**：
-             \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` に解凍した${{ env.TAG }}フォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。
-             [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)]()
+             \`\\SteamLibrary\\steamapps\\common\\SCP Secret Laboratory\\Translations\` に解凍した${{ env.TAG }}フォルダごと入れてください。ディレクトリの開き方はSteamを開いて以下の画像のようにして開きます。 
+             ![Steam Directory](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)
              
-             [![image](https://cdn.wikiwiki.jp/to/w/scpsl/FAQ/::attach/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202023-09-10%20164322.png?rev=fa8748a3e2e5ad64e6c518908e3d01d1&t=20230910164350)]()
+             ![Translations Folder](https://cdn.wikiwiki.jp/to/w/scpsl/FAQ/::attach/%E3%82%B9%E3%82%AF%E3%83%AA%E3%83%BC%E3%83%B3%E3%82%B7%E3%83%A7%E3%83%83%E3%83%88%202023-09-10%20164322.png?rev=fa8748a3e2e5ad64e6c518908e3d01d1&t=20230910164350)  
           4. **ゲーム内設定から言語を変更する**：
-             [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)]()
+             ![Language Settings](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
 
              翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
           ## インストーラーを使ってのインストール方法
-          1. **SCPSL.exeをダウンロード**
-            [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/c3252454-ef90-40ac-98d3-c3efe72aa31d)]()
+          1. **SCPSL.exeをダウンロード** 
+            ![SCPSL.exe Download](${{ steps.upload_assets.outputs.browser_download_url }})
           2. **SCPSL.exeを実行**
             SCPSL.exeをダブルクリックします。
-            [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/a69c5917-356e-464e-ade4-c4008316bede)]()
+            ![SCPSL.exe](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/a69c5917-356e-464e-ade4-c4008316bede)
             クリックするとこのような画面が表示されます。詳細情報より、実行を選択して実行します。
             
-            ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/e31991a3-6f39-48d6-8e6f-f9073c95b52c)
-            管理者権限で実行を選択して完了です。
+            ![Run as Admin](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/e31991a3-6f39-48d6-8e6f-f9073c95b52c)
+            管理者権限で実行を選択して完了です。  
           3. **ゲーム内設定から言語を変更する**：
-               [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)]()
+               ![Language Settings](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
             
             翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
-            **※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**
-　　　　　　　**更新時も自動で更新してくれます。**
-       
-        gh release edit ${{ github.event.release.tag_name }} --notes "${updated_body}"
+            **※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**  
+　　　　　　　**更新時も自動で更新してくれます。**"
+          gh release edit ${{ github.event.release.tag_name }} --notes "${updated_body}
 
       - name: Delete source ZIP asset
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}  
           script: |
-            const release_id = ${{ github.event.release.id }};
-            const assets = await github.rest.repos.listReleaseAssets({
-              owner: context.repo.owner,
+            const release = await github.rest.repos.getRelease({
+              owner: context.repo.owner, 
               repo: context.repo.repo,
-              release_id: release_id,
-            });
-            for (const asset of assets.data) {
+              release_id: ${{ github.event.release.id }}
+            })
+
+            for (const asset of release.data.assets) {
               if (asset.name.startsWith('Source code')) {
                 await github.rest.repos.deleteReleaseAsset({
                   owner: context.repo.owner,
-                  repo: context.repo.repo,
+                  repo: context.repo.repo,  
                   asset_id: asset.id,
-                });
-              }
+                })
+              }  
             }
