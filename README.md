@@ -2,8 +2,8 @@
 
 [![SCPSL](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/700330/capsule_616x353.jpg?t=1717344352)]()
 
-[![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![License](https://img.shields.io/github/license/hayabusa255/SCPSLTranslationJP)]()
-[![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)]()
+[![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![License](https://img.shields.io/github/license/hayabusa255/SCPSLTranslationJP)](https://github.com/hayabusa255/SCPSLTranslationJP/blob/main/LICENSE)
+[![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/releases)
 ## 公式Discordサーバー
 
 ディスコードサーバーではサポートが受けられたり、翻訳のコラボレーターなどを募集しています。興味ある方は是非！
