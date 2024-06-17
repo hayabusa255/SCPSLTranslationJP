@@ -30,12 +30,17 @@ jobs:
       - name: Get previous release assets
         id: get_previous_assets
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          previous_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          previous_release_id=$(gh release view $previous_tag --json id -q '.id')
-          previous_assets=$(gh release view $previous_release_id --json assets)
-          echo "::set-output name=assets::${previous_assets}"
+          previous_tag=$(git describe --abbrev=0 --tags `git rev-list --tags --skip=1 --max-count=1`)
+          if [ -z "$previous_tag" ]; then
+            echo "No previous release found"
+            echo "::set-output name=assets::"
+          else
+            previous_release_id=$(gh release view $previous_tag --json id -q '.id')
+            previous_assets=$(gh release view $previous_release_id --json assets)
+            echo "::set-output name=assets::${previous_assets}"
+          fi
 
       - name: Upload SCPSL.exe as release asset
         env:
