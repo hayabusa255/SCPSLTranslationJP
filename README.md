@@ -1,8 +1,8 @@
 # SCP: Secret Laboratory 日本語翻訳プロジェクト
 
-![SCPSL](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/700330/capsule_616x353.jpg?t=1717344352)
+[![SCPSL](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/700330/capsule_616x353.jpg?t=1717344352)]()
 
-![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP) ![License](https://img.shields.io/github/license/hayabusa255/SCPSLTranslationJP)
+[![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![License](https://img.shields.io/github/license/hayabusa255/SCPSLTranslationJP)]()
 [![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)]()
 ## 公式Discordサーバー
 
