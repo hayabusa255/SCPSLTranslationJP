@@ -30,6 +30,22 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
     [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)]()
     
     翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
+## インストーラーを使用するインストール方法
+1. **SCPSL.exeをダウンロード** ：
+![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/6f6a1a08-de22-4e60-ad33-b2af9acf1416)
+2. **SCPSL.exeを実行**：
+ SCPSL.exeをダブルクリックします。
+![SCPSL.exe](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/a69c5917-356e-464e-ade4-c4008316bede)
+ クリックするとこのような画面が表示されます。詳細情報より、実行を選択して実行します。
+            
+![Run as Admin](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/e31991a3-6f39-48d6-8e6f-f9073c95b52c)
+管理者権限で実行を選択して完了です。  
+3. **ゲーム内設定から言語を変更する**：
+  ![Language Settings](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
+            
+翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
+**※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。
+**更新時も自動で更新してくれます。**
 
 ## ライセンス
 このプロジェクトはMITライセンスの下でライセンスされています。詳細は `LICENSE` ファイルを参照してください。
