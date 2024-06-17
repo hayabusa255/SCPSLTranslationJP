@@ -1,0 +1,54 @@
+0~Janitor Keycard
+1~Scientist Keycard
+2~Research Supervisor Keycard
+3~Zone Manager Keycard
+4~Guard Keycard
+5~MTF Private Keycard
+6~Containment Engineer Keycard
+7~MTF Operative Keycard
+8~MTF Captain Keycard
+9~Facility Manager Keycard
+10~Chaos Insurgency Access Device
+11~O5-level Keycard
+12~Radio~Allows communication over long distances between devices. Range can be adjusted.
+13~COM-15
+14~First Aid Kit~Heals your injuries.
+15~Flashlight~Let there be light!
+16~Micro H.I.D.~Mobile high-intensity electrical discharge thrower.
+17~SCP-500~The Panacea. Instantly restores all health and cures most afflictions. 
+18~SCP-207~Harmfully increases motor skills.
+20~MTF-E11-SR
+21~Crossvec
+23~FSP-9
+24~Logicer
+25~High-Explosive Grenade~A high explosive dealing significant damage. Detonates after a brief delay once thrown.
+26~Flashbang Grenade~Blinds and disorients your enemies. Detonates after a brief delay once thrown.
+30~COM-18
+31~SCP-018~Superball with the ability to bounce with extreme efficiency. Deadly ricochet at high speeds.
+32~SCP-268~When worn, temporarily makes you invisible unless it is interrupted by any user interaction.
+33~Adrenaline~Provides a temporary health boost and a short burst of stamina.
+34~Painkillers~Slowly restores health over time.
+35~Coin~You're not sure why you'd want to carry this around...
+36~Light Armor
+37~Combat Armor
+38~Heavy Armor
+39~.44 Revolver
+40~AK
+41~Shotgun
+42~Bag of Candies~A bag containing the following candies:
+43~SCP-2176~Your very own Ghostlight! Caution: Fragile. Disrupts electronics when broken.
+44~SCP-244-A~An ancient vase, freezing to the touch. Creates a large cloud of icy fog when placed.
+45~SCP-244-B~An ancient vase, freezing to the touch. Creates a large cloud of icy fog when placed.
+46~SCP-1853~Increases dexterity and weapon handling when your life is in danger.
+47~3-X Particle Disruptor
+48~COM-45
+49~SCP-1576~Allows temporary communication with the dead. Can be used again after some time passes.
+50~Jailbird~What?!
+51~SCP-207?~Opposite day?
+52~FR-MG-0
+53~A7
+54~Lantern~A classic oil lantern, inscribed with the name "Daniel".
+55~Snowball
+56~Coal
+57~Coal?
+58~Tape Player?~Contains an unlabeled tape. Please don’t play it. Please.

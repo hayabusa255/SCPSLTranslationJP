@@ -1,0 +1,28 @@
+Mobile Task Force Unit Epsilon-11 designated [designation] has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>
+Awaiting re-containment of: [count] SCP subjects.
+Awaiting re-containment of: 1 SCP subject.
+Substantial threat to safety remains within the facility -- exercise caution.
+successfully terminated. Termination cause unspecified.
+terminated by SCP-[scp].
+successfully terminated by Automatic Security System.
+successfully terminated by Alpha Warhead.
+contained successfully by Science Personnel.
+contained successfully by Class-D Personnel.
+contained successfully by Chaos Insurgency.
+SCP-[scp]
+contained successfully. Containment unit unknown.
+contained successfully. Containment Unit [designation].
+lost in Decontamination Sequence.
+[current] out of [max] generators activated.
+<split>All generators have been successfully engaged.
+Overcharge in 3... 2... 1...
+Facility is back in operational mode.
+Attention, all personnel.<split>The Light Containment Zone decontamination process will occur in T-15 minutes.<split>All biological substances must be removed in order to avoid destruction.
+Danger, Light Containment Zone overall decontamination in T-[time] minutes.
+Danger, Light Containment Zone overall decontamination in T-1 minute.
+Danger, Light Containment Zone overall decontamination in T-30 seconds.<split>All checkpoint doors have been permanently opened. Please evacuate immediately.
+Light Containment Zone is locked down and ready for decontamination.<split>The removal of organic substances has now begun.
+ALPHA WARHEAD EMERGENCY DETONATION SEQUENCE ENGAGED.<split>THE UNDERGROUND SECTION OF THE FACILITY WILL BE DETONATED IN T-[time] SECONDS.
+DETONATION CANCELLED. RESTARTING SYSTEMS.
+DETONATION SEQUENCE RESUMED, T-[time] SECONDS.
+terminated by Marshmallow Man.
