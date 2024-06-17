@@ -212,7 +212,7 @@ static async Task Main(string[] args)
                 {
                     try
                     {
-                        dir.Delete();
+                        dir.Delete(true);
                         Log.Info($"古いバージョンの翻訳ファイル '{dir.Name}' を削除しました。");
                     }
                     catch (Exception ex)
