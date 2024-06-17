@@ -22,8 +22,8 @@ class Program
 static async Task Main(string[] args)
     {
 
-            if (!IsAdministrator())
-            {
+        if (!IsAdministrator())
+        {
 
             //別プロセスで本アプリを起動する
             Process.Start(new ProcessStartInfo
@@ -32,7 +32,11 @@ static async Task Main(string[] args)
                 UseShellExecute = true,
                 Verb = "RunAs",
             });
-            
+
+
+            Environment.Exit(0);
+        
+
         }
            
         

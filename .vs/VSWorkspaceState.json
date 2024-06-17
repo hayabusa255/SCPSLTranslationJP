@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\\u65E5\u672C\u8A9E\u5316\u30A4\u30F3\u30B9\u30C8\u30FC\u30E9\u30FC",
+    "\\\u65E5\u672C\u8A9E\u5316\u30A4\u30F3\u30B9\u30C8\u30FC\u30E9\u30FC\\SCPSL\u65E5\u672C\u8A9E\u5316\u30A4\u30F3\u30B9\u30C8\u30FC\u30E9\u30FC"
   ],
-  "SelectedNode": "\\C:\\Users\\fujit\\Source\\Repos\\SCPSLTranslationJP",
+  "SelectedNode": "\\\u65E5\u672C\u8A9E\u5316\u30A4\u30F3\u30B9\u30C8\u30FC\u30E9\u30FC\\SCPSL\u65E5\u672C\u8A9E\u5316\u30A4\u30F3\u30B9\u30C8\u30FC\u30E9\u30FC\\Program.cs",
   "PreviewInSolutionExplorer": false
 }
