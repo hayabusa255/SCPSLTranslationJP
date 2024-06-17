@@ -1,0 +1,24 @@
+Server IP Display Mode
+Interface Language
+Changes won't take immediate effect in some places.\nFull game restart recommended.
+Loading...
+Subtitles
+Healthbar Mode
+Exact HP Number
+Percentage
+Role Intro Animation
+Regular
+Fast
+Controls the duration of the full-screen text animation containing the name of your new role.
+Hidden
+Allows server IP address to be hidden on interface elements.
+Flash Taskbar on Respawn
+Photosensitivity Warning on Startup
+Preferred System of Units
+Metric
+Imperial
+Select preference between metric units (kilograms, meters, etc.) or imperial units (pounds, inches, etc.). Please note that this feature only affects some UI elements and is not supported by all game features.
+Weapon Accuracy Display Mode
+Accurate Range
+Dispersion
+Determines how weapon accuracy is depicted by UI elements. Accurate range displays the distance at which the weapon remains likely to hit a target, while dispersion shows the maximum angular deviation from the target direction.

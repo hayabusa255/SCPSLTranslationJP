@@ -1,0 +1,24 @@
+None
+SCP-173
+Class-D
+Spectator
+SCP-106
+NTF Specialist
+SCP-049
+Scientist
+SCP-079
+Chaos Conscript
+SCP-096
+SCP-049-2
+NTF Sergeant
+NTF Captain
+NTF Private
+Tutorial
+Facility Guard
+SCP-939
+Custom Role
+Chaos Rifleman
+Chaos Marauder
+Chaos Repressor
+Overwatch
+Filmmaker

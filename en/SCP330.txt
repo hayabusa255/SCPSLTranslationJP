@@ -1,0 +1,22 @@
+Candies
+Rainbow Candy
+Its a hard piece of rock candy, packed with all sorts of flavours.
+Grants a large number of small bonuses, including health regeneration, invigoration, and AHP.
+Yellow Candy
+The overwhelming smell of lemon makes you cringe a little.
+Allows you to move faster and sprint longer for a short period of time.
+Purple Candy
+It has a juicy grape smell. Your mouth begins to water.
+Grants temporary resistance to damage and slowly regenerates health.
+Red Candy
+A strong scent of cherry fills the room. It’s a bit... <i>too</i> strong.
+Quickly restores your health.
+Green Candy
+A nasty, herbal smell emits from the candy.
+Provides a long-lasting regeneration of health and temporary immunity to most status effects.
+Blue Candy
+It smells soft and sweet, something akin to a marshmallow.
+Grants a temporary barrier.
+Pink Candy
+The strawberry scent is as gentle as it looks.
+- R E D A C T E D -
