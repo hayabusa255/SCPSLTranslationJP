@@ -53,6 +53,7 @@ jobs:
         run: |
             curl -LJO -H 'Accept: application/octet-stream' \
             'https://api.github.com/repos/${{github.repository}}/releases/${{steps.latest_release.outputs.result}}/assets?name=SCPSL.exe'
+            mv SCPSL.exe?name=SCPSL.exe SCPSL.exe
           
       - name: Upload SCPSL.exe to latest release
         uses: actions/upload-release-asset@v1
