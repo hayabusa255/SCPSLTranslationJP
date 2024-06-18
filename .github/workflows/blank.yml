@@ -50,10 +50,12 @@ jobs:
             return releases.data[1].id;
                 
       - name: Download SCPSL.exe from previous release
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         run: |
-            release_id=${{steps.latest_release.outputs.result}}
-            asset_url=$(curl -s https://api.github.com/repos/${{github.repository}}/releases/${release_id}/assets | jq -r '.[] | select(.name == "SCPSL.exe") | .url')
-            curl -LJO -H 'Accept: application/octet-stream' ${asset_url}
+          release_id=${{steps.latest_release.outputs.result}}
+          asset_url=$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/${{github.repository}}/releases/${release_id}/assets | jq -r '.[] | select(.name == "SCPSL.exe") | .url')
+          curl -LJO -H 'Accept: application/octet-stream' -H "Authorization: token ${GITHUB_TOKEN}" ${asset_url}
           
       - name: Upload SCPSL.exe to latest release
         uses: actions/upload-release-asset@v1
@@ -99,7 +101,7 @@ jobs:
                       
               翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
               **※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**
-              **更新時も自動で更新してくれます。**
+              **更新時も自動で更新してくれます。**"
           gh release edit ${{ github.event.release.tag_name }} --notes "${updated_body}"
       - name: Delete source ZIP asset
         uses: actions/github-script@v6
