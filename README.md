@@ -48,5 +48,41 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
 **※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**
 **更新時も自動で更新してくれます。**
 
+## コラボレーター
+
+このプロジェクトに携わって下さる方々です
+以下は主なコラボレーターです：
+
+### 主なコラボレーター
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/hayabusa255">
+        <img src="https://github.com/hayabusa255.png" width="100px;" alt="hayabusa255"/>
+        <br />
+        <sub><b>hayabusa255</b></sub>
+      </a>
+      <br />
+      <sub>役割: 総合管理者</sub>
+      <br />
+      <sub>貢献内容: 日本語化インストーラーの開発、主要翻訳の実施、翻訳の品質管理</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/PikutoSun2">
+        <img src="https://github.com/PikutoSun2.png" width="100px;" alt="ピクトさん"/>
+        <br />
+        <sub><b>ピクトさん</b></sub>
+      </a>
+      <br />
+      <sub>役割: 翻訳コーディネーター</sub>
+      <br />
+      <sub>貢献内容: 主要翻訳の実施、翻訳の品質管理</sub>
+    </td>
+  </tr>
+</table>
+
+
+
 ## ライセンス
 このプロジェクトはMITライセンスの下でライセンスされています。詳細は `LICENSE` ファイルを参照してください。
