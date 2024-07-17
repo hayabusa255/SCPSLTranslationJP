@@ -7,19 +7,28 @@ using System.Net.Http;
 using System.Reflection;
 using System.Reflection.PortableExecutable;
 using System.Security.Principal;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Win32;
 using Octokit;
+
+using Newtonsoft.Json;
+
+using System.Reflection.Metadata.Ecma335;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+using ValveKeyValue;
+using System.Net.NetworkInformation;
 
 class Program
 {
     private static readonly string GitHubUrl = "https://github.com/hayabusa255/SCPSLTranslationJP/releases/latest";
     private static readonly string DownloadUrlTemplate = "https://github.com/hayabusa255/SCPSLTranslationJP/releases/download/{0}/{1}.zip";
-    private static readonly string TargetDirectory = @"\SteamLibrary\steamapps\common\SCP Secret Laboratory\Translations";
 
     private static readonly GitHubClient GitHubClient = new(new ProductHeaderValue("CsharpApp"));
 
 
-static async Task Main(string[] args)
+    static async Task Main(string[] args)
     {
 
         if (!IsAdministrator())
@@ -57,7 +66,13 @@ static async Task Main(string[] args)
                 Log.Error("最新バージョンのタグが取得できませんでした。");
                 return;
             }
-            if (Directory.Exists(Path.Combine(TargetDirectory, latestTag)))
+            if(Directory.Exists(GetDirectoryAsync().Result) == false)
+            {
+                Log.Error("SCP: Secret Laboratoryがインストールされていません。インストール後もう一度実行してください。\nキーを押して終了してください。");
+                Console.ReadKey();
+                return;
+            }
+            if (Directory.Exists(Path.Combine(GetDirectoryAsync().Result, latestTag)))
             {
                 Log.Info($"すでに最新版の日本語化ファイルがインストールされています。キーを押して終了してください。");
                 Console.ReadKey();
@@ -66,19 +81,20 @@ static async Task Main(string[] args)
             {
 
                 DeleteOldTranslations(latestTag);
-                // ダウンロードURLを構築
+
                 string downloadUrl = string.Format(DownloadUrlTemplate, latestTag, latestTag);
 
-                // ZIPファイルのパスを設定
+
                 string zipFilePath = Path.Combine(Path.GetTempPath(), $"{latestTag}.zip");
 
                 Log.Info($"{latestTag}.zipをダウンロードします。");
                 await DownloadFileAsync(downloadUrl, zipFilePath);
 
-                // 解凍先ディレクトリを設定
-                string extractPath = Path.Combine(TargetDirectory, latestTag);
 
-                // フォルダが存在しない場合は作成
+                string extractPath = Path.Combine(GetDirectoryAsync().Result, latestTag);
+
+
+
                 if (!Directory.Exists(extractPath))
                 {
                     Directory.CreateDirectory(extractPath);
@@ -132,6 +148,50 @@ static async Task Main(string[] args)
             return responseBody.Substring(tagStartIndex, tagEndIndex - tagStartIndex);
         }
         return null;
+    }
+    private static async Task<string> GetDirectoryAsync()
+    {
+        string steamPath = null;
+        try
+        {
+            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam"))
+            {
+                if (key != null)
+                {
+                    steamPath = key.GetValue("InstallPath") as string;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error($"Error retrieving Steam path: {ex.Message}");
+            return null;
+        }
+        try
+        {
+
+            string gamePath = SteamLibrary.GetLibraryFolders(steamPath);
+          
+
+            if (!string.IsNullOrEmpty(gamePath))
+            {
+
+                return gamePath + "/steamapps/common/SCP Secret Laboratory/Translations";
+            }
+            else
+            {
+                return null;
+            }
+        }
+        catch (FileNotFoundException ex)
+        {
+            Log.Error(ex.Message);
+            return null;
+        };
+        
+
+
+
     }
 
     private static async Task DownloadFileAsync(string url, string destinationPath)
@@ -202,7 +262,7 @@ static async Task Main(string[] args)
         oldVersions.Add("jp");
 
 
-        DirectoryInfo directoryInfo = new DirectoryInfo(TargetDirectory);
+        DirectoryInfo directoryInfo = new DirectoryInfo(GetDirectoryAsync().Result);
         foreach (DirectoryInfo dir in directoryInfo.GetDirectories().Where(d => oldVersions.Contains(d.Name)))
         {
 
@@ -247,7 +307,68 @@ public class Log
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Error] {text}");
         Console.ResetColor();
+        //エラーがコード何行目か取得
+        StackTrace stackTrace = new StackTrace();
+        StackFrame stackFrame = stackTrace.GetFrame(1);
+        MethodBase methodBase = stackFrame.GetMethod();
+        string methodName = methodBase.Name;
+        int lineNumber = stackFrame.GetFileLineNumber();
+        if (lineNumber != 0)
+        {
+            text += $" (at {methodName}() in {stackFrame.GetFileName()}:line {lineNumber})";
+        }
+        if(File.Exists("error.log"))
+        {
+            File.AppendAllText("error.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Error] {text}\n");
+        }
+        else
+        {
+            File.WriteAllText("error.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Error] {text}\n");
+        }   
 
+    } 
+}
+public class SteamLibrary
+{
+    public static string GetLibraryFolders(string steamPath)
+    {
+        string libraryFoldersPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
+
+        if (File.Exists(libraryFoldersPath))
+        {
+
+            try
+            {
+                var kv = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
+                using (var stream = File.OpenRead(libraryFoldersPath))
+                {
+                    var data = kv.Deserialize(stream);
+
+
+                    foreach (var folder in data)
+                    {
+                        string path = (string)folder["path"];
+                        if(File.Exists(Path.Combine(path, "steamapps", "appmanifest_700330.acf")))
+                        {
+                            return path;
+                        }
+
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"エラーが発生しました: {ex.Message}");
+            }
+        }
+        return null;
     }
 
+  
+
+
 }
+
+
+
