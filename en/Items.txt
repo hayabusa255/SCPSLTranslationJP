@@ -24,7 +24,7 @@
 25~High-Explosive Grenade~A high explosive dealing significant damage. Detonates after a brief delay once thrown.
 26~Flashbang Grenade~Blinds and disorients your enemies. Detonates after a brief delay once thrown.
 30~COM-18
-31~SCP-018~Superball with the ability to bounce with extreme efficiency. Deadly ricochet at high speeds.
+31~Jackie~A friend! Bounces with extreme efficiency.
 32~SCP-268~When worn, temporarily makes you invisible unless it is interrupted by any user interaction.
 33~Adrenaline~Provides a temporary health boost and a short burst of stamina.
 34~Painkillers~Slowly restores health over time.
@@ -44,11 +44,12 @@
 48~COM-45
 49~SCP-1576~Allows temporary communication with the dead. Can be used again after some time passes.
 50~Jailbird~What?!
-51~SCP-207?~Opposite day?
+51~Anti-Cola~The result of an experiment with SCP-914. Good for your health, bad for your motor skills. Will save your life in a pinch.
 52~FR-MG-0
 53~A7
 54~Lantern~A classic oil lantern, inscribed with the name "Daniel".
-55~Snowball
-56~Coal
-57~Coal?
-58~Tape Player?~Contains an unlabeled tape. Please don’t play it. Please.
+55~SCP-1344~A set of modified goggles that lets you perceive the positions of other players through walls. Once worn, they must never be removed!
+56~Snowball
+57~Coal
+58~Coal?
+59~Tape Player?~Contains an unlabeled tape. Please don’t play it. Please.

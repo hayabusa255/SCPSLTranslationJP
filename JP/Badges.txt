@@ -81,3 +81,9 @@ Northwood ソーシャルメディア監督
 Northwood ソーシャルメディアマネージャー 
 Northwood 翻訳監督
 Northwood Steam 監督
+SCP:SL レベルデザインマネージャー
+SCP:SL アンチチートマネージャー
+SCP:SL アンチチートスーパーバイザー
+Northwood Wiki スーパーバイザー
+SCP:SL API チームリーダー
+SCP:SL API メンテナー

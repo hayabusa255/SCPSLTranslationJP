@@ -81,3 +81,9 @@ Northwood Social Media Supervisor
 Northwood Social Media Manager 
 Northwood Translation Supervisor
 Northwood Steam Supervisor
+SCP:SL Level Design Manager
+SCP:SL Anti-Cheat Manager
+SCP:SL Anti-Cheat Supervisor
+Northwood Wiki Supervisor
+SCP:SL API Team Lead
+SCP:SL API Maintainer
