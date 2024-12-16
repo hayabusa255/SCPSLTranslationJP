@@ -1,4 +1,4 @@
-Ammo {0}/{1} {2}
+Ammo [loaded]/[capacity] [type]
 Damage
 Fire Rate
 Hip Accuracy
@@ -12,7 +12,14 @@ Stamina Usage
 Movement Speed
 Item Limits:
 Ammo Limits:
-{0} total
+[amount] total
 Armor Penetration
 Running Accuracy
 Press [key] to cackle
+Remaining charge: [percent]
+Remaining ammo: [rem]
+Hold [primary] for quick-fire mode.
+Hold [secondary] for a high-powered charge.
+Press [key] to cycle firing modes.
+Press [key] to attack.
+Hold [key] to charge.

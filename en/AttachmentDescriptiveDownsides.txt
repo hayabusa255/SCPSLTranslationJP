@@ -1,1 +1,2 @@
 Laser is visible to others
+No bonus damage for headshots

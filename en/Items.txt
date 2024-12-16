@@ -14,7 +14,7 @@
 13~COM-15
 14~First Aid Kit~Heals your injuries.
 15~Flashlight~Let there be light!
-16~Micro H.I.D.~Mobile high-intensity electrical discharge thrower.
+16~Micro H.I.D.~Heavy electrical device designed for the termination of anomalies.
 17~SCP-500~The Panacea. Instantly restores all health and cures most afflictions. 
 18~SCP-207~Harmfully increases motor skills.
 20~MTF-E11-SR
@@ -24,7 +24,7 @@
 25~High-Explosive Grenade~A high explosive dealing significant damage. Detonates after a brief delay once thrown.
 26~Flashbang Grenade~Blinds and disorients your enemies. Detonates after a brief delay once thrown.
 30~COM-18
-31~Jackie~A friend! Bounces with extreme efficiency.
+31~SCP-018~Superball with the ability to bounce with extreme efficiency. Deadly ricochet at high speeds.
 32~SCP-268~When worn, temporarily makes you invisible unless it is interrupted by any user interaction.
 33~Adrenaline~Provides a temporary health boost and a short burst of stamina.
 34~Painkillers~Slowly restores health over time.
@@ -40,7 +40,7 @@
 44~SCP-244-A~An ancient vase, freezing to the touch. Creates a large cloud of icy fog when placed.
 45~SCP-244-B~An ancient vase, freezing to the touch. Creates a large cloud of icy fog when placed.
 46~SCP-1853~Increases dexterity and weapon handling when your life is in danger.
-47~3-X Particle Disruptor
+47~3-X Particle Disruptor~A strange weapon that fires powerful, disintegrating energy beams.
 48~COM-45
 49~SCP-1576~Allows temporary communication with the dead. Can be used again after some time passes.
 50~Jailbird~What?!

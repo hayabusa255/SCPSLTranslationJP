@@ -1,15 +1,15 @@
-Mobile Task Force Unit Mu-13 "Ghostbusters" designated [designation] has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>
-Awaiting re-containment of: [count] Specters.
-Awaiting re-containment of: 1 Specter.
+Mobile Task Force Unit Epsilon-11 designated [designation] has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>
+Awaiting re-containment of: [count] SCP subjects.
+Awaiting re-containment of: 1 SCP subject.
 Substantial threat to safety remains within the facility -- exercise caution.
 successfully terminated. Termination cause unspecified.
-terminated by Specter-[scp].
+terminated by SCP-[scp].
 successfully terminated by Automatic Security System.
 successfully terminated by Alpha Warhead.
 contained successfully by Science Personnel.
 contained successfully by Class-D Personnel.
 contained successfully by Chaos Insurgency.
-Specter-[scp]
+SCP-[scp]
 contained successfully. Containment unit unknown.
 contained successfully. Containment Unit [designation].
 lost in Decontamination Sequence.
@@ -26,3 +26,6 @@ ALPHA WARHEAD EMERGENCY DETONATION SEQUENCE ENGAGED.<split>THE UNDERGROUND SECTI
 DETONATION CANCELLED. RESTARTING SYSTEMS.
 DETONATION SEQUENCE RESUMED, T-[time] SECONDS.
 terminated by Marshmallow Man.
+Nine-Tailed Fox Backup Unit designated [designation] has entered the facility.<split>
+Security alert. Substantial Chaos Insurgent activity detected.<split>Security personnel, proceed with standard protocols.
+Attention security personnel. Chaos Insurgency spotted at Gate A.

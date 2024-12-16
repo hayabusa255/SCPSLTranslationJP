@@ -21,3 +21,4 @@ Projectiles number
 Reload speed
 ---
 Running accuracy
+Double-action speed

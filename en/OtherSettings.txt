@@ -17,4 +17,10 @@ Changes will take place the next time you connect to a server (or on round resta
 Friends-only
 Privacy
 SCP Spawn Preferences
-Spawn preferences are used to improve automatic assigment of SCP roles among teammates. Please note it does not affect your chances of becoming an SCP instead of a human.
+Spawn preferences are used to improve automatic assignment of SCP roles among teammates. Please note it does not affect your chances of becoming an SCP instead of a human.
+Badge Preferences
+No Preference
+Prefer Global Badge
+Prefer Local Badge
+Global Badge Visibility Preferences
+Local Badge Visibility Preferences

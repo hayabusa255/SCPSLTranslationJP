@@ -50,3 +50,6 @@ Graphics API
 Changes the 3D Graphics Library utilized by the game.\nThis option is experimental, and, as such, we recommend keeping it on Auto —unless you're attempting to resolve a specific rendering or performance issue with poorly supported hardware.
 Changes will take place following a game restart.
 Unavailable as a Graphics API was forced through launch parameters.
+Blood Decals Limit
+Bullet Holes Limit
+Show Needles
