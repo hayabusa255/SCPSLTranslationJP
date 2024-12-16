@@ -6,7 +6,7 @@
 [![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/releases)
 ## 公式Discordサーバー
 
-ディスコードサーバーではサポートが受けられたり、更新時にお知らせしてくれたり、翻訳のコラボレーターなどを募集しています。興味ある方は是非！
+ディスコードサーバーではサポートが受けられたり、更新時にお知らせしてくれたり、翻訳コーディネーターを募集しています。興味ある方は是非！
 
 
 [![](https://dcbadge.limes.pink/api/server/NNcHeyQNSf)](https://discord.gg/NNcHeyQNSf)
