@@ -24,3 +24,7 @@ Prefer Global Badge
 Prefer Local Badge
 Global Badge Visibility Preferences
 Local Badge Visibility Preferences
+Opt Out of SCP
+If enabled, you will be unable to spawn as an SCP. However, in the event that there are not enough players opted into SCP, you may still spawn in as one.
+Opt In
+Opt Out
