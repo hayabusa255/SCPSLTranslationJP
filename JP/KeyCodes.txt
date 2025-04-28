@@ -1,19 +1,19 @@
-Server Setting Not Found
-Key Not Assigned
-Arrow Up
-Arrow Down
-Arrow Left
-Arrow Right
-Left Shift
-Right Shift
-Left Control
-Right Control
-Left Alt
-Right Alt
+サーバー設定が見つかりません
+キーが割り当てられていません
+Arrow 上
+Arrow 下
+Arrow 左
+Arrow 右
+左 Shift
+右 Shift
+左 Control
+右 Control
+左 Alt
+右 Alt
 Tab
 Space
 Enter
-Left Mouse Button
-Right Mouse Button
-Middle Mouse Button
-Mouse Button {0}
+左マウスボタン
+右マウスボタン
+中央マウスボタン
+マウスボタン {0}
