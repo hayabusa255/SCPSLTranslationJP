@@ -51,9 +51,9 @@ DIRECT CONNECT
 TECH SUPPORT / FORUM
 SOUND VOLUME
 IPアドレスを入力
-データをダウンロード中。
-利用可能なサーバーがありません。
-ESCで閉じる / キャンセル
+通信中
+サーバーが見つかりません
+Escを押して閉じる
 KEY BINDING
 MAX BLOOD AMOUNT
 FPS Limit

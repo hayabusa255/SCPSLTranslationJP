@@ -21,4 +21,4 @@ SCP-939
 カオス 略奪兵
 カオス 抑圧兵
 Overwatch
-Filmmaker
+フィルムメーカー
