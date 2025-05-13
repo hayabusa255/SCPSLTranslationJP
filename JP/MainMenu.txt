@@ -11,11 +11,11 @@ Change details:\n-PIXEL LIGHT COUNT - Maximum number of light sources that have 
 POST\nPROCESSING
 クレジット
 ゲームを辞める
-Fullscreen mode
-SCREEN SETTINGS
+全画面モード
+スクリーン設定
 COLOR CORRECTION
 IPアドレスを入力...
-SCREEN RESOLUTION
+スクリーン解像度
 参加する
 PIXEL LIGHT COUNT
 SHADOW TYPE
@@ -24,8 +24,8 @@ SHADOWS
 Change post-processing settings. These settings generally don't affect performance, leaving default values is recommended.
 Light rendering mode:\nWhen off, graphics quality is significantly reduced. Disabling this setting is only recommended for low-end computers.
 V-SYNC
-CONNECT
-QUALITY SETTINGS
+接続
+品質設定
 Change shadow preferences. Setting these sliders at lower values may increase gameplay smoothness.
 メインメニュー
 RENDER LIGHTS
@@ -48,8 +48,8 @@ By default, the server will set up on the local network.\nYour friends will need
 The presented game is still in a public beta.\nYou may experience connection problems and many other bugs.\nThe current state does not reflect the final version.
 4. (more tutorials later)
 DIRECT CONNECT
-TECH SUPPORT / FORUM
-SOUND VOLUME
+テクニカルサポート / フォーラム
+音量
 IPアドレスを入力
 通信中
 サーバーが見つかりません
