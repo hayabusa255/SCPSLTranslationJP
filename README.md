@@ -4,7 +4,7 @@
 
 [![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![License](https://img.shields.io/github/license/hayabusa255/SCPSLTranslationJP)](https://github.com/hayabusa255/SCPSLTranslationJP/blob/main/LICENSE)
 [![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/releases)
-## 公式Discordサーバー
+## Discordサーバー
 
 ディスコードサーバーではサポートが受けられたり、更新時にお知らせしてくれたり、翻訳コーディネーターを募集しています。興味ある方は是非！
 
