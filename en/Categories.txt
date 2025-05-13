@@ -5,6 +5,6 @@ Radio
 Firearms
 Grenades
 SCP Items
-Micro H.I.D.
+Special Weapons
 Ammo
 Body Armor

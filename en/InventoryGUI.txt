@@ -23,3 +23,5 @@ Hold [secondary] for a high-powered charge.
 Press [key] to cycle firing modes.
 Press [key] to attack.
 Hold [key] to charge.
+Ready to discharge. [primary] to activate.
+This weapon is damaged. Capabilities are limited.
