@@ -48,13 +48,10 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
 **※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**
 **更新時も自動で更新してくれます。**
 
-## 貢献者
 
-このプロジェクトに携わって下さる方々です
 
-以下は主な貢献者です：
 
-### 主な貢献者
+### プロジェクト貢献者一覧
 
 <table>
   <tr>
@@ -74,6 +71,17 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
         <img src="https://github.com/PikutoSun2.png" width="100px;" alt="ピクトさん"/>
         <br />
         <sub><b>ピクトさん</b></sub>
+      </a>
+      <br />
+      <sub>役割: 翻訳コーディネーター</sub>
+      <br />
+      <sub>貢献内容: 主要翻訳の実施、翻訳の品質管理</sub>
+    </td>
+    <td align="center">
+      <a href="https://github.com/2UCL">
+        <img src="https://github.com/2UCL.png" width="100px;" alt="2UCL"/>
+        <br />
+        <sub><b>2UCL</b></sub>
       </a>
       <br />
       <sub>役割: 翻訳コーディネーター</sub>
