@@ -1,9 +1,9 @@
 サーバー設定が見つかりません
 キーが割り当てられていません
-Arrow 上
-Arrow 下
-Arrow 左
-Arrow 右
+上 矢印キー
+下 矢印キー
+左 矢印キー
+右　矢印キー
 左 Shift
 右 Shift
 左 Control
