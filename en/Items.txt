@@ -53,3 +53,5 @@
 57~Coal
 58~Coal?
 59~Tape Player?~Contains an unlabeled tape. Please don’t play it. Please.
+61~Surface Access Pass~Single-use access pass for opening exit gates.
+62~SCP-127

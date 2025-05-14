@@ -53,3 +53,4 @@ Unavailable as a Graphics API was forced through launch parameters.
 Blood Decals Limit
 Bullet Holes Limit
 Show Needles
+SCP-939 Vision Blur

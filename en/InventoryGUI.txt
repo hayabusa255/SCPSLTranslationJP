@@ -25,3 +25,5 @@ Press [key] to attack.
 Hold [key] to charge.
 Ready to discharge. [primary] to activate.
 This weapon is damaged. Capabilities are limited.
+SCP-127 grows in strength as your bond with it deepens.
+Use the $arrow keys$ or $[up], [left], [down], and [right]$ to control the Snake.
