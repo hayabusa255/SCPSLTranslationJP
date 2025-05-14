@@ -1,7 +1,7 @@
  (%time% ⏳)
  (+%influence% 👊)
 <color=%factionColor%>%timeDisplay%%influenceDisplay%</color>
-完遂した目標はここに表示される
+完遂した目標はここに表示されます!
 <color=%achieverColor%>%achieverName%</color> が <color=%victimColor%>%victimName%</color> を撃破
 <color=%achieverColor%>%achieverName%</color> が <color=%victimColor%>%victimName%</color> にダメージを与えた
 <color=%achieverColor%>%achieverName%</color> が施設から脱出
