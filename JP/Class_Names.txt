@@ -22,6 +22,7 @@ SCP-939
 Overwatch
 フィルムメーカー
 SCP-3114
+破壊された
 SCP-1507
 SCP-1507-Alpha
 SCP-1507-049
