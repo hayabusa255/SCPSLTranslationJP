@@ -5,5 +5,5 @@ CONT. ENGINEER
 SECURITY GUARD
 ZONE MANAGER
 FACILITY MANAGER
-残りの使用回数:1
+残り使用回数:1
 アクセスが拒否されました
