@@ -87,3 +87,4 @@ SCP:SL アンチチートスーパーバイザー
 Northwood Wiki スーパーバイザー
 SCP:SL API チームリーダー
 SCP:SL API メンテナー
+SCP:SL バグレポート貢献者
