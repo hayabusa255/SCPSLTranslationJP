@@ -1,12 +1,12 @@
-Press {0} to open the Voice Channel Selector.
-Voice Channel Selector
-Proximity
-Radio
-SCP Chat
-End Screen
-Intercom
-Mimicry
+{0}キーでボイスチャンネル選択画面を開く
+ボイスチャンネルを選択
+近距離音声
+無線機
+SCPチャット
+ゲーム終了画面
+施設放送
+擬音
 SCP-1576
-<i>Spatial Audio</i>
-<i>Handles spatial audio in proximity. If disabled, anyone will be heard without taking distance or radios into account.</i>
-<i>Used by every player when the round ends.</i>
+<i>空間音声</i>
+<i>近距離での空間音声を管理します。無効にすると、距離や無線通信の有無に関わらず、すべてのプレイヤーの音声が聞こえるようになります。</i>
+<i>ラウンド終了時にすべてのプレイヤーが使用します。</i>
