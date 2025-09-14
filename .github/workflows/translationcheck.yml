@@ -21,15 +21,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Download translation checker ステップは不要なため削除
-
       - name: Run translation checker
         id: check
+        # このステップの作業場所をtranslationcheckerフォルダに指定
+        working-directory: ./translationchecker
         run: |
           $env:PYTHONIOENCODING="utf-8"
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          # 実行ファイルのパスをリポジトリ内のパスに修正
-          ./translationchecker/translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
+          # working-directoryを指定したので、直接ファイル名を指定すればOK
+          ./translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
           $report = Get-Content report.md -Raw -Encoding UTF8
           $report = $report -replace '`', '\`'
           $report = $report -replace '"', '\"'
@@ -57,5 +57,6 @@ jobs:
         uses: peter-evans/create-issue-from-file@v4
         with:
           title: "Translation Status Report - ${{ github.sha }}"
-          content-filepath: report.md
+          # report.mdはtranslationcheckerフォルダ内に作成されるため、パスを修正
+          content-filepath: ./translationchecker/report.md
           labels: translation, automated
