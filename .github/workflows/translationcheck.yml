@@ -37,13 +37,16 @@ jobs:
       - name: Run translation checker
         id: check
         run: |
-          ./translationchecker.exe > report.md 2>&1
-          $report = Get-Content report.md -Raw
+          $env:PYTHONIOENCODING="utf-8"
+          [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+          ./translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
+          $report = Get-Content report.md -Raw -Encoding UTF8
           $report = $report -replace '`', '\`'
           $report = $report -replace '"', '\"'
-          echo "report<<EOF" >> $env:GITHUB_OUTPUT
-          echo "$report" >> $env:GITHUB_OUTPUT
-          echo "EOF" >> $env:GITHUB_OUTPUT
+          # Convert to base64 to handle special characters
+          $bytes = [System.Text.Encoding]::UTF8.GetBytes($report)
+          $encoded = [Convert]::ToBase64String($bytes)
+          echo "report_encoded=$encoded" >> $env:GITHUB_OUTPUT
         shell: powershell
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
