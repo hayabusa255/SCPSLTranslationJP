@@ -9,7 +9,7 @@ Northwood Human Resources
 Northwood Human Resources Director
 Northwood Marketing Platform Manager
 Northwood Staff
-Northwood Steam Manager
+Northwood Forum Moderation Manager
 Northwood System Administrator
 Northwood Wiki Manager
 SCP:SL Art Manager
@@ -22,8 +22,8 @@ SCP:SL Event Winner
 SCP:SL Fullstack Programmer
 SCP:SL Game Designer
 SCP:SL Gameplay Programmer
-SCP:SL Global Moderation Manager
-SCP:SL Global Moderator
+SCP:SL Safety and Compliance Manager
+SCP:SL Safety and Compliance Specialist
 SCP:SL Lead Game Designer
 SCP:SL Lead Gameplay Programmer
 SCP:SL Level Designer
@@ -69,7 +69,7 @@ Assistant Community Management Director
 Assistant Human Resources Director
 SCP:SL Game Design Supervisor
 SCP:SL Level Designer Supervisor
-SCP:SL Global Moderation Supervisor
+SCP:SL Safety and Compliance Supervisor
 Northwood System Administration Supervisor
 Northwood Web Development Supervisor 
 Northwood Web Development Manager
@@ -80,10 +80,11 @@ Northwood Patreon Manager
 Northwood Social Media Supervisor 
 Northwood Social Media Manager 
 Northwood Translation Supervisor
-Northwood Steam Supervisor
+Northwood Forum Moderation Supervisor
 SCP:SL Level Design Manager
 SCP:SL Anti-Cheat Manager
 SCP:SL Anti-Cheat Supervisor
 Northwood Wiki Supervisor
 SCP:SL API Team Lead
 SCP:SL API Maintainer
+SCP:SL Bug Reporting Contributor
