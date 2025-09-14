@@ -69,7 +69,7 @@ Northwood セキュリティディレクターアドバイザー
 人事部副監督
 SCP:SL ゲームデザイン監督
 SCP:SL レベルデザイナー監督
-SCP:SL グローバルモデレーション監督
+SCP:SL 安全及びコンプライアンス監督
 Northwood システム管理監督
 Northwood Web開発監督 
 Northwood Web開発マネージャー
@@ -80,7 +80,7 @@ Northwood Patreon マネージャー
 Northwood ソーシャルメディア監督
 Northwood ソーシャルメディアマネージャー 
 Northwood 翻訳監督
-Northwood Steam 監督
+Northwood フォーラムモデレーション監督
 SCP:SL レベルデザインマネージャー
 SCP:SL アンチチートマネージャー
 SCP:SL アンチチートスーパーバイザー
