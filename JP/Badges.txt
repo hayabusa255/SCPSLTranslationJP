@@ -9,7 +9,7 @@ Northwood 人事
 Northwood 人事監督者
 Northwood マーケティングプラットフォームマネージャー
 Northwood スタッフ
-Northwood STEAMマネージャー
+Northwood フォーラムモデレーションマネージャー
 Northwood システム管理者
 Northwood WIKIマネージャー
 SCP:SL 美術マネージャー
@@ -22,8 +22,8 @@ SCP:SL イベント優勝者
 SCP:SL 総合プログラマー
 SCP:SL ゲームデザイナー
 SCP:SL ゲームプレイプログラマー
-SCP:SL グローバルモデレーションマネージャー　
-SCP:SL グローバルモデレーター
+SCP:SL 安全及びコンプライアンスマネージャー　
+SCP:SL 安全及びコンプライアンス専門家
 SCP:SL リードゲームデザイナー
 SCP:SL リードゲームプレイプログラマー
 SCP:SL レベルデザイナー
