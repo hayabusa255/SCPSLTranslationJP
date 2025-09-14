@@ -21,25 +21,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Download translation checker
-        run: |
-          $latestRelease = Invoke-RestMethod -Uri "https://api.github.com/repos/${{ github.repository }}/releases/latest"
-          $downloadUrl = $latestRelease.assets | Where-Object { $_.name -eq "translationchecker.exe" } | Select-Object -ExpandProperty browser_download_url
-          if ($downloadUrl) {
-            Write-Host "Downloading from: $downloadUrl"
-            Invoke-WebRequest -Uri $downloadUrl -OutFile "translationchecker.exe"
-          } else {
-            Write-Error "translationchecker.exe not found in latest release"
-            exit 1
-          }
-        shell: powershell
+      # Download translation checker ステップは不要なため削除
 
       - name: Run translation checker
         id: check
         run: |
           $env:PYTHONIOENCODING="utf-8"
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          ./translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
+          # 実行ファイルのパスをリポジトリ内のパスに修正
+          ./translationchecker/translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
           $report = Get-Content report.md -Raw -Encoding UTF8
           $report = $report -replace '`', '\`'
           $report = $report -replace '"', '\"'
