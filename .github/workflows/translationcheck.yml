@@ -2,7 +2,6 @@ name: Translation Checker
 
 on:
   workflow_dispatch:
-
     inputs:
       run_ai_check:
         description: 'Enable time-consuming AI nuance check?'
@@ -37,10 +36,13 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ github.event.inputs.run_ai_check == true && secrets.GEMINI_API_KEY || '' }}
 
-      - name: Create issue on push to main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+
+      - name: Create issue with report
+
+        if: always()
         uses: peter-evans/create-issue-from-file@v4
         with:
-          title: "Translation Status Report - ${{ github.sha }}"
+          title: "Manual Translation Status Report"
           content-filepath: ./translationchecker/report.md
-          labels: translation, automated
+          labels: translation, manual-report
