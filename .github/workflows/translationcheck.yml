@@ -35,8 +35,7 @@ jobs:
           echo "report=$escaped_report" >> $env:GITHUB_OUTPUT
         shell: powershell
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          RUN_AI_CHECK: ${{ github.event.inputs.run_ai_check }}
+          GEMINI_API_KEY: ${{ github.event.inputs.run_ai_check == true && secrets.GEMINI_API_KEY || '' }}
 
       - name: Create issue on push to main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
