@@ -1,9 +1,10 @@
-SCIENTIST
-JANITOR
-RESEARCH SUPERVISOR
-CONT. ENGINEER
-SECURITY GUARD
-ZONE MANAGER
-FACILITY MANAGER
-1回限り使用可
-パス使用済み
+研究員
+用務員
+主任研究員
+収容技術者
+警備員
+区画管理者
+施設管理者
+残りの使用回数:1
+
+アクセス権取り消し
