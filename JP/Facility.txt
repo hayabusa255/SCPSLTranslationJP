@@ -1,7 +1,7 @@
 ボイス音量
 はい
 強制的に開始
-SCP-106 RE-CONTAINMENT\nPROCEDURE OVERRIDE
+SCP-106 再収容\n手順　実行
 Y軸を反転する
 概要
 キャンセル
@@ -16,17 +16,17 @@ ALPHA WARHEADは使用不可
 マウス感度
 ハッキング
 拾っています...
-Increasing brightness <b>significantly worsens the mood </b>of the game.\nTry to set this value to as low as you can.\n<b>The default value is recommended.</b>
-[1] OPEN/CLOSE DOOR\n[2] LOCK DOOR*\n\n*Locking the door uses special ability
+明るさの増加は<b>ゲームの</b>没入感を大いに悪化させます。\nなるべく値を低く設定するようにしてください。\n<b>初期値が推奨されます。</b>
+[1] 開/閉\n[2] ドアロック*\n\n*ドアをロックするには特殊能力を使用します。
 ドアは SCP-079 により閉鎖中
 フルスクリーンモード
 本当にサーバーから退出しますか？
-基本設定. Full list of settings in the menu.
+基本設定. メニュー内の設定項目一覧.
 プレイヤーを待機中...
 概要
 続ける
 メイン音量
-人が待機中
+人が接続
 あなたは研究員として脱出し、機動部隊に加わりました。
 あなたはDクラス職員として脱出し、カオスインサージェンシーに加わりました。
 あなたは
