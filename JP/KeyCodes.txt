@@ -1,15 +1,15 @@
 サーバー設定が見つかりません
 キーが割り当てられていません
-上 矢印キー
-下 矢印キー
-左 矢印キー
-右　矢印キー
-左 Shift
-右 Shift
-左 Control
-右 Control
-左 Alt
-右 Alt
+上矢印キー
+下矢印キー
+左矢印キー
+右矢印キー
+左Shift
+右Shift
+左Control
+右Control
+左Alt
+右Alt
 Tab
 Space
 Enter
@@ -17,3 +17,4 @@ Enter
 右マウスボタン
 中央マウスボタン
 マウスボタン {0}
+
