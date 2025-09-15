@@ -38,11 +38,11 @@ FPS制限
 Color Correction
 アンチエイリアシング
 Render Lights
-マスター
+主音量
 効果音
 ボイスチャット
 メニュー音楽
-インターフェース
+インターフェース音量
 メニューテーマ
 高速イントロフェード
 ヘッドボブ
@@ -63,11 +63,11 @@ SCP-079 - ポストプロセス
 ゲームを終了します\nよろしいですか?
 画面解像度
 IPアドレスを隠す
-{username}さん ようこそ!
+おかえりなさい、{username}さん!
 クレジット
 認証中
-接続中...
-<color=green>オンライン</color>
+中央サーバーに接続中...
+<color=green>接続が確立されました</color>
 <color=red>接続失敗 (コンソールで詳細確認)</color>
 <color=red>Steam 認証失敗 (コンソールで詳細確認)</color>
 <color=red>Discord 認証失敗 (コンソールで詳細確認)</color>
