@@ -5,13 +5,13 @@ Northwood コミュニティディレクター
 Northwood Discordマネージャー
 Northwood 重役補佐
 Northwood フィードバックマネージャー
-Northwood 人事
+Northwood 人事担当者
 Northwood 人事ディレクター
 Northwood マーケティングプラットフォームマネージャー
 Northwood スタッフ
 Northwood フォーラムモデレーションマネージャー
 Northwood システム管理者
-Northwood WIKIマネージャー
+Northwood ウィキマネージャー
 SCP:SL 美術マネージャー
 SCP:SL 美術監督者
 SCP:SL アーティスト
@@ -19,7 +19,7 @@ SCP:SL サーバープログラマー
 SCP:SL サーバープログラムマネージャー
 SCP:SL 開発者
 SCP:SL イベント優勝者
-SCP:SL 総合プログラマー
+SCP:SL フルスタックプログラマー
 SCP:SL ゲームデザイナー
 SCP:SL ゲームプレイプログラマー
 SCP:SL 安全・コンプライアンスマネージャー　
@@ -64,8 +64,8 @@ Northwood 翻訳コーディネーター
 Northwood セキュリティディレクター
 Northwood セキュリティアドバイザー
 Northwood アシスタントセキュリティディレクター
-広報部門副部長
-コミュニティ管理部門副部長
+広報部門アシスタントディレクター
+コミュニティ管理部門アシスタントディレクター
 人事部アシスタントディレクター
 SCP:SL ゲームデザイン監督
 SCP:SL レベルデザイナー監督
@@ -84,7 +84,7 @@ Northwood フォーラムモデレーションスーパーバイザー
 SCP:SL レベルデザインマネージャー
 SCP:SL アンチチートマネージャー
 SCP:SL アンチチートスーパーバイザー
-Northwood Wiki スーパーバイザー
+Northwood ウィキ スーパーバイザー
 SCP:SL API チームリーダー
 SCP:SL API メンテナー
 SCP:SL バグレポート貢献者
