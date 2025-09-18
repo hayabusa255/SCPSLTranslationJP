@@ -1,101 +1,101 @@
-参加する
+参加
 閉じる
-SHADOW RESOLUTION
+影の解像度
 設定
 <i>SCP: CONTAINMENT BREACH</i>に基づく
 戻る
 言語
-ANTIALIASING
-Change details:\n-PIXEL LIGHT COUNT - Maximum number of light sources that have their light rendered on individual pixels.\n-V-Sync - Enable synchronising with the refresh rate of the display device.
-参加する
-POST\nPROCESSING
+アンチエイリアシング
+詳細を変更:\n-ピクセルライト数 - 個々のピクセルに光がレンダリングされる光源の最大数。\n-垂直同期 - 表示装置のリフレッシュレートとの同期を有効にします。
+参加
+ポストプロセッシング
 クレジット
-ゲームを辞める
+ゲームを終了
 全画面モード
 スクリーン設定
-COLOR CORRECTION
+色補正
 IPアドレスを入力...
 スクリーン解像度
-参加する
-PIXEL LIGHT COUNT
-SHADOW TYPE
-SHADOWS
+プレイ
+ピクセルライト数
+影の形式
+影
 ゲームを作成
-Change post-processing settings. These settings generally don't affect performance, leaving default values is recommended.
-Light rendering mode:\nWhen off, graphics quality is significantly reduced. Disabling this setting is only recommended for low-end computers.
-V-SYNC
+ポストプロセッシング設定を変更します。これらの設定は通常パフォーマンスに影響を及ぼしません。 デフォルト設定のままにすることをおすすめします。
+ライトレンダリングモード:\n無効時、 グラフィック品質が大きく低下します。 ローエンドPCを使っている場合のみこの設定を無効にすることをおすすめします。
+垂直同期
 接続
 品質設定
-Change shadow preferences. Setting these sliders at lower values may increase gameplay smoothness.
+影のプリファレンスを変更します。スライダーを低い値に設定すると、ゲームプレイの滑らかさが向上する可能性があります。
 メインメニュー
-RENDER LIGHTS
-MOTION BLUR
-SHADOW DISTANCE
-DETAILS
+ライトを作画
+モーションブラー
+影の距離
+詳細
 3. SCP-914
-TUTORIALS
+チュートリアル
 警告
-Browse available servers
-Don't show it again
-How would you like to connect?
-SERVER BROWSER
-OKAY
-FIND MATCH
-2. Using weapons
-Discordでフォーラムが開かれています。インストールは不要です。（ロゴをクリックして開く）
-By default, the server will set up on the local network.\nYour friends will need the direct IP address to connect.\nIf you want to set up a public server, select LocalAdmin.exe and follow the instructions.\nIf you have any questions, please ask our technical support (link in the main menu)
-1. The basics
-The presented game is still in a public beta.\nYou may experience connection problems and many other bugs.\nThe current state does not reflect the final version.
-4. (more tutorials later)
-DIRECT CONNECT
+利用可能なサーバーをブラウズ
+二度と表示しない
+どのように接続しますか?
+サーバーブラウザ
+了解
+試合を探す
+2. 武器を使用
+Discordをフォーラムとして利用しています。インストールは不要です。（ロゴをクリックして参加）
+デフォルトでは、サーバーはローカルネットワーク上に設定されます。\nフレンドが接続するには、直接IPアドレスが必要です。\nパブリックサーバーを設定したい場合は、LocalAdmin.exeを選択し、指示に従ってください。\nご質問がある場合は、テクニカルサポート（メインメニュー内のリンク）までお問い合わせください。
+1. 基本
+本ゲームはまだ、ベータ版です。\n接続の問題、様々なバグがある場合があります\n現在の状態は最終版を反映したものではありません。
+4. (さらなるチュートリアルは後日公開します。)
+直接接続
 テクニカルサポート / フォーラム
 音量
 IPアドレスを入力
-通信中
+データダウンロード中
 サーバーが見つかりません
-Escを押して閉じる
-KEY BINDING
-MAX BLOOD AMOUNT
-FPS Limit
-FPS Limit does not work when vSync is enabled!
-Set Default
-フォーラムがSteam Discussionsで開かれています。 (以下のロゴをクリックしてフォーラムを開く)
-AUDIO SETTINGS
-MASTER VOLUME
-MENU MUSIC
+Escを押して閉じる / キャンセル
+キーバインド
+血痕の最大数
+FPS上限
+FPS上限は垂直同期が有効になっている状態では、機能しません。
+既定値を設定
+Steam Discussionsをフォーラムとして利用しています。 (以下のロゴをクリックしてフォーラムを開く)
+オーディオ設定
+主音量
+メニュー音楽
 ボイスチャット
-SOUND EFFECTS
-GAMEPLAY OPTIONS
-FAST INTRO FADE
-Class intro text will fade out much more quickly.
-SCP-079 - TOGGLE VIEW MODE
-Press once to swap between camera modes.
-SCP-079 - POST-PROCESSING
-If disabled, camera effects will be heavily reduced.
-HEAD BOB
-Enables first-person camera bobbing during movement.
-TOGGLE SPRINT
-Sprinting toggles on and off, instead of being held down.
-SEPARATE ARTIFICIAL HP BAR
-Gives artificial HP its own health bar, instead of an overlay.
-Our translations are open-source on GitHub!\nWant to help? Click here to access the repo.
-RICH PRESENCE
-If enabled, your status will be displayed on Discord/Steam.
-DISPLAY EXACT HP VALUE
-Displays exact HP, instead of just the percentage.
-PUBLIC LOBBY
-If enabled, your steam friends can join you without permission.
-HIDE IP
-If enabled, any IP in client console is not displayed.
-TOGGLE SEARCH
-Item pickup will not require a held key; press again to cancel.
-Applies soft shadows to corners and tight areas to give models more depth.
-Gives the environment more depth at a high performance cost.
-Gives lighting more depth by applying a glow based on the light intensity.
-Toggle to show subtitles for cassie announcements.
-Flashes the taskbar when you spawn while the game is not in focus.
-Smoothes lines and removes visual distortions.
-Synchronizes the in-game frame rate with your monitor's refresh rate to stop screen tearing.
-Projected textures such as bullet holes or blood splatter.
-Toggle Dark Mode
-Toggle to change some bright elements to their dark-themed versions.
+効果音
+ゲームプレイオプション
+高速イントロフェード
+クラス紹介テキストのフェードアウトが速くなります。
+SCP-079 - ビューモード切り替え
+カメラモードを切り替えるには1回押してください。
+SCP-079 - ポストプロセッシング
+無効にすると、カメラの効果が大きく低下します。
+頭の振れ
+移動中に一人称視点カメラの揺れを有効にします。
+スプリント切り替え
+ホールドでスプリントのかわりに、切り替え式で有効無効を切り替えます。
+HPゲージの独立
+オーバーレイではなく、人工HPに専用のHPゲージを表示します。
+翻訳はGitHubでオープンソース化されています！\nお手伝いしませんか？リポジトリにアクセスするにはこちらをクリックしてください。
+リッチプレゼンス
+有効にすると、あなたのステータスがDiscord/Steamに表示されます。
+正確なHPの値を表示
+パーセント表示ではなく正確なHPの値を表示します。
+パブリックロビー
+有効にすると、あなたのSteamのフレンドが許可を求めずに合流できるようになります。
+IPを隠す
+有効にすると、クライアントコンソールに表示されるIPは表示されなくなります。
+検索を切り替え
+アイテムを拾うときにキーを長押しする必要がなくなります。もう一度キーを押してキャンセルできます。
+モデルに奥行きを与えるため、角や狭い部分に柔らかい影を適用します。
+パフォーマンスを大きく消費する代わりに、環境に奥行きを与えます。
+光の強さに基づいたグローを適用し、ライティングに奥行きを加えます。
+CASSIEアナウンスの字幕表示の切り替え
+ゲームがアクティブでない状態でリスポーンすると、タスクバーを点滅させます。
+線を滑らかにし、映像の歪みを軽減します。
+フレームレートをモニターのリフレッシュレートに同期させ、画面のティアリングを防ぎます。
+弾痕や血しぶきなどの投影テクスチャを表示します。
+ダークモードを切り替えます。
+一部の明るい要素をダークテーマのバージョンに切り替えます。
