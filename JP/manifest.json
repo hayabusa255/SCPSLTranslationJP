@@ -1,20 +1,20 @@
 {
-  "Name": "日本語",
-  "Authors": [
-    "hayabusa255", 
-    "Akinasu333",
-    "torokuro_",
-    "PikutoSun",
-    "2U_pikachu"
-  ],
-  "InterfaceLocales": [
-    "ja-JP",
-    "ja"
-  ],
-  "SystemLocales": [
-    "ja-JP"
-  ],
-  "ForcedFontOrder": [
-
-  ]
+	"Name": "日本語",
+	"Authors": [
+		"hayabusa255",
+		"Akinasu333",
+		"torokuro_",
+		"PikutoSun",
+		"2U_pikachu"
+	],
+	"InterfaceLocales": [
+		"ja",
+		"ja-JP"
+	],
+	"SystemLocales": [
+		"ja-JP"
+	],
+	"ForcedFontOrder": [
+		"NotoSansCJKjp-RegularDynamic"
+	]
 }
