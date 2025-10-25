@@ -1,40 +1,41 @@
-Candies
-Rainbow Candy
-Its a hard piece of rock candy, packed with all sorts of flavours. Trick or treat?
-Expels a prismatic cloud which grants buffs to nearby players. Allows all within range to cheat death.
-Yellow Candy
-The overwhelming smell of lemon makes you cringe a little. Trick or treat?
-Can't stop, won't stop.
-Purple Candy
-It has a juicy grape smell. Your mouth begins to water.
-Slows your metabolism — but greatly increases your appetite.
-Red Candy
-A strong scent of cherry fills the room. It’s a bit... <i>too</i> strong. Trick or treat?
-Causes a scorching hot wave of fire to spew from your mouth, damaging anyone in your vicinity.
-Green Candy
-A nasty, herbal smell emits from the candy. Trick or treat?
-A laced piece of candy with powerful regenerative properties. Grants a massive health bonus.
-Blue Candy
-It smells soft and sweet, something akin to a marshmallow. Trick or treat?
-Rapidly converts body tissue into marshmallow. Part Man, Part Marshmallow. All Carnage.
-Pink Candy
-The strawberry scent is as gentle as it looks.
-- R E D A C T E D -
-Orange Candy
-The citrus-scented candy shines with an enticing luster. Trick or treat?
-Causes you to radiate a brilliant shade of orange. Enemies struggle to avert their eyes from you.  
-White Candy
-A distinctly sugary smell emanates from within the wrapper. There doesn’t seem to be any candy inside… Trick or treat?
-Temporarily transforms you into a ghost — turning you translucent and allowing you to pass through doors.
-Gray Candy
-The faint smell of lead emanates from this surprisingly heavy candy. Trick or treat?
-Turns you into an extremely heavy and damage resistant piece of lead. Watch out below!
-Black Candy
-The overwhelming scent of nothingness makes you gag. You remember tasting it infinite times, but you can't recall the flavor. Trick or treat?
-Inflicts a random effect. Feeling Lucky?
-Brown Candy
-The familiar scent of coffee entices you. Trick or treat?
-An extremely effective laxative. 
-Evil Candy
-The piece of candy pulses with an evil energy. Trick or treat?
-Turns you evil (really rare).
+キャンディー
+虹色のキャンディ
+様々なフレーバーが詰まったハードロックキャンディ。トリック・オア・トリート？
+虹色の雲を放ち、近くのプレイヤーにバフ（能力向上効果）を与える。範囲内の全員が死を免れることができる。
+黄色のキャンディ
+強烈なレモンの香りに、思わず顔をしかめてしまう。トリック・オア・トリート？
+止まらない、止められない。
+紫色のキャンディ
+ジューシーなブドウの香りがして、口の中に唾液が広がる。
+代謝を遅くするが、食欲を大幅に増進させる。
+赤色のキャンディ
+強烈なチェリーの香りが部屋中に充満する。少し…<i>強すぎる。</i>トリック・オア・トリート？
+口から灼熱の炎の波を吐き出し、周囲の者にダメージを与える。
+緑色のキャンディ
+ハーブのような嫌な匂いがするキャンディ。トリック・オア・トリート？
+強力な再生能力を持つキャンディ。体力ボーナスが大幅に得られる。
+青色のキャンディ
+マシュマロに似た、ふんわりと甘い香りがする。トリック・オア・トリート？
+体組織を急速にマシュマロに変える。一部は人間、一部はマシュマロ。皆殺しだ。
+桃色のキャンディ
+見た目通り、優しいストロベリーの香り。
+- 編 集 済 み -
+橙色のキャンディ
+柑橘系の香りがするキャンディが、魅力的な光沢を放っている。トリック・オア・トリート？
+まばゆいオレンジ色に輝く。敵はあなたから目をそらすのに苦労する。
+白色のキャンディ
+包み紙の中から、明らかに甘い匂いが漂ってくる。中にはキャンディが入っていないようだ… トリック・オア・トリート？
+一時的にゴーストに変身し、半透明になってドアを通り抜けられるようになる。
+灰色のキャンディ
+この驚くほど重いキャンディから、かすかな鉛の匂いがする。トリック・オア・トリート？
+非常に重く、ダメージに強い鉛のかたまりに変身させる。下に注意！
+黒色のキャンディ
+無の圧倒的な香りに吐き気を催す。無限に味わった記憶はあるが、その味を思い出せない。トリック・オア・トリート？
+ランダムな効果を与える。運試しはいかが？
+茶色のキャンディ
+おなじみのコーヒーの香りがあなたを誘う。トリック・オア・トリート？
+非常に効果的な下剤。
+悪魔のキャンディ
+邪悪なエネルギーで脈打つキャンディ。トリック・オア・トリート？
+
+あなたを悪魔に変える（非常にまれ）。
