@@ -55,3 +55,4 @@
 59~Tape Player?~Contains an unlabeled tape. Please don’t play it. Please.
 61~Surface Access Pass~Single-use access pass for opening exit gates.
 62~SCP-127
+68~SCP-1509~A bladed weapon that deals moderate damage. Killing a human with it will resurrect an ally.~The Blade of Rebirth

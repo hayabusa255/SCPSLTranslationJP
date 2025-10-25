@@ -1,7 +1,7 @@
 Mobile Task Force Unit Epsilon-11 designated [designation] has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>
 Awaiting re-containment of: [count] SCP subjects.
 Awaiting re-containment of: 1 SCP subject.
-Substantial threat to safety remains within the facility -- exercise caution.
+Substantial threat to safety remains within the facility — exercise caution.
 successfully terminated. Termination cause unspecified.
 terminated by SCP-[scp].
 successfully terminated by Automatic Security System.
@@ -22,11 +22,11 @@ Danger, Light Containment Zone overall decontamination in T-[time] minutes.
 Danger, Light Containment Zone overall decontamination in T-1 minute.
 Danger, Light Containment Zone overall decontamination in T-30 seconds.<split>All checkpoint doors have been permanently opened. Please evacuate immediately.
 Light Containment Zone is locked down and ready for decontamination.<split>The removal of organic substances has now begun.
-ALPHA WARHEAD EMERGENCY DETONATION SEQUENCE ENGAGED.<split>THE UNDERGROUND SECTION OF THE FACILITY WILL BE DETONATED IN T-[time] SECONDS.
-DETONATION CANCELLED. RESTARTING SYSTEMS.
-DETONATION SEQUENCE RESUMED, T-[time] SECONDS.
+EMERGENCY DETONATION SEQUENCE: ACTIVATED.<split>THE UNDERGROUND SECTION OF THIS FACILITY IS SET TO SELF-DESTRUCT IN: T-[time] SECONDS.
+DETONATION SEQUENCE: CANCELLED.
+EMERGENCY DETONATION SEQUENCE: RESUMED. T-[time] SECONDS.
 terminated by Marshmallow Man.
-Nine-Tailed Fox Backup Unit designated [designation] has entered the facility.<split>
-Security alert. Substantial Chaos Insurgent activity detected.<split>Security personnel, proceed with standard protocols.
-Attention security personnel. Chaos Insurgency spotted at Gate A.
-BY ORDER OF O5 COMMAND: DEAD MAN'S SEQUENCE ACTIVATED.
+Nine-Tailed Fox Backup Unit has entered the facility.<split>
+Attention, all personnel. Detected [number] Chaos Insurgency forces at Gate A.<split>Lethal force authorized.
+Acquired [number] additional hostile forces at Gate A.<split>Defense model: updated.
+SITE RECOVERY FAILURE — DEAD MAN's SWITCH ACTIVATED.<split>THE UNDERGROUND SECTION OF THIS FACILITY <b>WILL</b> SELF-DESTRUCT IN: T-[time] SECONDS
