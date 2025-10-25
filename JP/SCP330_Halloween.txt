@@ -1,0 +1,40 @@
+Candies
+Rainbow Candy
+Its a hard piece of rock candy, packed with all sorts of flavours. Trick or treat?
+Expels a prismatic cloud which grants buffs to nearby players. Allows all within range to cheat death.
+Yellow Candy
+The overwhelming smell of lemon makes you cringe a little. Trick or treat?
+Can't stop, won't stop.
+Purple Candy
+It has a juicy grape smell. Your mouth begins to water.
+Slows your metabolism — but greatly increases your appetite.
+Red Candy
+A strong scent of cherry fills the room. It’s a bit... <i>too</i> strong. Trick or treat?
+Causes a scorching hot wave of fire to spew from your mouth, damaging anyone in your vicinity.
+Green Candy
+A nasty, herbal smell emits from the candy. Trick or treat?
+A laced piece of candy with powerful regenerative properties. Grants a massive health bonus.
+Blue Candy
+It smells soft and sweet, something akin to a marshmallow. Trick or treat?
+Rapidly converts body tissue into marshmallow. Part Man, Part Marshmallow. All Carnage.
+Pink Candy
+The strawberry scent is as gentle as it looks.
+- R E D A C T E D -
+Orange Candy
+The citrus-scented candy shines with an enticing luster. Trick or treat?
+Causes you to radiate a brilliant shade of orange. Enemies struggle to avert their eyes from you.  
+White Candy
+A distinctly sugary smell emanates from within the wrapper. There doesn’t seem to be any candy inside… Trick or treat?
+Temporarily transforms you into a ghost — turning you translucent and allowing you to pass through doors.
+Gray Candy
+The faint smell of lead emanates from this surprisingly heavy candy. Trick or treat?
+Turns you into an extremely heavy and damage resistant piece of lead. Watch out below!
+Black Candy
+The overwhelming scent of nothingness makes you gag. You remember tasting it infinite times, but you can't recall the flavor. Trick or treat?
+Inflicts a random effect. Feeling Lucky?
+Brown Candy
+The familiar scent of coffee entices you. Trick or treat?
+An extremely effective laxative. 
+Evil Candy
+The piece of candy pulses with an evil energy. Trick or treat?
+Turns you evil (really rare).
