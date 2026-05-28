@@ -1,3 +1,21 @@
+SCPSLTranslationJP License
+
+Japanese translation files
+--------------------------
+
+The Japanese translation files in the JP/ directory are licensed under the
+Creative Commons Attribution 4.0 International License (CC BY 4.0), unless
+otherwise noted.
+
+See JP/LICENSE.md for the attribution notice and license links.
+
+Source code and tools
+---------------------
+
+Source code and software tooling in this repository, including the installer
+source under the 日本語化インストーラー/ directory, are licensed under the MIT
+License below, unless otherwise noted.
+
 MIT License
 
 Copyright (c) 2024 SCPSLTranslationTeam
@@ -19,3 +37,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+Third-party content
+-------------------
+
+SCP: Secret Laboratory, the original English text, names, and related assets
+belong to their respective rights holders. They are not relicensed by this
+repository unless expressly stated by the rights holder.
