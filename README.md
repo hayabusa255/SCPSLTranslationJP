@@ -1,5 +1,7 @@
 # SCP: Secret Laboratory 日本語翻訳プロジェクト
 
+[日本語](README.md) | [English](README.en.md)
+
 [![SCPSL](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/700330/capsule_616x353.jpg?t=1717344352)]()
 
 [![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![Translation License: CC BY 4.0](https://img.shields.io/badge/translation-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/deed.ja) [![Code License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/blob/main/LICENSE)
