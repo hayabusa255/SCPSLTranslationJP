@@ -2,15 +2,21 @@ using System.Diagnostics;
 using System.Text;
 using TranslationEditor;
 
-// Usage: TranslationEditor [repo root] [--port N] [--no-browser]
+// Usage: TranslationEditor [repo root] [--port N] [--no-browser] [--base <git ref>]
 string? rootArg = null;
 int port = int.TryParse(Environment.GetEnvironmentVariable("TRANSLATION_EDITOR_PORT"), out var envPort) ? envPort : 5080;
 bool openBrowser = true;
+string defaultBase = "HEAD";
 for (int i = 0; i < args.Length; i++)
 {
     if (args[i] == "--port" && i + 1 < args.Length && int.TryParse(args[i + 1], out var p))
     {
         port = p;
+        i++;
+    }
+    else if (args[i] == "--base" && i + 1 < args.Length)
+    {
+        defaultBase = args[i + 1];
         i++;
     }
     else if (args[i] == "--no-browser")
@@ -32,6 +38,25 @@ if (root is null || !Directory.Exists(Path.Combine(root, "en")) || !Directory.Ex
 
 var store = new TranslationStore(Path.Combine(root, "en"), Path.Combine(root, "JP"));
 
+var git = GitBase.Detect(root);
+if (git.Available && git.Resolve(defaultBase) is null)
+{
+    Console.Error.WriteLine($"--base '{defaultBase}' を解決できません。HEAD を使います。");
+    defaultBase = "HEAD";
+}
+
+// Resolves ?base= (or the default). Error is set for an unacceptable ref; Ctx is null when git is unavailable.
+(BaseContext? Ctx, IResult? Error) ResolveBase(HttpRequest req)
+{
+    if (!git.Available)
+    {
+        return req.Query.ContainsKey("base") ? (null, Results.BadRequest(new { error = "git が使えません。" })) : (null, null);
+    }
+    string reference = req.Query.TryGetValue("base", out var v) && v.ToString().Length > 0 ? v.ToString() : defaultBase;
+    var ctx = git.Resolve(reference);
+    return ctx is null ? (null, Results.BadRequest(new { error = "比較元の ref が不正か、見つかりません。" })) : (ctx, null);
+}
+
 var builder = WebApplication.CreateBuilder();
 string url = $"http://localhost:{port}";
 builder.WebHost.UseUrls(url);
@@ -41,10 +66,23 @@ var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
 
-app.MapGet("/api/files", () => store.List());
+app.MapGet("/api/base", (HttpRequest req) =>
+{
+    var (ctx, error) = ResolveBase(req);
+    return error ?? Results.Ok(ctx?.Info ?? new BaseInfo(false, null, null, null, null));
+});
 
-app.MapGet("/api/files/{name}", (string name) =>
-    store.Get(name) is { } result ? Results.Ok(result) : Results.NotFound());
+app.MapGet("/api/files", (HttpRequest req) =>
+{
+    var (ctx, error) = ResolveBase(req);
+    return error ?? Results.Ok(store.List(ctx));
+});
+
+app.MapGet("/api/files/{name}", (string name, HttpRequest req) =>
+{
+    var (ctx, error) = ResolveBase(req);
+    return error ?? (store.Get(name, ctx) is { } result ? Results.Ok(result) : Results.NotFound());
+});
 
 app.MapPut("/api/files/{name}", (string name, SaveRequest req) =>
 {

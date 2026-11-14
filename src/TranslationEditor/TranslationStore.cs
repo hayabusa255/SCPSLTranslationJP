@@ -2,9 +2,10 @@ using System.Text;
 
 namespace TranslationEditor;
 
-internal record FileSummary(string Name, int EnLines, int JpLines, int Untranslated);
-internal record LineEntry(int Line, string En, string Jp);
-internal record FileDetail(string Name, LineEntry[] Lines, string[] Extra);
+internal record ChangedItem(int Line, string Jp);
+internal record FileSummary(string Name, int EnLines, int JpLines, int Untranslated, int Changed, ChangedItem[] ChangedItems);
+internal record LineEntry(int Line, string En, string Jp, string? Base);
+internal record FileDetail(string Name, LineEntry[] Lines, string[] Extra, bool BaseExists);
 
 // A parsed text file: line contents plus each line's own terminator, so mixed LF/CRLF files round-trip.
 internal sealed class ParsedFile
@@ -70,7 +71,18 @@ internal sealed class TranslationStore
 
     public int EnLineCount(string name) => ParsedFile.Parse(File.ReadAllBytes(Path.Combine(_enDir, name))).Lines.Count;
 
-    public FileSummary[] List() => Names().Select(name =>
+    // A line counts as changed when the base translation differs from the current one.
+    // A missing base line equals an empty line; a file missing from the base is changed on every line.
+    private static bool IsChanged(ParsedFile? baseFile, int i, string jp) =>
+        baseFile is null || (i < baseFile.Lines.Count ? baseFile.Lines[i] : "") != jp;
+
+    public FileSummary[] List(BaseContext? b)
+    {
+        var changedNames = b?.ChangedNames;
+        return Names().Select(name => Summarize(name, b, changedNames)).ToArray();
+    }
+
+    private FileSummary Summarize(string name, BaseContext? b, HashSet<string>? changedNames)
     {
         var en = ParsedFile.Parse(File.ReadAllBytes(Path.Combine(_enDir, name)));
         var jp = ReadJp(name);
@@ -83,10 +95,23 @@ internal sealed class TranslationStore
                 untranslated++;
             }
         }
-        return new FileSummary(name, en.Lines.Count, jp?.Lines.Count ?? 0, untranslated);
-    }).ToArray();
+        var items = new List<ChangedItem>();
+        if (b is not null && changedNames!.Contains(name))
+        {
+            var baseFile = b.Read(name);
+            for (int i = 0; i < en.Lines.Count; i++)
+            {
+                string j = jp is not null && i < jp.Lines.Count ? jp.Lines[i] : "";
+                if (IsChanged(baseFile, i, j))
+                {
+                    items.Add(new ChangedItem(i + 1, j));
+                }
+            }
+        }
+        return new FileSummary(name, en.Lines.Count, jp?.Lines.Count ?? 0, untranslated, items.Count, items.ToArray());
+    }
 
-    public FileDetail? Get(string name)
+    public FileDetail? Get(string name, BaseContext? b)
     {
         if (!Exists(name))
         {
@@ -94,10 +119,12 @@ internal sealed class TranslationStore
         }
         var en = ParsedFile.Parse(File.ReadAllBytes(Path.Combine(_enDir, name)));
         var jp = ReadJp(name);
+        var baseFile = b?.Read(name);
         var lines = en.Lines.Select((e, i) =>
-            new LineEntry(i + 1, e, jp is not null && i < jp.Lines.Count ? jp.Lines[i] : "")).ToArray();
+            new LineEntry(i + 1, e, jp is not null && i < jp.Lines.Count ? jp.Lines[i] : "",
+                baseFile is not null && i < baseFile.Lines.Count ? baseFile.Lines[i] : null)).ToArray();
         string[] extra = jp is not null && jp.Lines.Count > en.Lines.Count ? jp.Lines.Skip(en.Lines.Count).ToArray() : [];
-        return new FileDetail(name, lines, extra);
+        return new FileDetail(name, lines, extra, baseFile is not null);
     }
 
     public void Save(string name, string[] lines)

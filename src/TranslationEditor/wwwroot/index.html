@@ -8,11 +8,13 @@
 :root {
   --bg: #f6f7f9; --panel: #fff; --text: #1d2229; --muted: #6a7482; --border: #d9dde3;
   --accent: #2f6fdb; --warn-bg: #fff3d6; --err-bg: #fde4e4; --dirty-bg: #e3f0ff; --err: #b3261e; --warn: #8a5a00;
+  --del-bg: #ffd7d5; --del-fg: #8e1b14; --add-bg: #cdeccf; --add-fg: #14532d; --rev-bg: #f1f4f8;
 }
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #14171b; --panel: #1c2026; --text: #e3e6ea; --muted: #8d97a5; --border: #333a44;
     --accent: #6ea2ff; --warn-bg: #3b3115; --err-bg: #412222; --dirty-bg: #1e3350; --err: #ff8f87; --warn: #e8b84a;
+    --del-bg: #5a2626; --del-fg: #ffb4ae; --add-bg: #1f4a2a; --add-fg: #a8e6b4; --rev-bg: #232830;
   }
 }
 * { box-sizing: border-box; }
@@ -52,18 +54,36 @@ tr.dirty td.num { box-shadow: inset 3px 0 var(--accent); }
 tr.dirty td.jp { background: var(--dirty-bg); }
 textarea { width: 100%; resize: none; overflow: hidden; border: 1px solid var(--border); border-radius: 4px; padding: 3px 6px; font: inherit; background: var(--panel); color: var(--text); min-height: 28px; }
 .phinfo { font-size: 11px; color: var(--err); margin-top: 2px; }
+.nogit .gitonly { display: none !important; }
+#baseinfo { color: var(--muted); }
+#baseref { width: 110px; padding: 4px 6px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 4px; }
+button.sub { background: transparent; color: var(--accent); padding: 2px 8px; font-size: 12px; }
+.file.all { font-weight: 600; border-bottom: 1px solid var(--border); }
+.badge.chg { color: var(--accent); font-weight: 600; }
+td.act { width: 92px; font-size: 12px; }
+td.act label { display: block; margin-top: 6px; white-space: nowrap; }
+.prev, .diffline { font-size: 12px; white-space: pre-wrap; word-break: break-word; background: var(--rev-bg); border-radius: 3px; padding: 1px 6px; margin-bottom: 3px; color: var(--muted); }
+.prev b, .diffline b { font-weight: 600; color: var(--muted); margin-right: 6px; }
+del { background: var(--del-bg); color: var(--del-fg); text-decoration: line-through; }
+ins { background: var(--add-bg); color: var(--add-fg); text-decoration: none; }
+tr.cur td.num { background: var(--accent); color: #fff; }
+tr.fhead td { background: var(--panel); font-weight: 600; cursor: pointer; position: sticky; top: 33px; z-index: 1; color: var(--accent); }
+tr.reviewed td { opacity: .6; }
 .empty { padding: 24px; color: var(--muted); }
 </style>
 </head>
 <body>
 <aside id="side">
   <input id="ffilter" type="search" placeholder="ファイル名で絞り込み">
+  <label class="gitonly" style="margin:0 10px 6px"><input type="checkbox" id="onlyChangedFiles"> 変更のあるファイルだけ</label>
   <div id="list"></div>
 </aside>
 <section id="main">
   <div id="bar">
     <span class="title" id="title">ファイルを選択してください</span>
+    <span class="gitonly"><span id="baseinfo"></span> <input id="baseref" type="text" placeholder="git ref" spellcheck="false"> <button class="sub" id="basebtn">変更</button></span>
     <label><input type="checkbox" id="onlyIssues"> 未翻訳/問題のある行だけ</label>
+    <label class="gitonly"><input type="checkbox" id="onlyChanged"> 変更行だけ</label>
     <input type="search" id="q" placeholder="EN/JP 本文を検索">
     <span class="spacer"></span>
     <span id="dirty"></span>
@@ -75,7 +95,9 @@ textarea { width: 100%; resize: none; overflow: hidden; border: 1px solid var(--
 </section>
 <script>
 const $ = id => document.getElementById(id);
-let files = [], current = null, rows = [], dirtyCount = 0;
+const ALL = '*all*';
+let files = [], current = null, groups = [], dirtyCount = 0;
+let gitOk = false, baseRef = '', cursorTr = null;
 
 // Same token rules as TranslationChecker/PlaceholderChecker.cs.
 const TOKEN = /\[([A-Za-z_]\w*)\]|\{(\w+)\}|(%%|%(?:\d+\$)?[-+ 0#]*\d*(?:\.\d+)?[sdifuxX])|<(\/?[A-Za-z][A-Za-z0-9]*)(?:[=\s][^>]*)?>/g;
@@ -96,30 +118,104 @@ function phDiff(en, jp) {
   return { missing, extra };
 }
 
+// Character-level diff via LCS. Returns [{t:'=',s}, {t:'-',s}, {t:'+',s}] with adjacent ops merged.
+function charDiff(a, b) {
+  const A = Array.from(a), B = Array.from(b), n = A.length, m = B.length;
+  if (n * m > 4000000) return [{ t: '-', s: a }, { t: '+', s: b }];
+  let p = 0; while (p < n && p < m && A[p] === B[p]) p++;
+  let q = 0; while (q < n - p && q < m - p && A[n - 1 - q] === B[m - 1 - q]) q++;
+  const a2 = A.slice(p, n - q), b2 = B.slice(p, m - q), N = a2.length, M = b2.length;
+  const w = M + 1, dp = new Int32Array((N + 1) * w);
+  for (let i = N - 1; i >= 0; i--) for (let j = M - 1; j >= 0; j--)
+    dp[i * w + j] = a2[i] === b2[j] ? dp[(i + 1) * w + j + 1] + 1 : Math.max(dp[(i + 1) * w + j], dp[i * w + j + 1]);
+  const ops = [];
+  const push = (t, s) => { if (ops.length && ops[ops.length - 1].t === t) ops[ops.length - 1].s += s; else ops.push({ t, s }); };
+  if (p) push('=', A.slice(0, p).join(''));
+  let i = 0, j = 0;
+  while (i < N || j < M) {
+    if (i < N && j < M && a2[i] === b2[j]) { push('=', a2[i]); i++; j++; }
+    else if (j >= M || (i < N && dp[(i + 1) * w + j] >= dp[i * w + j + 1])) { push('-', a2[i]); i++; }
+    else { push('+', b2[j]); j++; }
+  }
+  if (q) push('=', A.slice(n - q).join(''));
+  return ops;
+}
+function fillDiff(el, ops, show) {
+  el.textContent = '';
+  for (const o of ops) {
+    if (!show.includes(o.t)) continue;
+    if (o.t === '=') el.append(document.createTextNode(o.s));
+    else { const x = document.createElement(o.t === '-' ? 'del' : 'ins'); x.textContent = o.s; el.append(x); }
+  }
+}
+
+// Reviewed marks live only in this browser's localStorage.
+function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+const rkey = (name, line, jp) => `reviewed:${name}:${line}:${hash(jp)}`;
+function isReviewed(name, line, jp) { try { return localStorage.getItem(rkey(name, line, jp)) === '1'; } catch { return false; } }
+function setReviewed(name, line, jp, on) { try { if (on) localStorage.setItem(rkey(name, line, jp), '1'); else localStorage.removeItem(rkey(name, line, jp)); } catch {} }
+
+const baseQuery = () => baseRef ? '?base=' + encodeURIComponent(baseRef) : '';
 function setMsg(t, err) { $('msg').textContent = t; $('msg').className = err ? 'err' : ''; }
+const allRows = () => groups.flatMap(g => g.rows);
 function updateDirty() {
-  dirtyCount = rows.filter(r => r.jp !== r.saved).length;
+  dirtyCount = allRows().filter(r => r.jp !== r.saved).length;
   $('dirty').textContent = dirtyCount ? `● 未保存 ${dirtyCount} 行` : '';
   $('save').disabled = !current || !dirtyCount;
 }
 
+async function loadBase(ref) {
+  const res = await fetch('/api/base' + (ref ? '?base=' + encodeURIComponent(ref) : ''));
+  if (!res.ok) { let m = ''; try { m = (await res.json()).error; } catch {} return m || String(res.status); }
+  const b = await res.json();
+  gitOk = b.available;
+  document.body.classList.toggle('nogit', !gitOk);
+  if (gitOk) {
+    baseRef = b.ref;
+    $('baseinfo').textContent = `比較元: ${b.ref} (${b.commit} ${b.subject})`;
+    $('baseinfo').title = $('baseinfo').textContent;
+    $('baseref').value = b.ref;
+  }
+  return null;
+}
+
 async function loadList() {
-  files = await (await fetch('/api/files')).json();
+  const res = await fetch('/api/files' + baseQuery());
+  files = await res.json();
+  for (const x of files) x.unreviewed = x.changedItems.filter(c => !isReviewed(x.name, c.line, c.jp)).length;
   renderList();
 }
+function badgeFor(x, b) {
+  if (x.jpLines !== x.enLines) { b.textContent = `⚠ ${x.jpLines}/${x.enLines}`; b.className += ' mismatch'; b.title = '行数が en と一致しません'; }
+  else if (x.untranslated) { b.textContent = `未 ${x.untranslated}`; b.className += ' todo'; b.title = `未翻訳 ${x.untranslated} / ${x.enLines} 行`; }
+  else { b.textContent = `${x.enLines}`; }
+}
 function renderList() {
-  const f = $('ffilter').value.toLowerCase();
+  const f = $('ffilter').value.toLowerCase(), onlyCh = $('onlyChangedFiles').checked;
   const box = $('list'); box.textContent = '';
+  if (gitOk) {
+    const tot = files.reduce((a, x) => a + x.changed, 0), un = files.reduce((a, x) => a + x.unreviewed, 0);
+    const d = document.createElement('div');
+    d.className = 'file all' + (current === ALL ? ' active' : '');
+    const n = document.createElement('span'); n.className = 'n'; n.textContent = '全ファイルの変更';
+    const b = document.createElement('span'); b.className = 'badge chg'; b.textContent = `Δ${tot} / 未確認${un}`;
+    d.append(n, b); d.onclick = openAll; box.append(d);
+  }
   for (const x of files) {
     if (f && !x.name.toLowerCase().includes(f)) continue;
+    if (gitOk && onlyCh && !x.changed) continue;
     const d = document.createElement('div');
     d.className = 'file' + (current === x.name ? ' active' : '');
     const n = document.createElement('span'); n.className = 'n'; n.textContent = x.name; n.title = x.name;
     const b = document.createElement('span'); b.className = 'badge';
-    if (x.jpLines !== x.enLines) { b.textContent = `⚠ ${x.jpLines}/${x.enLines}`; b.className += ' mismatch'; b.title = '行数が en と一致しません'; }
-    else if (x.untranslated) { b.textContent = `未 ${x.untranslated}`; b.className += ' todo'; b.title = `未翻訳 ${x.untranslated} / ${x.enLines} 行`; }
-    else { b.textContent = `${x.enLines}`; }
-    d.append(n, b);
+    badgeFor(x, b);
+    if (gitOk && x.changed) {
+      const c = document.createElement('span'); c.className = 'badge chg';
+      c.textContent = x.unreviewed ? `Δ${x.changed} / 未確認${x.unreviewed}` : `Δ${x.changed}`;
+      c.title = `比較元から変更 ${x.changed} 行、未確認 ${x.unreviewed} 行`;
+      const w = document.createElement('span'); w.style.display = 'flex'; w.style.gap = '6px'; w.append(c, b);
+      d.append(n, w);
+    } else d.append(n, b);
     d.onclick = () => openFile(x.name);
     box.append(d);
   }
@@ -127,111 +223,235 @@ function renderList() {
 
 function confirmDiscard() { return !dirtyCount || confirm('未保存の変更があります。破棄して続けますか？'); }
 
-async function openFile(name) {
-  if (name === current) return;
+function makeRows(lines) {
+  return lines.map(l => ({ line: l.line, en: l.en, jp: l.jp, saved: l.jp, base: l.base }));
+}
+function isChanged(g, r) {
+  if (!gitOk) return false;
+  return r.base === null ? (!g.baseExists || r.saved !== '') : r.base !== r.saved;
+}
+async function fetchDetail(name) {
+  const res = await fetch('/api/files/' + encodeURIComponent(name) + baseQuery());
+  if (!res.ok) throw new Error(name + ': ' + res.status);
+  const d = await res.json();
+  return { name, rows: makeRows(d.lines), extra: d.extra, baseExists: d.baseExists };
+}
+
+async function openFile(name, force) {
+  if (!force && name === current) return;
   if (!confirmDiscard()) return;
   setMsg('読み込み中…');
-  const res = await fetch('/api/files/' + encodeURIComponent(name));
-  if (!res.ok) { setMsg('読み込みに失敗しました', true); return; }
-  const d = await res.json();
-  current = name;
-  rows = d.lines.map(l => ({ line: l.line, en: l.en, jp: l.jp, saved: l.jp }));
+  let g;
+  try { g = await fetchDetail(name); } catch { setMsg('読み込みに失敗しました', true); return; }
+  current = name; groups = [g];
   $('title').textContent = name;
   const w = $('warn');
-  if (d.extra.length) { w.style.display = 'block'; w.textContent = `JP に en より ${d.extra.length} 行多く含まれています（保存すると超過分は削除されます）。`; }
+  if (g.extra.length) { w.style.display = 'block'; w.textContent = `JP に en より ${g.extra.length} 行多く含まれています（保存すると超過分は削除されます）。`; }
   else w.style.display = 'none';
   setMsg('');
-  renderTable();
-  renderList();
-  updateDirty();
+  renderTable(); renderList(); updateDirty();
   $('scroll').scrollTop = 0;
 }
 
-function rowState(r) {
+async function openAll(force) {
+  if (force !== true && current === ALL) return;
+  if (!confirmDiscard()) return;
+  setMsg('読み込み中…');
+  try { groups = await Promise.all(files.filter(x => x.changed).map(x => fetchDetail(x.name))); }
+  catch { setMsg('読み込みに失敗しました', true); return; }
+  current = ALL;
+  $('title').textContent = '全ファイルの変更';
+  $('warn').style.display = 'none';
+  setMsg('');
+  renderTable(); renderList(); updateDirty();
+  $('scroll').scrollTop = 0;
+}
+
+function rowState(g, r) {
   const untr = r.jp === '' || r.jp === r.en;
   const d = phDiff(r.en, r.jp);
   const ph = !untr && (d.missing.length || d.extra.length);
-  return { untr, ph, d, dirty: r.jp !== r.saved };
+  return { untr, ph, d, dirty: r.jp !== r.saved, changed: isChanged(g, r) };
 }
-function applyState(tr, r) {
-  const s = rowState(r);
+function applyState(tr) {
+  const g = tr._g, r = tr._r, s = rowState(g, r);
   tr.classList.toggle('untr', s.untr);
   tr.classList.toggle('ph', !!s.ph);
   tr.classList.toggle('dirty', s.dirty);
-  const info = tr.querySelector('.phinfo');
+  tr.classList.toggle('chg', s.changed);
   const parts = [];
   if (s.ph) {
     if (s.d.missing.length) parts.push('不足: ' + s.d.missing.join(' '));
     if (s.d.extra.length) parts.push('余分: ' + s.d.extra.join(' '));
   }
-  info.textContent = parts.join(' / ');
+  tr._info.textContent = parts.join(' / ');
   tr.dataset.issue = (s.untr || s.ph) ? '1' : '';
+  const baseVal = r.base ?? '';
+  tr._prev.style.display = tr._diff.style.display = tr._act.style.display = s.changed ? '' : 'none';
+  if (s.changed) {
+    const ops = charDiff(baseVal, r.jp);
+    tr._prev.textContent = '';
+    const lab = document.createElement('b'); lab.textContent = '修正前';
+    tr._prev.append(lab);
+    if (r.base === null) tr._prev.append(document.createTextNode('（なし）'));
+    else fillDiff(tr._prev, charDiff(baseVal, r.saved), ['=', '-']);
+    if (r.base !== null && r.base === '') tr._prev.append(document.createTextNode('（空）'));
+    tr._diff.textContent = '';
+    const l2 = document.createElement('b'); l2.textContent = '差分';
+    tr._diff.append(l2);
+    if (r.jp === baseVal) tr._diff.append(document.createTextNode('（修正前と同じ）'));
+    else { const sp = document.createElement('span'); fillDiff(sp, ops, ['=', '-', '+']); tr._diff.append(sp); }
+    const atBase = r.jp === baseVal;
+    tr._rev.textContent = !atBase || r.stash === undefined ? '元に戻す' : 'やり直す';
+    tr._rev.disabled = atBase && r.stash === undefined;
+    tr._chk.checked = isReviewed(g.name, r.line, r.jp);
+  }
+  tr.classList.toggle('reviewed', s.changed && tr._chk.checked);
 }
 function autosize(t) { t.style.height = 'auto'; t.style.height = t.scrollHeight + 2 + 'px'; }
 
 function renderTable() {
-  const sc = $('scroll'); sc.textContent = '';
+  const sc = $('scroll'); sc.textContent = ''; cursorTr = null;
+  const all = current === ALL;
   const table = document.createElement('table');
-  table.innerHTML = '<colgroup><col style="width:52px"><col style="width:42%"><col></colgroup><thead><tr><th style="text-align:right">#</th><th>EN</th><th>JP</th></tr></thead>';
+  table.innerHTML = '<colgroup><col style="width:52px"><col style="width:40%"><col><col class="gitonly" style="width:92px"></colgroup><thead><tr><th style="text-align:right">#</th><th>EN</th><th>JP</th><th class="gitonly"></th></tr></thead>';
   const tb = document.createElement('tbody');
-  for (const r of rows) {
-    const tr = document.createElement('tr');
-    const n = document.createElement('td'); n.className = 'num'; n.textContent = r.line;
-    const e = document.createElement('td'); e.className = 'en'; e.textContent = r.en;
-    const j = document.createElement('td'); j.className = 'jp';
-    const t = document.createElement('textarea'); t.rows = 1; t.value = r.jp; t.spellcheck = false;
-    const info = document.createElement('div'); info.className = 'phinfo';
-    t.addEventListener('input', () => { r.jp = t.value; autosize(t); applyState(tr, r); updateDirty(); });
-    t.addEventListener('keydown', ev => { if (ev.key === 'Enter') ev.preventDefault(); }); // one line per row
-    j.append(t, info);
-    tr.append(n, e, j);
-    tr._r = r; tr._t = t;
-    applyState(tr, r);
-    tb.append(tr);
+  for (const g of groups) {
+    if (all) {
+      const h = document.createElement('tr'); h.className = 'fhead';
+      const hd = document.createElement('td'); hd.colSpan = 4; hd.textContent = g.name; hd.title = 'クリックでこのファイルの通常ビューへ';
+      h.append(hd); h.onclick = () => openFile(g.name);
+      h._head = true; h._g = g; tb.append(h);
+    }
+    for (const r of g.rows) {
+      if (all && !isChanged(g, r)) continue;
+      const tr = document.createElement('tr');
+      const n = document.createElement('td'); n.className = 'num'; n.textContent = r.line;
+      const e = document.createElement('td'); e.className = 'en'; e.textContent = r.en;
+      const j = document.createElement('td'); j.className = 'jp';
+      const prev = document.createElement('div'); prev.className = 'prev';
+      const diff = document.createElement('div'); diff.className = 'diffline';
+      const t = document.createElement('textarea'); t.rows = 1; t.value = r.jp; t.spellcheck = false;
+      const info = document.createElement('div'); info.className = 'phinfo';
+      j.append(prev, diff, t, info);
+      const act = document.createElement('td'); act.className = 'act gitonly';
+      const rev = document.createElement('button'); rev.className = 'sub'; rev.textContent = '元に戻す';
+      const lab = document.createElement('label'); const chk = document.createElement('input'); chk.type = 'checkbox';
+      lab.append(chk, ' 確認済み');
+      act.append(rev, lab);
+      tr.append(n, e, j, act);
+      Object.assign(tr, { _r: r, _g: g, _t: t, _info: info, _prev: prev, _diff: diff, _act: act, _rev: rev, _chk: chk });
+      t.addEventListener('input', () => { r.jp = t.value; r.stash = undefined; autosize(t); applyState(tr); updateDirty(); });
+      t.addEventListener('keydown', ev => { if (ev.key === 'Enter') ev.preventDefault(); }); // one line per row
+      rev.onclick = () => {
+        const bv = r.base ?? '';
+        if (r.jp !== bv) { r.stash = r.jp; r.jp = bv; }
+        else if (r.stash !== undefined) { r.jp = r.stash; r.stash = undefined; }
+        t.value = r.jp; autosize(t); applyState(tr); updateDirty();
+      };
+      chk.onchange = () => { setReviewed(g.name, r.line, r.jp, chk.checked); tr.classList.toggle('reviewed', chk.checked); refreshReviewCounts(); };
+      applyState(tr);
+      tb.append(tr);
+    }
   }
   table.append(tb);
   sc.append(table);
   applyFilter();
-  for (const tr of tb.children) autosize(tr._t);
+  for (const tr of tb.children) if (tr._t) autosize(tr._t);
+}
+
+// Recompute unreviewed counts from the saved text (what the file list knows) and redraw the list.
+function refreshReviewCounts() {
+  for (const x of files) x.unreviewed = x.changedItems.filter(c => !isReviewed(x.name, c.line, c.jp)).length;
+  renderList();
 }
 
 function applyFilter() {
-  const only = $('onlyIssues').checked, q = $('q').value.toLowerCase();
+  const only = $('onlyIssues').checked, onlyCh = $('onlyChanged').checked && gitOk, q = $('q').value.toLowerCase();
   const tb = document.querySelector('tbody'); if (!tb) return;
+  let head = null, headShown = false;
+  const flush = () => { if (head) head.style.display = headShown ? '' : 'none'; };
   for (const tr of tb.children) {
+    if (tr._head) { flush(); head = tr; headShown = false; continue; }
     const r = tr._r;
     let show = true;
-    if (only && !(tr.dataset.issue || r.jp !== r.saved)) show = false;
+    if (current === ALL && !tr.classList.contains('chg')) show = false;
+    if (show && only && !(tr.dataset.issue || r.jp !== r.saved)) show = false;
+    if (show && onlyCh && !tr.classList.contains('chg')) show = false;
     if (show && q && !(r.en.toLowerCase().includes(q) || r.jp.toLowerCase().includes(q))) show = false;
     tr.style.display = show ? '' : 'none';
-    if (show) autosize(tr._t);
+    if (show) { headShown = true; autosize(tr._t); }
   }
+  flush();
 }
 
+async function putFile(g) {
+  const res = await fetch('/api/files/' + encodeURIComponent(g.name), {
+    method: 'PUT', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lines: g.rows.map(r => r.jp) })
+  });
+  if (!res.ok) { let m = ''; try { m = (await res.json()).error; } catch {} throw new Error(g.name + ' ' + (m || res.status)); }
+  for (const r of g.rows) r.saved = r.jp;
+}
 async function save() {
   if (!current || !dirtyCount) return;
   setMsg('保存中…');
-  const res = await fetch('/api/files/' + encodeURIComponent(current), {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ lines: rows.map(r => r.jp) })
-  });
-  if (!res.ok) { let m = ''; try { m = (await res.json()).error; } catch {} setMsg('保存に失敗しました ' + (m || res.status), true); return; }
-  for (const r of rows) r.saved = r.jp;
-  document.querySelectorAll('tbody tr').forEach(tr => applyState(tr, tr._r));
-  $('warn').style.display = 'none';
+  try {
+    for (const g of groups) if (g.rows.some(r => r.jp !== r.saved)) await putFile(g);
+  } catch (e) { setMsg('保存に失敗しました ' + e.message, true); document.querySelectorAll('tbody tr').forEach(tr => tr._r && applyState(tr)); updateDirty(); return; }
+  document.querySelectorAll('tbody tr').forEach(tr => tr._r && applyState(tr));
+  if (current !== ALL) $('warn').style.display = 'none';
+  applyFilter();
   updateDirty();
   setMsg('保存しました');
   await loadList();
 }
 
+// j/k: jump between changed rows.
+function jump(dir) {
+  const trs = [...document.querySelectorAll('tbody tr.chg')].filter(tr => tr.style.display !== 'none');
+  if (!trs.length) return;
+  let i = cursorTr ? trs.indexOf(cursorTr) : -1;
+  if (i < 0) {
+    const top = $('scroll').getBoundingClientRect().top + 40;
+    i = dir > 0 ? trs.findIndex(tr => tr.getBoundingClientRect().top > top) - 1 : trs.findIndex(tr => tr.getBoundingClientRect().top >= top);
+    if (i === -2) i = trs.length - 1;
+  }
+  i = Math.min(trs.length - 1, Math.max(0, i + dir));
+  if (cursorTr) cursorTr.classList.remove('cur');
+  cursorTr = trs[i]; cursorTr.classList.add('cur');
+  cursorTr.scrollIntoView({ block: 'center' });
+}
+
+async function changeBase() {
+  const ref = $('baseref').value.trim();
+  if (!ref || ref === baseRef) return;
+  if (!confirmDiscard()) return;
+  const err = await loadBase(ref);
+  if (err) { setMsg('比較元を変更できません: ' + err, true); return; }
+  const cur = current; current = null; groups = []; dirtyCount = 0;
+  await loadList();
+  if (cur === ALL) await openAll(true); else if (cur) await openFile(cur, true); else updateDirty();
+  setMsg('');
+}
+
 $('save').onclick = save;
 $('onlyIssues').onchange = applyFilter;
+$('onlyChanged').onchange = applyFilter;
+$('onlyChangedFiles').onchange = renderList;
 $('q').oninput = applyFilter;
 $('ffilter').oninput = renderList;
-document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
+$('basebtn').onclick = changeBase;
+$('baseref').addEventListener('keydown', e => { if (e.key === 'Enter') changeBase(); });
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); return; }
+  const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === 'TEXTAREA' || tag === 'INPUT' || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'j') jump(1); else if (e.key === 'k') jump(-1);
+});
 window.addEventListener('beforeunload', e => { if (dirtyCount) { e.preventDefault(); e.returnValue = ''; } });
 window.addEventListener('resize', () => document.querySelectorAll('tbody textarea').forEach(autosize));
-loadList();
+(async () => { await loadBase(''); await loadList(); })();
 </script>
 </body>
 </html>
