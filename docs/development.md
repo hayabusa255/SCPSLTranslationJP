@@ -1,22 +1,70 @@
 # 開発ガイド
 
-翻訳データは `JP/`（日本語）と `en/`（英語原文）にあります。ツール類は .NET 8 で、`SCPSLTranslationJP.slnx` からまとめて開けます。
+翻訳データは `JP/`（日本語）と `en/`（英語原文）にあります。ツール類は .NET 10 です（SDK のバージョンは `global.json` で指定。10.0.100 以降の 10.0.x フィーチャーバンドに自動で上がります）。`SCPSLTranslationJP.slnx` からまとめて開けます。
 
 ## 構成
 
 | パス | 内容 |
 |---|---|
 | `SCPSLTranslationJP.slnx` | 全プロジェクトのソリューション |
+| `global.json` | 使用する .NET SDK の指定（10.0.100 以降） |
 | `Directory.Build.props` | 共通設定（ImplicitUsings / Nullable） |
-| `src/SCPSL日本語化インストーラー/` | 日本語化インストーラー（リリースでは `SCPSL.exe` として配布） |
+| `src/SCPSL日本語化インストーラー/` | 日本語化インストーラー（リリースでは Windows 版 `SCPSL.exe` / Linux 版 `SCPSL-linux-x64` として配布） |
 | `src/TranslationChecker/` | 翻訳チェッカー（旧 `translationchecker.exe` を ILSpy で復元したもの） |
 | `src/TranslationEditor/` | 翻訳エディタ（en と JP を並べて JP を編集する、ローカル専用の Web ツール） |
+| `tests/Installer.Tests/` | インストーラーの単体テスト |
+| `.github/workflows/build.yml` | push / PR で Ubuntu と Windows の両方でビルドとテスト |
+| `.github/workflows/release.yml` | `JP-*` タグの push でテスト、zip、インストーラー（Windows / Linux）のビルドを行いリリースを公開。本文は `.github/scripts/release-notes.sh` が生成 |
+| `.github/workflows/translationcheck.yml` | 翻訳チェッカーの手動実行 |
 
 ## ビルド
 
 ```sh
 dotnet build SCPSLTranslationJP.slnx -c Release
+dotnet test SCPSLTranslationJP.slnx -c Release
 ```
+
+テストは `tests/Installer.Tests`（インストーラー用）です。
+
+## インストーラー
+
+`src/SCPSL日本語化インストーラー/` は Windows / Linux 両対応のコンソールアプリです（アセンブリ名は `SCPSL`）。Steam（ネイティブ / Flatpak / Snap / Steam Deck）の SCP: Secret Laboratory を検出し、最新の日本語訳を取得して `Translations` フォルダに入れます。管理者権限は常には要求せず、Steam フォルダに書き込めない場合だけ Windows で UAC 昇格を求めます。
+
+```sh
+# ローカルで実行（何も書き込まずに確認）
+dotnet run --project "src/SCPSL日本語化インストーラー" -- --dry-run
+
+# 配布用の自己完結・単一ファイル（出力は out/win/SCPSL.exe と out/linux/SCPSL）
+dotnet publish "src/SCPSL日本語化インストーラー" -c Release -r win-x64 -o out/win
+dotnet publish "src/SCPSL日本語化インストーラー" -c Release -r linux-x64 -o out/linux
+```
+
+| オプション | 内容 |
+|---|---|
+| `--game-dir <path>` | ゲームフォルダを指定（自動検出を使わない） |
+| `-y` / `--yes` | 確認を省略 |
+| `--force` | 最新でも再インストール |
+| `--dry-run` | 書き込まずに内容だけ表示 |
+| `--repo <owner/name>` | 翻訳を取得するリポジトリを変更 |
+| `--no-pause` | 終了時にキー入力を待たない |
+| `-h` / `--help` | ヘルプを表示 |
+| `--version` | バージョンを表示 |
+
+自動検出できないときは、対話的にゲームフォルダのパスを入力できます。古い日本語訳フォルダ（manifest の `InterfaceLocales` に `ja` を含むもの）は確認のうえ削除します。
+
+主なファイル:
+
+| ファイル | 役割 |
+|---|---|
+| `Program.cs` | 引数の解釈と全体の流れ |
+| `SteamLocator` | Steam ライブラリとゲームフォルダの検出 |
+| `VdfParser` | Steam の VDF / manifest の解析 |
+| `ReleaseClient` | GitHub のリリース取得とダウンロード |
+| `TranslationInstaller` | 翻訳の展開、更新、古い訳の削除 |
+| `ConsoleUi` | 出力と確認の入力 |
+| `WindowsElevation` | Windows での管理者権限の確認と昇格 |
+
+リリースでは `.github/workflows/release.yml` が `-p:InstallerRepository=<ビルドしたリポジトリ>` 付きで上の publish を実行し、`SCPSL.exe` と `SCPSL-linux-x64` を添付します。
 
 ## 翻訳チェッカー
 
