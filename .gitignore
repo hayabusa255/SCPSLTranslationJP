@@ -40,3 +40,7 @@ msbuild.wrn
 # Misc
 *.rsuser
 artifacts/
+
+# AIs
+CLAUDE.md
+AGENTS.md
