@@ -22,13 +22,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build translation checker
+        run: dotnet build src/TranslationChecker -c Release
+
       - name: Run translation checker
         id: check
-        working-directory: ./translationchecker
         run: |
           $env:PYTHONIOENCODING="utf-8"
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          ./translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
+          dotnet run --project src/TranslationChecker -c Release --no-build -- . | Out-File -FilePath report.md -Encoding UTF8
           $report = Get-Content report.md -Raw -Encoding UTF8
           $escaped_report = $report -replace '%', '%25' -replace "`n", '%0A' -replace "`r", '%0D'
           echo "report=$escaped_report" >> $env:GITHUB_OUTPUT
@@ -43,5 +50,5 @@ jobs:
         uses: peter-evans/create-issue-from-file@v4
         with:
           title: "Manual Translation Status Report"
-          content-filepath: ./translationchecker/report.md
+          content-filepath: ./report.md
           labels: translation, manual-report
