@@ -2,7 +2,7 @@
 
 [日本語](README.md) | [English](README.en.md)
 
-[![SCPSL](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/700330/capsule_616x353.jpg?t=1717344352)]()
+[![SCPSL](./docs/NewSLImage.png)]()
 
 [![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![Translation License: CC BY 4.0](https://img.shields.io/badge/translation-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/deed.ja) [![Code License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/blob/main/LICENSE)
 [![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/releases)
@@ -29,7 +29,7 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
     [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)]()
 
 3. **ゲーム内設定から言語を変更する**：
-    [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)]()
+    [![image](./docs/NowJapanese.png)]()
     
     翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
 ## インストーラーを使用するインストール方法
@@ -44,7 +44,7 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
 
 管理者権限で実行を選択して完了です。  
 3. **ゲーム内設定から言語を変更する**：
-  ![Language Settings](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
+  ![Language Settings](./docs/NowJapanese.png)
             
 翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
 **※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**
