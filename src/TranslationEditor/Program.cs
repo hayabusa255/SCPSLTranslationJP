@@ -57,7 +57,12 @@ if (git.Available && git.Resolve(defaultBase) is null)
     return ctx is null ? (null, Results.BadRequest(new { error = "比較元の ref が不正か、見つかりません。" })) : (ctx, null);
 }
 
-var builder = WebApplication.CreateBuilder();
+// 静的ファイルは実行ファイル側の wwwroot から配信する（カレントディレクトリに依存させない）。
+var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory,
+});
 string url = $"http://localhost:{port}";
 builder.WebHost.UseUrls(url);
 builder.Logging.SetMinimumLevel(LogLevel.Warning);
