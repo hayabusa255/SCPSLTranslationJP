@@ -30,3 +30,5 @@ Nine-Tailed Fox Backup Unit has entered the facility.<split>
 Attention, all personnel. Detected [number] Chaos Insurgency forces at Gate A.<split>Lethal force authorized.
 Acquired [number] additional hostile forces at Gate A.<split>Defense model: updated.
 SITE RECOVERY FAILURE — DEAD MAN's SWITCH ACTIVATED.<split>THE UNDERGROUND SECTION OF THIS FACILITY <b>WILL</b> SELF-DESTRUCT IN: T-[time] SECONDS
+Emergency backup generator activated. Estimated activation time in T-[time] seconds.
+Backup generator successfully engaged. Central power moved to defense module. Broadcasting emergency frequency.

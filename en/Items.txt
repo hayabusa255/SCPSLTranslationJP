@@ -1,14 +1,14 @@
-0~Janitor Keycard
-1~Scientist Keycard
-2~Research Supervisor Keycard
-3~Zone Manager Keycard
-4~Guard Keycard
+0~Janitor Keycard~~Opens SCP-914
+1~Scientist Keycard~~Opens SCP Containment Chambers
+2~Research Supervisor Keycard~~Opens SCP Item Pedestals and Checkpoints
+3~Zone Manager Keycard~~Opens Checkpoints and SCP-914
+4~Guard Keycard~~General Low Tier Access
 5~MTF Private Keycard
 6~Containment Engineer Keycard
-7~MTF Operative Keycard
-8~MTF Captain Keycard
-9~Facility Manager Keycard
-10~Chaos Insurgency Access Device
+7~MTF Operative Keycard~~General Access
+8~MTF Captain Keycard~~General and Experimental Weapon Access
+9~Facility Manager Keycard~~Opens SCP Weapon Lockers and Warhead Panel
+10~Chaos Insurgency Access Device~~General and Experimental Weapon Access
 11~O5-level Keycard
 12~Radio~Allows communication over long distances between devices. Range can be adjusted.
 13~COM-15
@@ -43,12 +43,12 @@
 47~3-X Particle Disruptor~A strange weapon that fires powerful, disintegrating energy beams.
 48~COM-45
 49~SCP-1576~Allows temporary communication with the dead. Can be used again after some time passes.~Edisonian Afterlife Communicator
-50~Jailbird~What?!
+50~Jailbird~A strange, unstable baton that can be swung at targets or charged to inflict massive damage.
 51~Anti-Cola~The result of an experiment with SCP-914. Good for your health, bad for your motor skills. Will save your life in a pinch.~selttoB aloC
 52~FR-MG-0
 53~A7
 54~Lantern~A classic oil lantern, inscribed with the name "Daniel".
-55~SCP-1344~A set of modified goggles that lets you perceive the positions of other players through walls. Once worn, they must never be removed!~Eye-Catching Goggles
+55~SCP-1344~A set of modified goggles that lets you perceive the positions of actively moving players through walls. Once worn, they must never be removed!~Eye-Catching Goggles
 56~Snowball
 57~Coal
 58~Coal?
@@ -56,3 +56,4 @@
 61~Surface Access Pass~Single-use access pass for opening exit gates.
 62~SCP-127
 68~SCP-1509~A bladed weapon that deals moderate damage. Killing a human with it will resurrect an ally.~The Blade of Rebirth
+69~SCP-021-J~A dark, dangorus energy radiates from the water botllef. You get the feeling that it may be impersobile to contein. Do you dare consume it?~Evil :(

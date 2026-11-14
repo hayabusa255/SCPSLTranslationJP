@@ -1,0 +1,27 @@
+Disguised
+Revealed
+Slash:While revealed, use [key_slash] to rapidly attack, dealing moderate damage on each hit. Hexed targets take increased damage and regenerate Essence and Hume Shield on kill. 
+Polymorphic:Use [key_menu] to open the disguise menu and select a form. In human form, you may pick up items and mimic their usage. SCP forms grant some attributes and damage resistance. Use [key_prox] to speak in proximity chat. Revealing unlocks offensive abilities. 
+Essence:Your abilities require Essence, which passively generates up to 50%. Essence generation rate and limit are increased whilst near humans or upon receiving damage, allowing generation up to 100%. Revealing requires at least 50% Essence, and full depletion of Essence forces you back into disguise.
+Bewitch:While disguised and above 75% Essence, hold [key_bewitch] to violently reveal yourself and inflict any nearby human with Hexed. Humans that are Hexed become outlined, rendering them visible through obstacles, are visually and audibly impaired, and are more vulnerable to your attacks.
+Fox Hunt:Hold [key_foxhunt] to shift into a quadrupedal form and Hex humans within your line of sight. Speed is increased at the cost of higher Essence drain, and Slash cannot be used. Hold [key_pounce] to Pounce, dealing massive damage. Hexed targets are instead grappled and killed, allowing you to either steal their form or gain Essence and Hume Shield to continue fighting.
+Disguise as [role_name] using [player_nickname]'s identity.
+Disguise as [role_name] using your own identity.
+Disguise as [role_name].
+This disguise is not available at this time.
+This is already your current disguise.
+This toggle allows the use of your own nickname for any disguises selected in this menu. Quick Disguise is not affected by this.
+Current Disguise
+Reveal
+DISGUISE
+KILL
+Press [key_attack] or [key_jump] to Pounce.
+Unable to pick up this item.
+Hold [key_reveal] to Reveal
+Hold [key_bewitch] to Bewitch nearby humans.
+Press [key] to communicate with humans while disguised.
+Disguise Menu
+SCP Disguises
+Human Disguises
+Other Disguises
+Use your own nickname
