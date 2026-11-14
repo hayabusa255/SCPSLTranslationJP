@@ -25,14 +25,14 @@ SCPスポーン設定
 グローバルバッジ表示設定
 ローカルバッジ表示設定
 SCPとしてスポーンしない
-有効にすると、SCPとしてスポーンできなくなります。ただし、無効に設定しているプレイヤーが十分に居ないとき、SCPとしてスポーンする可能性があります。
+有効にすると、SCPとしてスポーンできなくなります。ただし、SCPを希望しているプレイヤーが十分に居ないときは、SCPとしてスポーンする可能性があります。
 無効
 有効
-Russia Connectivity Relay Settings
-Gameplay Hints
-Human Hints
-SCP Hints
-First-Time Hints
-Repeating Hints
-Reset Hint Memory
-Hints
+ロシア向け接続リレー設定
+ゲームプレイヒント
+人間向けヒント
+SCP向けヒント
+初回ヒント
+繰り返しヒント
+ヒントの記憶をリセット
+ヒント

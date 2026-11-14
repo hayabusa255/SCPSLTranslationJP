@@ -6,7 +6,7 @@
 プリセット
 ワークステーション - <color=#c00>オフライン</color>
 <color=#ccc>SITE-02 銃器改造システム</color> - スタンバイモード\n<size=39>画面にふれて起動 <color=#ccc>担当者専用</color></size>
-ようこそ!
+ようこそ！
 ワークステーションを起動しています
 ワークステーション - <color=#0c0>準備完了</color>
 <size=52><color=#ccc>SITE-02 銃器改造システム</color> - 準備完了</size>\n<size=42><color=#ccc>武器を装備してアタッチメントを変更してください</color></size>
@@ -15,4 +15,4 @@
 詳細を開く
 詳細を閉じる
 [Attachment] カスタマイズ
-[Key] で アタッチメントを編集
+[Key]でアタッチメントを編集

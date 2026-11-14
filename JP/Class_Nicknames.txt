@@ -25,7 +25,7 @@
 -
 ピンク・フラミンゴ
 ピンク・フラミンゴ
-ピンク・フラミンゴ
-Blue Flamingos
-Green Flamingos
-Polymorphic Humanoid
+ゾンビ・フラミンゴ
+青フラミンゴ
+緑フラミンゴ
+変幻自在の人型

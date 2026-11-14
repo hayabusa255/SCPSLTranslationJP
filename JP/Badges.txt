@@ -3,156 +3,156 @@ Northwood CIO
 Northwood COO
 Northwood コミュニティディレクター
 Northwood Discordマネージャー
-Northwood 重役補佐
+Northwood 役員補佐
 Northwood フィードバックマネージャー
-Northwood 人事担当者
+Northwood 人事
 Northwood 人事ディレクター
-Northwood マーケティングプラットフォームマネージャー
+Northwood マーケティングマネージャー
 Northwood スタッフ
 Northwood フォーラムモデレーションマネージャー
 Northwood システム管理者
-Northwood ウィキマネージャー
-SCP:SL 美術マネージャー
-SCP:SL 美術監督者
-SCP:SL アーティスト
-SCP:SL サーバープログラマー
-SCP:SL サーバープログラムマネージャー
-SCP:SL 開発者
+Northwood Wikiマネージャー
+Northwood 美術マネージャー
+Northwood 美術スーパーバイザー
+Northwood アーティスト
+Northwood バックエンドプログラマー
+Northwood バックエンドプログラミングマネージャー
+Northwood 開発者
 SCP:SL イベント優勝者
-SCP:SL フルスタックプログラマー
-SCP:SL ゲームデザイナー
-SCP:SL ゲームプレイプログラマー
-SCP:SL 安全・コンプライアンスマネージャー　
-SCP:SL 安全・コンプライアンス専門家
-SCP:SL リードゲームデザイナー
-SCP:SL リードゲームプレイプログラマー
-SCP:SL レベルデザイナー
+Northwood フルスタックプログラマー
+Northwood ゲームデザイナー
+Northwood ゲームプレイプログラマー
+Northwood 安全・コンプライアンスマネージャー
+Northwood 安全・コンプライアンススペシャリスト
+Northwood リードゲームデザイナー
+Northwood リードゲームプレイプログラマー
+Northwood レベルデザイナー
 SCP:SL パートナー
-SCP:SL パトロン支援者
-SCP:SL 品質保証マネージャー
-SCP:SL サウンドデザイナー
-SCP:SL ゲームディレクター
-SCP:SL 公式サーバーマネージャー
+SCP:SL Patreon支援者
+Northwood 品質保証マネージャー
+Northwood サウンドデザイナー
+Northwood ゲームディレクター
+Northwood 公式サーバーマネージャー
 Northwood 検証スペシャリスト
-SCP:SL アンチチート開発者
-SCP:SL 品質保証テスター
-SCP:SL 品質保証スーパーバイザー
-SCP:SL Twitch加入者
-SCP:SL オーディオマネージャー
-Northwood フィードバック・コーディネーター
+Northwood アンチチート開発者
+Northwood 品質保証テスター
+Northwood 品質保証スーパーバイザー
+SCP:SL Twitchサブスク登録者
+Northwood オーディオマネージャー
+Northwood フィードバックコーディネーター
 Northwood 検証スーパーバイザー
-SCP:SL 公式サーバースーパーバイザー
+Northwood 公式サーバースーパーバイザー
 Northwood フィードバックスーパーバイザー
 Northwood 検証マネージャー
-Northwood ボットマネージャー
+Northwood Botマネージャー
 Northwood 翻訳マネージャー
-SCP:SL ゲームデザインマネージャー
-SCP:SL アニメーター
+Northwood ゲームデザインマネージャー
+Northwood アニメーター
 Northwood 広報ディレクター
 SCP:SL コミュニティヘルパー
 SCP:SL 声優
 SCP:SL 財団支援者
 Northwood スタジオディレクター
-SCP:SL アシスタントゲームディレクター 
+Northwood アシスタントゲームディレクター
 Northwood 技術サポートスーパーバイザー
 Northwood 技術サポートマネージャー
 Northwood システム管理マネージャー
-SCP:SL ストーリーデザイナー
-Northwood マーケティングプラットフォーム スーパーバイザー
-SCP:SL 音響技術リード
+Northwood ストーリーデザイナー
+Northwood マーケティングスーパーバイザー
+Northwood オーディオテクニカルリード
 Northwood 翻訳コーディネーター
 Northwood セキュリティディレクター
 Northwood セキュリティアドバイザー
-Northwood アシスタントセキュリティディレクター
-広報部門アシスタントディレクター
-コミュニティ管理部門アシスタントディレクター
-人事部アシスタントディレクター
-SCP:SL ゲームデザイン監督
-SCP:SL レベルデザイナー監督
-SCP:SL 安全・コンプライアンス監督
-Northwood システム管理監督
-Northwood Web開発監督 
+Northwood セキュリティアシスタントディレクター
+Northwood 広報アシスタントディレクター
+Northwood コミュニティアシスタントディレクター
+Northwood 人事アシスタントディレクター
+Northwood ゲームデザインスーパーバイザー
+Northwood レベルデザインスーパーバイザー
+Northwood 安全・コンプライアンススーパーバイザー
+Northwood システム管理スーパーバイザー
+Northwood Web開発スーパーバイザー
 Northwood Web開発マネージャー
 Northwood コンテンツスーパーバイザー
 Northwood コンテンツマネージャー
-Northwood Patreon スーパーバイザー
-Northwood Patreon マネージャー
-Northwood ソーシャルメディアスーパーバイザー
-Northwood ソーシャルメディアマネージャー 
+Northwood Patreonスーパーバイザー
+Northwood Patreonマネージャー
+Northwood SNSスーパーバイザー
+Northwood SNSマネージャー
 Northwood 翻訳スーパーバイザー
 Northwood フォーラムモデレーションスーパーバイザー
-SCP:SL レベルデザインマネージャー
-SCP:SL アンチチートマネージャー
-SCP:SL アンチチートスーパーバイザー
-Northwood ウィキ スーパーバイザー
-SCP:SL API チームリーダー
-SCP:SL API メンテナー
-SCP:SL バグレポート貢献者
-Event Winner (Clip Contest 2023)
-FanExpo Chicago 2025 Attendee
-HDCC 2025 Attendee
-Localized Server Host – Brazil
-Localized Server Host – Czechoslovakia
-Localized Server Host – Finland
-Localized Server Host – France
-Localized Server Host – Germany
-Localized Server Host – Hungary
-Localized Server Host – Israel
-Localized Server Host – Italy
-Localized Server Host – Japan
-Localized Server Host – Korea
-Localized Server Host – Poland
-Localized Server Host – Russia
-Localized Server Host – Ukraine
-Localized Server Host – Yugoslavia
-Northwood Discord Supervisor
-Northwood Environmental Artist
-Northwood Hard Surface Modeler
-Northwood Human Resources Representative
-Northwood Human Resources Coordinator
-Northwood Manager
-Northwood AC-HWID Specialist
-Northwood Marketing Specialist
-Northwood Partner Liaison
-Northwood Programmer
-Northwood Promotional Media Specialist
-Northwood Senior Game Designer
-Northwood Forum Manager
-Northwood Technical Game Designer
-Northwood Translator
-Northwood UI Artist
-Northwood VFX Artist
-Official Server Host
-PAX AUS 2024 Attendee
-SCP:SL Community Tournament Organizer
-SCP:SL Event Winner (Fanart Contest 2018)
-SCP:SL Event Winner (Foxt PVP Tournament)
-SCP:SL Event Winner (TinyyTonyy Parkour)
-SCP:SL Event Winner(Sticker Competition)
-SCP:SL Event Winner (Infernal Battles 2023)
-SCP:SL Event Winner (Maze Madness 2023)
-SCP:SL Event Winner (Jailbird Brawl 2023)
-SCP:SL Event Winner (scpWyatt CTF Tournament)
-SCP:SL Event Winner (Art Contest 2024)
-SCP:SL Foundation Investor (Pro Troller)
-SCP:SL Sponsor
-TwitchCon 2019 Attendee
-Northwood Bot Engineer
-Northwood Bot Engineering Manager
-Northwood Content Editor
-Northwood Discord Moderator
-Northwood Forum Moderator
-Northwood Official Server Moderator
-Northwood Official Server Senior Moderator
-Northwood Officials Discord Moderator
-Northwood Officials Discord Supervisor
-Northwood Officials Discord Manager
-Northwood Patreon Representative
-Northwood Programming Team Lead
-Northwood Programming Supervisor
-Northwood Social Media Specialist
-Northwood Tech Support Specialist
-Northwood Web Developer
-Northwood Wiki Coordinator
-Northwood Wiki Translator
-SCP:SL Security Contributor
+Northwood レベルデザインマネージャー
+Northwood アンチチートマネージャー
+Northwood アンチチートスーパーバイザー
+Northwood Wikiスーパーバイザー
+Northwood APIチームリード
+Northwood APIメンテナー
+SCP:SL バグ報告貢献者
+イベント優勝者 (Clip Contest 2023)
+FanExpo Chicago 2025 参加者
+HDCC 2025 参加者
+地域サーバーホスト – ブラジル
+地域サーバーホスト – チェコスロバキア
+地域サーバーホスト – フィンランド
+地域サーバーホスト – フランス
+地域サーバーホスト – ドイツ
+地域サーバーホスト – ハンガリー
+地域サーバーホスト – イスラエル
+地域サーバーホスト – イタリア
+地域サーバーホスト – 日本
+地域サーバーホスト – 韓国
+地域サーバーホスト – ポーランド
+地域サーバーホスト – ロシア
+地域サーバーホスト – ウクライナ
+地域サーバーホスト – ユーゴスラビア
+Northwood Discordスーパーバイザー
+Northwood 環境アーティスト
+Northwood ハードサーフェスモデラー
+Northwood 人事担当者
+Northwood 人事コーディネーター
+Northwood マネージャー
+Northwood AC-HWIDスペシャリスト
+Northwood マーケティングスペシャリスト
+Northwood パートナー担当者
+Northwood プログラマー
+Northwood プロモーションメディアスペシャリスト
+Northwood シニアゲームデザイナー
+Northwood フォーラムマネージャー
+Northwood テクニカルゲームデザイナー
+Northwood 翻訳者
+Northwood UIアーティスト
+Northwood VFXアーティスト
+公式サーバーホスト
+PAX AUS 2024 参加者
+SCP:SL コミュニティトーナメント主催者
+SCP:SL イベント優勝者 (Fanart Contest 2018)
+SCP:SL イベント優勝者 (Foxt PVP Tournament)
+SCP:SL イベント優勝者 (TinyyTonyy Parkour)
+SCP:SL イベント優勝者 (Sticker Competition)
+SCP:SL イベント優勝者 (Infernal Battles 2023)
+SCP:SL イベント優勝者 (Maze Madness 2023)
+SCP:SL イベント優勝者 (Jailbird Brawl 2023)
+SCP:SL イベント優勝者 (scpWyatt CTF Tournament)
+SCP:SL イベント優勝者 (Art Contest 2024)
+SCP:SL 財団支援者 (Pro Troller)
+SCP:SL スポンサー
+TwitchCon 2019 参加者
+Northwood Botエンジニア
+Northwood Botエンジニアリングマネージャー
+Northwood コンテンツ編集者
+Northwood Discordモデレーター
+Northwood フォーラムモデレーター
+Northwood 公式サーバーモデレーター
+Northwood 公式サーバーシニアモデレーター
+Northwood 公式Discordモデレーター
+Northwood 公式Discordスーパーバイザー
+Northwood 公式Discordマネージャー
+Northwood Patreon担当者
+Northwood プログラミングチームリード
+Northwood プログラミングスーパーバイザー
+Northwood SNSスペシャリスト
+Northwood 技術サポートスペシャリスト
+Northwood Web開発者
+Northwood Wikiコーディネーター
+Northwood Wiki翻訳者
+SCP:SL セキュリティ貢献者

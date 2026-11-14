@@ -1,4 +1,4 @@
-Continue
-Quit Game
-Cancel
-Accept
+続行
+ゲームを終了
+キャンセル
+同意
