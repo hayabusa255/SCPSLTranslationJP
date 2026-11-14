@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="src/SCPSL日本語化インストーラー/SCPSL日本語化インストーラー.csproj" />
   <Project Path="src/TranslationChecker/TranslationChecker.csproj" />
+  <Project Path="src/TranslationEditor/TranslationEditor.csproj" />
 </Solution>

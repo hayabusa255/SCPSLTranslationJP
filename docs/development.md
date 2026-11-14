@@ -10,6 +10,7 @@
 | `Directory.Build.props` | 共通設定（ImplicitUsings / Nullable） |
 | `src/SCPSL日本語化インストーラー/` | 日本語化インストーラー（リリースでは `SCPSL.exe` として配布） |
 | `src/TranslationChecker/` | 翻訳チェッカー（旧 `translationchecker.exe` を ILSpy で復元したもの） |
+| `src/TranslationEditor/` | 翻訳エディタ（en と JP を並べて JP を編集する、ローカル専用の Web ツール） |
 
 ## ビルド
 
@@ -41,3 +42,16 @@ dotnet run --project src/TranslationChecker -c Release [リポジトリのルー
 ```sh
 dotnet publish src/TranslationChecker -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true
 ```
+
+## 翻訳エディタ
+
+`en/` と `JP/` を左右に並べて、ブラウザ上で JP を編集します。未翻訳の行、プレースホルダーの不一致、未保存の行が強調されます（プレースホルダーの判定は翻訳チェッカーと同じ考え方）。
+
+```sh
+dotnet run --project src/TranslationEditor [リポジトリのルート] [--port 5080] [--no-browser]
+```
+
+- ルートを省略すると、カレントディレクトリから `en` と `JP` を両方持つフォルダを上にたどって探します。
+- `http://localhost:5080` で localhost のみ待ち受けし、起動時に既定のブラウザを開きます（`--no-browser` で無効化、ポートは `--port` か環境変数 `TRANSLATION_EDITOR_PORT`）。
+- 保存は Ctrl+S または保存ボタン。JP ファイルの BOM・改行コード・末尾改行の有無は保たれます。新規ファイルは BOM なし LF で作られます。
+- 1行は1つの `<textarea>` で、Enter では改行できません（JP は行番号で en と対応するため）。
