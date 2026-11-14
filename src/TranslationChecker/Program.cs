@@ -8,7 +8,7 @@ namespace TranslationChecker;
 
 internal class Program
 {
-    private const int MaxLinesPerRequest = 200;
+    private const int MaxLinesPerRequest = 400;
     private const int MaxRetries = 3;
     private const int MaxRetryAfterSeconds = 60;
     private const int InitialDelayMs = 500;
@@ -23,26 +23,39 @@ internal class Program
     private static readonly string GeminiEndpoint =
         $"https://generativelanguage.googleapis.com/v1beta/models/{GeminiModel}:generateContent";
 
+    private const string GuidelinesRelativePath = "docs/translation-review-guidelines.md";
+
     private const string ReviewInstructions =
-        "You are an expert localization reviewer. Review the Japanese translations (JP) of English (EN) UI/subtitle strings " +
-        "from the game SCP: Secret Laboratory. Check accuracy, nuance, naturalness and context. " +
-        "Placeholders such as {0} or %s, rich-text tags such as <color=...>, and \\n must be preserved; if missing or altered, report CRITICAL. " +
-        "Return ONLY lines with problems (omit lines that are fine; return [] if none). " +
-        "severity: CRITICAL = wrong meaning or major grammar errors; WARNING = awkward or slightly unnatural. " +
-        "message: brief description in Japanese. id: the line id.";
+        "You are an expert localization reviewer for Japanese (JP) translations of English (EN) strings from the game SCP: Secret Laboratory. " +
+        "Return ONLY a JSON array of problems (return [] if there are none). " +
+        "Each file is listed with its lines as \"L<number> EN\" / \"L<number> JP\" pairs. Only review lines whose JP is a translation; " +
+        "lines whose JP is \"(untranslated)\" are context only and must not be reported. " +
+        "Placeholders and rich-text tags are checked separately; never report them. " +
+        "Output fields: file = the file name from the \"## \" heading; line = the number after L; " +
+        "severity = CRITICAL or WARNING; message = a brief description of the problem.";
 
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     private static readonly HttpClient httpClient = new();
 
     private static string geminiApiKey = "";
+    private static string reviewGuidelines = "";
     private static int currentDelayMs = InitialDelayMs;
     private static int consecutiveSuccesses = 0;
 
-    // One translated line to review. Id is local to a single batch.
-    private sealed record ReviewLine(int Id, FileCheckResult File, int LineNumber, string En, string Jp);
+    // Everything known about one file: the aligned lines (for context) and the translated pairs (to review).
+    private sealed record CheckedFile(
+        FileCheckResult Result,
+        List<ContextLine> Lines,
+        List<(int LineNumber, string En, string Jp)> Pairs);
 
-    private sealed record AiIssue(int Id, string Severity, string Message);
+    // A non-empty EN line with its JP counterpart. Jp is "" when missing or identical to EN.
+    private sealed record ContextLine(int LineNumber, string En, string Jp, bool Translated);
+
+    // The part of one file sent in a batch.
+    private sealed record Segment(CheckedFile File, List<ContextLine> Lines);
+
+    private sealed record AiIssue(string File, int Line, string Severity, string Message);
 
     private static async Task Main(string[] args)
     {
@@ -74,6 +87,11 @@ internal class Program
             }
             else
             {
+                string guidelinesPath = Path.Combine(rootPath, GuidelinesRelativePath);
+                if (File.Exists(guidelinesPath))
+                {
+                    reviewGuidelines = (await File.ReadAllTextAsync(guidelinesPath, Encoding.UTF8)).Trim();
+                }
                 Console.WriteLine(await CheckTranslations(enPath, jpPath));
             }
         }
@@ -105,7 +123,7 @@ internal class Program
         HashSet<string> jpFiles = Directory.GetFiles(jpPath, "*.txt").Select(f => Path.GetFileName(f)).ToHashSet();
         int totalFiles = enFiles.Count;
         List<string> missingFiles = new();
-        ConcurrentBag<(FileCheckResult Result, List<(int LineNumber, string En, string Jp)> Pairs)> fileResults = new();
+        ConcurrentBag<CheckedFile> fileResults = new();
 
         await Task.WhenAll(enFiles.OrderBy(x => x).Select(async fileName =>
         {
@@ -124,8 +142,7 @@ internal class Program
             fileResults.Add(await CheckSingleFile(fileName, enFilePath, jpFilePath));
         }));
 
-        List<(FileCheckResult Result, List<(int LineNumber, string En, string Jp)> Pairs)> ordered =
-            fileResults.OrderBy(r => r.Result.FileName).ToList();
+        List<CheckedFile> ordered = fileResults.OrderBy(r => r.Result.FileName).ToList();
 
         List<string> aiErrors = new();
         if (!string.IsNullOrEmpty(geminiApiKey))
@@ -192,7 +209,7 @@ internal class Program
 
         return sb.ToString();
     }
-    private static async Task<(FileCheckResult Result, List<(int LineNumber, string En, string Jp)> Pairs)> CheckSingleFile(string fileName, string enFilePath, string jpFilePath)
+    private static async Task<CheckedFile> CheckSingleFile(string fileName, string enFilePath, string jpFilePath)
     {
         FileCheckResult result = new() { FileName = fileName };
 
@@ -205,6 +222,12 @@ internal class Program
         int translatedCount = 0;
         List<string> fileIssues = new();
         List<(int LineNumber, string En, string Jp)> translationPairs = new();
+        List<ContextLine> contextLines = new();
+
+        if (enLines.Count != jpLines.Count)
+        {
+            fileIssues.Add($"[ ] Line count differs (en {enLines.Count} / JP {jpLines.Count}) — lines may be misaligned");
+        }
 
         for (int i = 0; i < enLines.Count; i++)
         {
@@ -219,15 +242,22 @@ internal class Program
             if (string.IsNullOrEmpty(jp))
             {
                 fileIssues.Add($"[ ] Line {i + 1}: Missing translation for '{TruncateText(en, 30)}'");
+                contextLines.Add(new ContextLine(i + 1, en, "", false));
             }
             else if (en == jp)
             {
                 fileIssues.Add($"[ ] Line {i + 1}: Untranslated '{TruncateText(en, 30)}'");
+                contextLines.Add(new ContextLine(i + 1, en, "", false));
             }
             else
             {
                 translatedCount++;
                 translationPairs.Add((i + 1, en, jp));
+                contextLines.Add(new ContextLine(i + 1, en, jp, true));
+                if (PlaceholderChecker.Compare(en, jp) is { } placeholderIssue)
+                {
+                    fileIssues.Add($"[ ] Line {i + 1}: {placeholderIssue}");
+                }
             }
         }
 
@@ -236,7 +266,7 @@ internal class Program
 
 
         result.Issues = fileIssues;
-        return (result, translationPairs);
+        return new CheckedFile(result, contextLines, translationPairs);
     }
 
     private static async Task<List<string>> ReadFileLines(string filePath)
@@ -260,28 +290,66 @@ internal class Program
         return text;
     }
 
-    // Reviews every translated line across all files in as few requests as possible.
+    // Splits files into batches of whole files (up to MaxLinesPerRequest lines each, counting all lines sent).
+    // A file with more translated lines than that is split into chunks of MaxLinesPerRequest lines.
+    private static List<List<Segment>> BuildBatches(List<CheckedFile> files)
+    {
+        List<List<Segment>> batches = new();
+        List<Segment> current = new();
+        int currentLines = 0;
+
+        void Flush()
+        {
+            if (current.Count > 0)
+            {
+                batches.Add(current);
+                current = new();
+                currentLines = 0;
+            }
+        }
+
+        foreach (CheckedFile file in files.Where(f => f.Pairs.Count > 0))
+        {
+            if (file.Pairs.Count > MaxLinesPerRequest)
+            {
+                Flush();
+                for (int i = 0; i < file.Lines.Count; i += MaxLinesPerRequest)
+                {
+                    List<ContextLine> chunk = file.Lines.Skip(i).Take(MaxLinesPerRequest).ToList();
+                    if (chunk.Any(l => l.Translated))
+                    {
+                        batches.Add(new List<Segment> { new(file, chunk) });
+                    }
+                }
+                continue;
+            }
+
+            if (currentLines + file.Lines.Count > MaxLinesPerRequest)
+            {
+                Flush();
+            }
+            current.Add(new Segment(file, file.Lines));
+            currentLines += file.Lines.Count;
+        }
+        Flush();
+        return batches;
+    }
+
+    // Reviews every translated line in as few requests as possible.
     // AI issues are appended to each file's Issues; returns one error message per failed batch.
-    private static async Task<List<string>> ReviewWithGemini(
-        List<(FileCheckResult Result, List<(int LineNumber, string En, string Jp)> Pairs)> files)
+    private static async Task<List<string>> ReviewWithGemini(List<CheckedFile> files)
     {
         List<string> errors = new();
-        var allLines = files
-            .SelectMany(f => f.Pairs.Select(p => (f.Result, p.LineNumber, p.En, p.Jp)))
-            .ToList();
+        List<List<Segment>> batches = BuildBatches(files);
 
-        int batchNumber = 0;
-        for (int start = 0; start < allLines.Count; start += MaxLinesPerRequest)
+        for (int b = 0; b < batches.Count; b++)
         {
-            batchNumber++;
-            List<ReviewLine> batch = allLines.Skip(start).Take(MaxLinesPerRequest)
-                .Select((l, i) => new ReviewLine(i + 1, l.Result, l.LineNumber, l.En, l.Jp))
-                .ToList();
-
+            List<Segment> batch = batches[b];
             string error;
             try
             {
-                (string? text, error) = await SendBatch(BuildPrompt(batch));
+                string prompt = BuildPrompt(batch);
+                (string? text, error) = await SendBatch(prompt);
                 if (text is not null)
                 {
                     try
@@ -301,10 +369,10 @@ internal class Program
 
             if (!string.IsNullOrEmpty(error))
             {
-                errors.Add($"Batch {batchNumber} ({batch[0].File.FileName} … {batch[^1].File.FileName}): {error}");
+                errors.Add($"Batch {b + 1}/{batches.Count} ({batch[0].File.Result.FileName} … {batch[^1].File.Result.FileName}): {error}");
             }
 
-            if (start + MaxLinesPerRequest < allLines.Count)
+            if (b + 1 < batches.Count)
             {
                 await Task.Delay(currentDelayMs);
             }
@@ -312,23 +380,25 @@ internal class Program
         return errors;
     }
 
-    // Groups the lines under "## File:" headers so the model has file context without repeating names per line.
-    private static string BuildPrompt(List<ReviewLine> batch)
+    // Every non-empty EN line of each file is sent so the model sees the surrounding context.
+    private static string BuildPrompt(List<Segment> batch)
     {
         StringBuilder prompt = new();
         prompt.AppendLine(ReviewInstructions);
-        FileCheckResult? currentFile = null;
-        foreach (ReviewLine line in batch)
+        if (reviewGuidelines.Length > 0)
         {
-            if (!ReferenceEquals(line.File, currentFile))
+            prompt.AppendLine();
+            prompt.AppendLine(reviewGuidelines);
+        }
+        foreach (Segment segment in batch)
+        {
+            prompt.AppendLine();
+            prompt.AppendLine($"## {segment.File.Result.FileName}");
+            foreach (ContextLine line in segment.Lines)
             {
-                currentFile = line.File;
-                prompt.AppendLine();
-                prompt.AppendLine($"## File: {currentFile.FileName}");
+                prompt.AppendLine($"L{line.LineNumber} EN: {line.En}");
+                prompt.AppendLine($"L{line.LineNumber} JP: {(line.Translated ? line.Jp : "(untranslated)")}");
             }
-            prompt.AppendLine($"{line.Id}");
-            prompt.AppendLine($"EN: {line.En}");
-            prompt.AppendLine($"JP: {line.Jp}");
         }
         return prompt.ToString();
     }
@@ -354,11 +424,12 @@ internal class Program
                         type = "OBJECT",
                         properties = new
                         {
-                            id = new { type = "INTEGER" },
+                            file = new { type = "STRING" },
+                            line = new { type = "INTEGER" },
                             severity = new { type = "STRING", format = "enum", @enum = new[] { "CRITICAL", "WARNING" } },
                             message = new { type = "STRING" }
                         },
-                        required = new[] { "id", "severity", "message" }
+                        required = new[] { "file", "line", "severity", "message" }
                     }
                 }
             }
@@ -475,21 +546,23 @@ internal class Program
         return JsonSerializer.Deserialize<List<AiIssue>>(text, JsonOptions) ?? new List<AiIssue>();
     }
 
-    // Maps batch-local ids back to (file, line) and appends the issues in the report's usual format.
-    private static void ApplyAiIssues(List<ReviewLine> batch, List<AiIssue> aiIssues)
+    // Maps (file, line) back to the translated lines of this batch and appends the issues in the report's usual format.
+    // Issues for other files or for lines that are not translated lines of this batch are ignored.
+    private static void ApplyAiIssues(List<Segment> batch, List<AiIssue> aiIssues)
     {
-        Dictionary<int, ReviewLine> byId = batch.ToDictionary(l => l.Id);
-        foreach (AiIssue issue in aiIssues.OrderBy(i => i.Id))
+        Dictionary<string, Segment> byFile = batch.ToDictionary(s => s.File.Result.FileName);
+        foreach (AiIssue issue in aiIssues.OrderBy(i => i.File, StringComparer.Ordinal).ThenBy(i => i.Line))
         {
-            if (!byId.TryGetValue(issue.Id, out ReviewLine? line))
+            if (issue.File is null || !byFile.TryGetValue(issue.File, out Segment? segment)
+                || !segment.Lines.Any(l => l.Translated && l.LineNumber == issue.Line))
             {
                 continue;
             }
 
             string text = issue.Severity.Equals("CRITICAL", StringComparison.OrdinalIgnoreCase)
-                ? $"[ ] Line {line.LineNumber}: ❌ (Gemini) CRITICAL: {issue.Message}"
-                : $"[ ] Line {line.LineNumber}: ⚠️ (Gemini) WARNING: {issue.Message}";
-            line.File.Issues.Add(text);
+                ? $"[ ] Line {issue.Line}: ❌ (Gemini) CRITICAL: {issue.Message}"
+                : $"[ ] Line {issue.Line}: ⚠️ (Gemini) WARNING: {issue.Message}";
+            segment.File.Result.Issues.Add(text);
         }
     }
 }
