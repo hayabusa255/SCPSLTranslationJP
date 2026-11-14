@@ -1,0 +1,71 @@
+name: Release
+
+on:
+  push:
+    tags: ['JP-*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'リリースを（再）作成するタグ（例: JP-Ver15.0Beta）'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - name: Check out tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Test
+        run: dotnet test SCPSLTranslationJP.slnx -c Release
+
+      - name: Create translation ZIP
+        run: |
+          cd JP
+          zip -r "../${TAG}.zip" *
+
+      - name: Publish installer (Windows)
+        run: dotnet publish "src/SCPSL日本語化インストーラー" -c Release -r win-x64 -p:InstallerRepository=${{ github.repository }} -o out/win
+
+      - name: Publish installer (Linux)
+        run: dotnet publish "src/SCPSL日本語化インストーラー" -c Release -r linux-x64 -p:InstallerRepository=${{ github.repository }} -o out/linux
+
+      - name: Prepare release assets
+        run: |
+          cp out/win/SCPSL.exe SCPSL.exe
+          cp out/linux/SCPSL SCPSL-linux-x64
+
+      - name: Write release notes
+        run: |
+          TAG="$TAG" REPO="${{ github.repository }}" bash .github/scripts/release-notes.sh > notes.md
+
+      - name: Create or update release
+        run: |
+          title="${TAG#JP-}日本語翻訳"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${TAG}.zip" SCPSL.exe SCPSL-linux-x64 --clobber
+            gh release edit "$TAG" --title "$title" --notes-file notes.md --latest
+          else
+            gh release create "$TAG" "${TAG}.zip" SCPSL.exe SCPSL-linux-x64 --title "$title" --notes-file notes.md --verify-tag --latest
+          fi
