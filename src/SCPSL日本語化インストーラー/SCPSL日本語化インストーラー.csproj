@@ -2,8 +2,25 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>SCPSL</AssemblyName>
+    <RootNamespace>SCPSLInstaller</RootNamespace>
+    <Version>2.0.0</Version>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <!-- 既定の取得元リポジトリ（owner/name）。リリース workflow が -p:InstallerRepository=<ビルドしたリポジトリ> で上書きする -->
+    <InstallerRepository Condition="'$(InstallerRepository)' == ''">hayabusa255/SCPSLTranslationJP</InstallerRepository>
+  </PropertyGroup>
+
+  <!-- 単一ファイル発行の設定。RuntimeIdentifier 指定時（publish -r）のみ有効にして、テストからの ProjectReference を妨げない -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,9 +28,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Octokit" Version="13.0.1" />
-    <PackageReference Include="ValveKeyValue" Version="0.11.0.378" />
+    <AssemblyMetadata Include="InstallerRepository" Value="$(InstallerRepository)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Installer.Tests" />
   </ItemGroup>
 
 </Project>

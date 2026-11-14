@@ -1,374 +1,237 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.IO.Compression;
-using System.Net.Http;
-using System.Reflection;
-using System.Reflection.PortableExecutable;
-using System.Security.Principal;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using Microsoft.Win32;
-using Octokit;
+using System.Text;
 
-using Newtonsoft.Json;
+namespace SCPSLInstaller;
 
-using System.Reflection.Metadata.Ecma335;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using ValveKeyValue;
-using System.Net.NetworkInformation;
-
-class Program
+internal static class Program
 {
-    private static readonly string GitHubUrl = "https://github.com/hayabusa255/SCPSLTranslationJP/releases/latest";
-    private static readonly string DownloadUrlTemplate = "https://github.com/hayabusa255/SCPSLTranslationJP/releases/download/{0}/{1}.zip";
-
-    private static readonly GitHubClient GitHubClient = new(new ProductHeaderValue("CsharpApp"));
-
-
-    static async Task Main(string[] args)
+    private static async Task<int> Main(string[] args)
     {
+        try { Console.OutputEncoding = Encoding.UTF8; } catch { }
 
-        if (!IsAdministrator())
+        var (opts, error) = Options.Parse(args);
+        bool pause = ConsoleUi.ShouldPause(opts.NoPause);
+
+        int code;
+        using var cts = new CancellationTokenSource();
+        ConsoleCancelEventHandler onCancel = (_, e) =>
         {
-
-            try
-            {
-
-
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = Process.GetCurrentProcess().MainModule.FileName,
-                    UseShellExecute = true,
-                    Verb = "RunAs",
-                });
-
-
-                Environment.Exit(0);
-            } catch (Exception ex)
-            {
-                Log.Error("管理者権限での実行が必要です。アプリケーションを再起動し、管理者として実行してください。 キーを押して終了します。");
-                Console.ReadKey();
-                Environment.Exit(1);
-            }
-
-        }
-           
-        
-        try
-        {
-            // 最新のリリースタグを取得
-            string latestTag = await GetLatestReleaseTag();
-            if (string.IsNullOrEmpty(latestTag))
-            {
-                Log.Error("最新バージョンのタグが取得できませんでした。");
-                return;
-            }
-            if(Directory.Exists(GetDirectoryAsync().Result) == false)
-            {
-                Log.Error("SCP: Secret Laboratoryがインストールされていません。インストール後もう一度実行してください。\nキーを押して終了してください。");
-                Console.ReadKey();
-                return;
-            }
-            if (Directory.Exists(Path.Combine(GetDirectoryAsync().Result, latestTag)))
-            {
-                Log.Info($"すでに最新版の日本語化ファイルがインストールされています。キーを押して終了してください。");
-                Console.ReadKey();
-            }
-            else
-            {
-
-                DeleteOldTranslations(latestTag);
-
-                string downloadUrl = string.Format(DownloadUrlTemplate, latestTag, latestTag);
-
-
-                string zipFilePath = Path.Combine(Path.GetTempPath(), $"{latestTag}.zip");
-
-                Log.Info($"{latestTag}.zipをダウンロードします。");
-                await DownloadFileAsync(downloadUrl, zipFilePath);
-
-
-                string extractPath = Path.Combine(GetDirectoryAsync().Result, latestTag);
-
-
-
-                if (!Directory.Exists(extractPath))
-                {
-                    Directory.CreateDirectory(extractPath);
-                }
-                Log.Info($"{latestTag}.zipを{extractPath}に展開します。");
-                // ZIPファイルを解凍
-                await ExtractZipFileWithProgress(zipFilePath, extractPath);
-
-                Log.Info("日本語化インストールが完了しました。キーを押して終了してください。");
-                Console.ReadKey();
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"エラーが発生しました: {ex.Message}");
-        }
-    }
-
-    private static async Task<string> GetLatestReleaseTag()
-    {
-        using (HttpClient client = new HttpClient())
-        {
-            client.DefaultRequestHeaders.Add("User-Agent", "C# Application");
-            HttpResponseMessage response = await client.GetAsync(GitHubUrl);
-            if (response.IsSuccessStatusCode)
-            {
-                string responseBody = await response.Content.ReadAsStringAsync();
-                string tag = ParseLatestReleaseTag(responseBody);
-                return tag;
-            }
-        }
-        return null;
-    }
-    public static bool IsAdministrator()
-    {
-        System.Security.Principal.WindowsIdentity identity
-            = System.Security.Principal.WindowsIdentity.GetCurrent();
-        System.Security.Principal.WindowsPrincipal principal
-            = new System.Security.Principal.WindowsPrincipal(identity);
-        return principal.IsInRole(System.Security.Principal.WindowsBuiltInRole.Administrator);
-    }
-    private static string ParseLatestReleaseTag(string responseBody)
-    {
-        // HTMLから最新バージョンのタグ名をパースする（適宜修正が必要）
-        // 例：<a href="/hayabusa255/SCPSLTranslationJP/releases/tag/v1.2.3"> の "v1.2.3" を抽出
-        const string tagPrefix = "/hayabusa255/SCPSLTranslationJP/releases/tag/";
-        int tagStartIndex = responseBody.IndexOf(tagPrefix) + tagPrefix.Length;
-        int tagEndIndex = responseBody.IndexOf("\"", tagStartIndex);
-        if (tagStartIndex > tagPrefix.Length && tagEndIndex > tagStartIndex)
-        {
-            return responseBody.Substring(tagStartIndex, tagEndIndex - tagStartIndex);
-        }
-        return null;
-    }
-    private static async Task<string> GetDirectoryAsync()
-    {
-        string steamPath = null;
-        try
-        {
-            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\WOW6432Node\Valve\Steam"))
-            {
-                if (key != null)
-                {
-                    steamPath = key.GetValue("InstallPath") as string;
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"Error retrieving Steam path: {ex.Message}");
-            return null;
-        }
-        try
-        {
-
-            string gamePath = SteamLibrary.GetLibraryFolders(steamPath);
-          
-
-            if (!string.IsNullOrEmpty(gamePath))
-            {
-
-                return gamePath + "/steamapps/common/SCP Secret Laboratory/Translations";
-            }
-            else
-            {
-                return null;
-            }
-        }
-        catch (FileNotFoundException ex)
-        {
-            Log.Error(ex.Message);
-            return null;
+            e.Cancel = true;
+            try { cts.Cancel(); } catch (ObjectDisposedException) { }
         };
-        
+        Console.CancelKeyPress += onCancel;
 
-
-
-    }
-
-    private static async Task DownloadFileAsync(string url, string destinationPath)
-    {
-        using (HttpClient client = new HttpClient())
+        try
         {
-            using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+            if (error is not null)
             {
-                response.EnsureSuccessStatusCode();
-                long? totalBytes = response.Content.Headers.ContentLength;
-
-                using (Stream contentStream = await response.Content.ReadAsStreamAsync(),
-                    fileStream = new FileStream(destinationPath, System.IO.FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
-                {
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-                    long totalBytesRead = 0;
-                    while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
-                    {
-                        await fileStream.WriteAsync(buffer, 0, bytesRead);
-                        totalBytesRead += bytesRead;
-
-                        if (totalBytes.HasValue)
-                        {
-                            Log.Info($"\rダウンロード中: {totalBytesRead} / {totalBytes} ({(totalBytesRead * 100 / totalBytes):0.00}%)");
-                        }
-                        else
-                        {
-                            Log.Info($"\rダウンロード中: {totalBytesRead} bytes");
-                        }
-                    }
-                }
+                ConsoleUi.Error(error);
+                ConsoleUi.Line(Options.Usage);
+                code = ExitCodes.BadArgs;
             }
-        }
-    }
-    private static async Task ExtractZipFileWithProgress(string zipFilePath, string extractPath)
-    {
-        using (ZipArchive archive = ZipFile.OpenRead(zipFilePath))
-        {
-            long totalEntries = archive.Entries.Count;
-            long currentEntry = 0;
-
-            foreach (ZipArchiveEntry entry in archive.Entries)
+            else if (opts.Help)
             {
-                string destinationPath = Path.Combine(extractPath, entry.FullName);
-                if (string.IsNullOrEmpty(entry.Name))
-                {
-                    // フォルダの場合
-                    Directory.CreateDirectory(destinationPath);
-                }
-                else
-                {
-                    // ファイルの場合
-                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
-                    entry.ExtractToFile(destinationPath, true);
-                }
-                currentEntry++;
-                Log.Info($"\r展開中: {currentEntry} / {totalEntries} ({(currentEntry * 100 / totalEntries):0.00}%)");
+                ConsoleUi.Line(Options.Usage);
+                code = ExitCodes.Success;
+            }
+            else if (opts.Version)
+            {
+                ConsoleUi.Line($"SCPSL {AppInfo.Version}");
+                code = ExitCodes.Success;
+            }
+            else
+            {
+                (code, bool relaunched) = await RunAsync(opts, args, cts.Token);
+                if (relaunched) pause = false; // 昇格した子プロセス側で待つ
             }
         }
-    }
-    private static async void DeleteOldTranslations(string lastesttag)
-    {
-        var client = GitHubClient;
-        var releases =  client.Repository.Release.GetAll("hayabusa255", "SCPSLTranslationJP").Result;
-        var oldVersions = releases.Select(r => r.TagName).ToList();
-        oldVersions.Remove(lastesttag);
-        oldVersions.Add("jp");
-
-
-        DirectoryInfo directoryInfo = new DirectoryInfo(GetDirectoryAsync().Result);
-        foreach (DirectoryInfo dir in directoryInfo.GetDirectories().Where(d => oldVersions.Contains(d.Name)))
+        catch (OperationCanceledException) when (cts.IsCancellationRequested)
         {
+            ConsoleUi.Warn("中断しました。");
+            code = ExitCodes.Cancelled;
+        }
+        catch (InstallerException ex)
+        {
+            ConsoleUi.LogException(ex);
+            ConsoleUi.Error(ex.Message);
+            ConsoleUi.Line($"詳細はログを確認してください: {ConsoleUi.LogPath}");
+            code = ExitCodes.Error;
+        }
+        catch (Exception ex)
+        {
+            ConsoleUi.LogException(ex);
+            ConsoleUi.Error($"予期しないエラーが発生しました: {ex.Message}");
+            ConsoleUi.Line($"詳細はログを確認してください: {ConsoleUi.LogPath}");
+            code = ExitCodes.Error;
+        }
+        finally
+        {
+            Console.CancelKeyPress -= onCancel;
+        }
 
-                Log.Info($"古いバージョンの翻訳ファイル{dir.Name}が見つかりました。これを削除しますか？ (Y/N): ");
-                var userInput = Console.ReadLine()?.ToString();
-                if (userInput == "y" || userInput =="Y")
-                {
-                    try
-                    {
-                        dir.Delete(true);
-                        Log.Info($"古いバージョンの翻訳ファイル '{dir.Name}' を削除しました。");
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error($"古いバージョンの翻訳ファイル '{dir.Name}' を削除できませんでした: {ex.Message}");
-                    }
-                }
-                else
-                {
-                    Log.Info("削除をスキップします。");
-                }
+        if (pause) ConsoleUi.Pause();
+        return code;
+    }
+
+    private static async Task<(int Code, bool Relaunched)> RunAsync(Options opts, string[] args, CancellationToken ct)
+    {
+        // 1. ゲームフォルダ
+        string? gameDir = ResolveGameDir(opts);
+        if (gameDir is null) return (ExitCodes.GameNotFound, false);
+        string translationsDir = Path.Combine(gameDir, "Translations");
+        ConsoleUi.Info($"ゲームフォルダ: {gameDir}");
+
+        // 2. 最新タグ
+        ConsoleUi.Info($"最新バージョンを確認しています ({opts.Repo}) ...");
+        var release = await ReleaseClient.GetLatestAsync(opts.Repo, ct);
+        string tag = release.Tag;
+        ConsoleUi.Info($"最新バージョン: {tag}");
+
+        bool installed = TranslationInstaller.IsInstalled(translationsDir, tag);
+
+        if (opts.DryRun)
+        {
+            ConsoleUi.Line();
+            ConsoleUi.Info("[dry-run] 変更は行いません。");
+            ConsoleUi.Line($"  Translations: {translationsDir} ({(Directory.Exists(translationsDir) ? "存在" : "未作成")})");
+            ConsoleUi.Line($"  ダウンロード元: {release.DownloadUrl}");
+            ConsoleUi.Line($"  最新版 {tag}: {(installed ? "インストール済み" : Directory.Exists(Path.Combine(translationsDir, tag)) ? "壊れたインストール（入れ直し対象）" : "未インストール")}");
+            if (installed && !opts.Force) ConsoleUi.Line("  → 最新版の入れ直しは不要です。");
+            var old = TranslationInstaller.FindOldJapaneseTranslations(translationsDir, tag);
+            if (old.Count == 0) ConsoleUi.Line("  削除予定の古い日本語訳: なし");
+            foreach (var o in old) ConsoleUi.Line($"  削除予定の古い日本語訳: {o.FolderName}{(o.DisplayName is null ? "" : $" ({o.DisplayName})")}");
+            return (ExitCodes.Success, false);
+        }
+
+        // 3. 書き込み権限
+        var access = TranslationInstaller.CheckWritable(translationsDir, out string? reason);
+        if (access == TranslationInstaller.WriteAccess.Failed)
+        {
+            ConsoleUi.Error($"Translations フォルダに書き込めません: {reason}");
+            ConsoleUi.Line($"  {translationsDir}");
+            return (ExitCodes.Error, false);
+        }
+        if (access == TranslationInstaller.WriteAccess.NeedsElevation)
+        {
+            if (OperatingSystem.IsWindows() && !WindowsElevation.IsAdministrator())
+            {
+                ConsoleUi.Warn("ゲームフォルダへの書き込み権限がありません。管理者として再起動します。");
+                int childCode = WindowsElevation.RelaunchElevated(args, gameDir, ct);
+                return (childCode, true);
             }
+            ConsoleUi.Error($"Translations フォルダへ書き込めません: {translationsDir}");
+            ConsoleUi.Line(OperatingSystem.IsWindows()
+                ? "管理者権限でも書き込めません。フォルダの権限やセキュリティソフトを確認してください。"
+                : "フォルダの所有者と権限を確認してください（sudo での実行はおすすめしません）。");
+            return (ExitCodes.Error, false);
         }
+
+        // 4. 取り残しの掃除と最新版判定
+        int stale = TranslationInstaller.CleanupStaleWorkDirs(translationsDir);
+        if (stale > 0) ConsoleUi.Info($"前回の作業フォルダを {stale} 件掃除しました。");
+
+        if (installed && !opts.Force)
+        {
+            ConsoleUi.Info($"すでに最新版 ({tag}) の日本語化ファイルがインストールされています。");
+            RemoveOldTranslations(translationsDir, tag, opts);
+            return (ExitCodes.Success, false);
+        }
+        if (!installed && Directory.Exists(Path.Combine(translationsDir, tag)))
+            ConsoleUi.Warn($"{tag} フォルダが不完全なため入れ直します。");
+
+        // 5. ダウンロード
+        string tempDir = Path.Combine(Path.GetTempPath(), $"SCPSLTranslationJP-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(tempDir);
+        try
+        {
+            string zipPath = Path.Combine(tempDir, tag + ".zip");
+            ConsoleUi.Info($"{tag}.zip をダウンロードします。");
+            var (report, finish) = ConsoleUi.CreateDownloadProgress();
+            try { await ReleaseClient.DownloadAsync(release.DownloadUrl, zipPath, report, ct, tag); }
+            finally { finish(); }
+
+            // 6. 展開と配置
+            ConsoleUi.Info($"展開しています: {Path.Combine(translationsDir, tag)}");
+            TranslationInstaller.InstallFromZip(translationsDir, tag, zipPath, ct);
+        }
+        finally
+        {
+            try { Directory.Delete(tempDir, true); } catch (Exception ex) { ConsoleUi.LogException(ex); }
+        }
+        ConsoleUi.Info($"{tag} のインストールが完了しました。");
+
+        // 7. 旧版の削除（新版の配置に成功した後）
+        RemoveOldTranslations(translationsDir, tag, opts);
+
+        ConsoleUi.Info("ゲーム内の設定で言語を日本語に変更し、ゲームを再起動してください。");
+        return (ExitCodes.Success, false);
     }
 
-public class Log
-{
-    public static void Info(string text)
+    private static void RemoveOldTranslations(string translationsDir, string tag, Options opts)
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Info] {text}");
-        Console.ResetColor();
-    }
-    public static void Warn(string text)
-    {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Warning] {text}");
-        Console.ResetColor();
-    }
-    public static void Error(string text)
-    {
-        Console.ForegroundColor = ConsoleColor.Red;
-        Console.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Error] {text}");
-        Console.ResetColor();
-        //エラーがコード何行目か取得
-        StackTrace stackTrace = new StackTrace();
-        StackFrame stackFrame = stackTrace.GetFrame(1);
-        MethodBase methodBase = stackFrame.GetMethod();
-        string methodName = methodBase.Name;
-        int lineNumber = stackFrame.GetFileLineNumber();
-        if (lineNumber != 0)
+        var old = TranslationInstaller.FindOldJapaneseTranslations(translationsDir, tag);
+        foreach (var o in old)
         {
-            text += $" (at {methodName}() in {stackFrame.GetFileName()}:line {lineNumber})";
-        }
-        if(File.Exists("error.log"))
-        {
-            File.AppendAllText("error.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Error] {text}\n");
-        }
-        else
-        {
-            File.WriteAllText("error.log", $"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)}] [Error] {text}\n");
-        }   
-
-    } 
-}
-public class SteamLibrary
-{
-    public static string GetLibraryFolders(string steamPath)
-    {
-        string libraryFoldersPath = Path.Combine(steamPath, "steamapps", "libraryfolders.vdf");
-
-        if (File.Exists(libraryFoldersPath))
-        {
-
+            string label = $"古い日本語訳フォルダ「{o.FolderName}」{(o.DisplayName is null ? "" : $" ({o.DisplayName})")}";
+            if (!opts.Yes && !ConsoleUi.IsInteractive)
+            {
+                ConsoleUi.Warn($"{label} が残っています。削除するには --yes を付けて実行してください。");
+                continue;
+            }
+            if (!ConsoleUi.Confirm($"{label} を削除しますか？", opts.Yes))
+            {
+                ConsoleUi.Info("削除をスキップしました。");
+                continue;
+            }
             try
             {
-                var kv = KVSerializer.Create(KVSerializationFormat.KeyValues1Text);
-                using (var stream = File.OpenRead(libraryFoldersPath))
-                {
-                    var data = kv.Deserialize(stream);
-
-
-                    foreach (var folder in data)
-                    {
-                        string path = (string)folder["path"];
-                        if(File.Exists(Path.Combine(path, "steamapps", "appmanifest_700330.acf")))
-                        {
-                            return path;
-                        }
-
-
-                    }
-                }
+                Directory.Delete(o.Path, true);
+                ConsoleUi.Info($"削除しました: {o.FolderName}");
             }
             catch (Exception ex)
             {
-                Log.Error($"エラーが発生しました: {ex.Message}");
+                ConsoleUi.LogException(ex);
+                ConsoleUi.Warn($"削除できませんでした: {o.FolderName} ({ex.Message})");
             }
         }
-        return null;
     }
 
-  
+    /// <summary>ゲームフォルダを決める。見つからなければ null（メッセージ表示済み）。</summary>
+    private static string? ResolveGameDir(Options opts)
+    {
+        if (opts.GameDir is not null)
+        {
+            string dir = SteamLocator.NormalizeUserPath(opts.GameDir);
+            if (SteamLocator.LooksLikeGameDir(dir)) return Path.GetFullPath(dir);
+            ConsoleUi.Error($"指定されたフォルダがゲームフォルダとして認識できません: {dir}（SCPSL_Data / SCPSL.exe / Translations のいずれかが必要です）");
+            return null;
+        }
 
+        var found = SteamLocator.FindGameDirs();
+        if (found.Count > 0)
+        {
+            if (found.Count > 1)
+            {
+                ConsoleUi.Warn($"ゲームフォルダが {found.Count} か所見つかりました。最初のものを使います。");
+                foreach (var f in found.Skip(1)) ConsoleUi.Line($"  他の候補: {f}");
+            }
+            return found[0];
+        }
 
+        ConsoleUi.Warn("SCP: Secret Laboratory のゲームフォルダが自動では見つかりませんでした。");
+        if (!ConsoleUi.IsInteractive)
+        {
+            ConsoleUi.Error("--game-dir でゲームフォルダを指定してください。");
+            return null;
+        }
+
+        while (true)
+        {
+            string? input = ConsoleUi.Prompt("ゲームフォルダのパスを入力してください（空欄で終了）: ");
+            if (input is null) return null;
+            string dir = SteamLocator.NormalizeUserPath(input);
+            if (dir.Length == 0) return null;
+            if (SteamLocator.LooksLikeGameDir(dir)) return Path.GetFullPath(dir);
+            ConsoleUi.Warn("SCPSL_Data / SCPSL.exe / Translations のいずれも見つかりません。もう一度入力してください。");
+        }
+    }
 }
-
-
-
