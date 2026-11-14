@@ -5,3 +5,4 @@
 アクセスカード:アクセスカードを持っている。最良ではないが、紛失してはならない。
 標準装備:銃器、アクセスカード、便利なアイテムを装備している。
 重装備:重火器、アクセス・デバイス、医療品を託された。
+Basic Gear:You have been issued a standard set of security gear, including a subpar SMG, a basic keycard, and a flashbang. Stick with your team to be effective and scavenge to find better items.

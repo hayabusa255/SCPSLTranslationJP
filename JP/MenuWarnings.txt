@@ -2,3 +2,5 @@
 OK
 現在 <b>Intel内蔵グラフィックス</b> で実行しています。(<b>非推奨環境です</b>)\nゲームを快適にプレイするために高性能なビデオカードを使用することをオススメします。\nこのまま続行すると頻繁に<b>ゲームがクラッシュ</b>してしまうかもしれません。
 重要:ボイスチャットに必要なシステムアップデートが見つかりませんでした。 Windows Updateが最新であることを確認してください。このまま続行するとゲームが正しく機能しないかもしれません。何度試してもこの問題が解決しない場合は、技術サポートチームにお問い合わせください。
+Network error detected when trying to reach Central Server.\n\nAlternative communication method enabled.\nRequests may take longer to complete.
+<size=11>Unable to connect to Central Server using alternative method.\nSwitched back to normal connection method.\n\nIf Authentication errors persist:\nPlease contact Northwood Support.</size>

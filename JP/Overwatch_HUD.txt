@@ -10,4 +10,11 @@ SCP-1576
 <i>空間音声</i>
 <i>近距離での空間音声を管理します。無効にすると、距離や無線通信の有無に関わらず、すべてのプレイヤーの音声が聞こえるようになります。</i>
 <i>ラウンド終了時にすべてのプレイヤーが使用します。</i>
-
+Menu Select
+Voice Chat
+Player Info
+Hitreg Log
+Debug Traces
+Hit Register Log:\n<size=11>New entries will appear from the right</size>
+Lobby
+SCP-1507

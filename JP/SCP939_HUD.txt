@@ -45,3 +45,4 @@ Mimic Point は消滅した (有効範囲外)
 お気に入りを切り替えます。お気に入りとしてマークされた録音は、ホットキーに登録されます。
 ドラッグして録音を再編成する
 ターゲットの声を奪った
+Sprint:Hold [key] to consume stamina and move at a faster pace. Stamina regenerates when you stop sprinting. Be mindful of its usage!

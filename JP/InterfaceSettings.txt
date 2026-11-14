@@ -22,3 +22,4 @@
 正確な範囲
 分散
 武器の精度が UI 要素によってどのように表現されるかを決定します。正確な射程は武器が目標に命中する可能性が高い距離を示し、分散は目標方向からの最大角度偏差を示します。
+Custom DisplayKit Elements~Enables or disables custom user interface elements from modded servers.

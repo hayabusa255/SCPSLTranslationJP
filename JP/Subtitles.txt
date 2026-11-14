@@ -30,3 +30,5 @@
 全職員に通達。ゲートAにて、[number]体の<color=#008F1E>カオス・インサージェンシー</color>を検出しました。<split>殺傷を伴う武力行使を許可します。
 ゲートAにて、新たに[number]体の<color=#008F1E>敵対勢力</color>を確認しました。<split>防衛モデルを更新します。
 サイト復旧失敗 — <color=#DC143C>デッドマンズスイッチ作動。</color><split>本施設の地下区画は、T-[time]秒後に自壊します。
+Emergency backup generator activated. Estimated activation time in T-[time] seconds.
+Backup generator successfully engaged. Central power moved to defense module. Broadcasting emergency frequency.

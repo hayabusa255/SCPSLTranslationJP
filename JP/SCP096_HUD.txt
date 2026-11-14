@@ -6,3 +6,4 @@ SCP-096は通常時は大人しく、誰かに顔を見られたり、危害を�
 従順時のみ
 [key]を押し続け発狂に入る
 [key]を押し続け発狂を終了する
+Scopophobia:You begin in a Docile state. In this state, you are unable to attack and move around slowly. If a human looks at your face, you gain the ability to enter the Enraged state. When Enraged, you move rapidly and gain powerful attacks, but can only see players who have looked at you.

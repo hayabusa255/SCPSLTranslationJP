@@ -20,3 +20,21 @@
 桃色のキャンディー
 見た目通り、ストロベリーの優しい香りがする。
 - 編 集 済 み - \n<color=#F00>爆発します。</color>
+Orange Candy
+Trick or treat?
+​
+White Candy
+Trick or treat?
+​
+Gray Candy
+Trick or treat?
+​
+Black Candy
+You pulled this one from beyond the limits of the bowl. You remember tasting it an infinite number of times, but you can't recall the flavor.
+Inflicts a random effect. Feeling Lucky?
+Brown Candy
+Trick or treat?
+​
+Evil Candy
+Trick or treat?
+​

@@ -21,3 +21,4 @@
 貧欲:治療にはまったく利点がないわけではない。近くにある死体の塊を捕食し、肉体を再生することができる。他の仲間のことは考えていないので一人で全て捕食してしまう。
 蘇生
 [key]を長押し
+Swipe:Press [key] on a nearby human to attack them, dealing moderate damage.

@@ -28,3 +28,11 @@ SCPとしてスポーンしない
 有効にすると、SCPとしてスポーンできなくなります。ただし、無効に設定しているプレイヤーが十分に居ないとき、SCPとしてスポーンする可能性があります。
 無効
 有効
+Russia Connectivity Relay Settings
+Gameplay Hints
+Human Hints
+SCP Hints
+First-Time Hints
+Repeating Hints
+Reset Hint Memory
+Hints

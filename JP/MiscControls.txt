@@ -1,0 +1,4 @@
+Continue
+Quit Game
+Cancel
+Accept

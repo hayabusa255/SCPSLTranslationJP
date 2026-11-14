@@ -22,6 +22,10 @@
 -
 -
 全員を殺害する。\n脱出を阻止する。\n他の<color=#F00>SCP達</color>と協力する。
+-
 全員を殺害する。\n対象を追跡する。\n<color=#FF59CA>群れの仲間</color>と協力する。
 全員を殺害する。\n対象を追跡する。\n<color=#FF59CA>群れの仲間</color>と協力する。
 全員を殺害する。\n脱出を阻止する。\n他の<color=#F00>SCP達</color>と協力する。
+Take back the facility from hostile forces.\nWork together with <color=#5B6370>Facility Guards</color> and other <color=#0096FF>MTF operatives</color>.
+Capture the facility and eliminate <color=#0096FF>Foundation personnel</color>.\nWork together with other <color=#008F1E>Chaos Insurgents</color>.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
