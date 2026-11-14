@@ -44,11 +44,22 @@ jobs:
           GEMINI_API_KEY: ${{ github.event.inputs.run_ai_check == 'true' && secrets.GEMINI_API_KEY || '' }}
 
 
-      - name: Create issue with report
+      # Reuse the open report issue if there is one; close it to start a fresh one next run.
+      - name: Find existing report issue
+        id: existing
+        if: always()
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $number = gh issue list --repo "${{ github.repository }}" --label manual-report --state open --limit 1 --json number --jq '.[0].number'
+          echo "number=$number" >> $env:GITHUB_OUTPUT
 
+      - name: Create or update issue with report
         if: always()
         uses: peter-evans/create-issue-from-file@v4
         with:
+          issue-number: ${{ steps.existing.outputs.number }}
           title: "Manual Translation Status Report"
           content-filepath: ./report.md
           labels: translation, manual-report
