@@ -1,0 +1,53 @@
+name: Build native C++ WinUI (no .NET dependency)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "winui-native/**"
+    paths:
+      - "NativeCppWinUI/**"
+      - "NativeCore/**"
+      - ".github/workflows/winui-cpp.yml"
+jobs:
+  windows-cpp:
+    runs-on: windows-2025
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust native x64
+        shell: pwsh
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add x86_64-pc-windows-msvc
+      - name: Build Rust native engine
+        shell: pwsh
+        run: |
+          cargo test --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          cargo build --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          New-Item -ItemType Directory -Force NativeCore/bin/win-x64 | Out-Null
+          Copy-Item NativeCore/target/x86_64-pc-windows-msvc/release/scpsl-native-core.exe NativeCore/bin/win-x64/ -Force
+      - name: Configure C++ WinUI with CMake and Microsoft WinApp CLI
+        shell: pwsh
+        run: |
+          cmake -S NativeCppWinUI -B NativeCppWinUI/build -A x64
+      - name: Compile WinUI C++/WinRT (not C# or WebView)
+        shell: pwsh
+        run: |
+          cmake --build NativeCppWinUI/build --config Release --parallel 2
+      - name: Verify native executable and gather package
+        shell: pwsh
+        run: |
+          $dir = "NativeCppWinUI/build/Release"
+          if (!(Test-Path "$dir/SCPSLWinUI.exe")) { throw "Native WinUI EXE missing" }
+          if (!(Test-Path "$dir/scpsl-native-core.exe")) { throw "Native Rust core missing" }
+          New-Item -ItemType Directory -Force -Path "dist" | Out-Null
+          Copy-Item "$dir/*" "dist/" -Recurse -Force
+          Compress-Archive -Path "dist/*" -DestinationPath "SCPSL-Native-CppWinUI.zip" -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCPSL-Native-CppWinUI
+          path: SCPSL-Native-CppWinUI.zip
+          if-no-files-found: error
+          retention-days: 7
