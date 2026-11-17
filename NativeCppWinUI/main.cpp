@@ -11,9 +11,11 @@
 #include <algorithm>
 
 #include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Data.Json.h>
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Microsoft.UI.Xaml.h>
+#include <winrt/Microsoft.UI.Xaml.Markup.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.Primitives.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
@@ -217,7 +219,7 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         StackPanel row;
         row.Orientation(Orientation::Horizontal);
         row.Spacing(12);
-        Ellipse avatar;
+        Microsoft::UI::Xaml::Shapes::Ellipse avatar;
         avatar.Width(62);
         avatar.Height(62);
         try {
