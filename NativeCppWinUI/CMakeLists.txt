@@ -53,7 +53,7 @@ file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Assets/app.ico" ICON_RES)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/resources.rc.in"
   "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" @ONLY)
 
-add_executable(SCPSLWinUI WIN32 main.cpp resource_loader.cpp "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" app.manifest)
+add_executable(SCPSLWinUI WIN32 main.cpp resource_loader.cpp markdown_renderer.cpp "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" app.manifest)
 target_compile_definitions(SCPSLWinUI PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 if(MSVC)
   target_compile_options(SCPSLWinUI PRIVATE /bigobj /EHsc /utf-8)

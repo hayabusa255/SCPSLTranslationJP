@@ -24,6 +24,9 @@
 #include <winrt/Microsoft.UI.Xaml.Media.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
+#include "markdown_renderer.h"
+#include <winrt/Windows.UI.Text.h>
+#include <winrt/Windows.UI.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 
 
@@ -162,10 +165,18 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
     com_array<Microsoft::UI::Xaml::Markup::XmlnsDefinition> GetXmlnsDefinitions(){return m_metadata.GetXmlnsDefinitions();}
 
     Window m_window{nullptr};
-    NavigationView m_nav{nullptr};
-    NavigationViewItem m_updateItem{nullptr},m_historyItem{nullptr},m_folderItem{nullptr},m_aboutItem{nullptr};
+    ListView m_nav{nullptr};
+    ListViewItem m_updateItem{nullptr},m_historyItem{nullptr},m_folderItem{nullptr},m_aboutItem{nullptr};
+    FontIcon m_statusIcon{nullptr};
+    Border m_availableCard{nullptr};
+    TextBlock m_availableVersion{nullptr};
+    std::vector<std::wstring> m_detectedPaths;
     ScrollViewer m_updatePage{nullptr},m_historyPage{nullptr},m_folderPage{nullptr},m_aboutPage{nullptr};
-    StackPanel m_historyList{nullptr},m_folderList{nullptr},m_installArea{nullptr},m_ecoRow{nullptr};
+    StackPanel m_historyList{nullptr},m_installArea{nullptr},m_ecoRow{nullptr};
+    ListView m_folderList{nullptr};
+    TextBlock m_historyStatus{nullptr};
+    std::vector<std::pair<std::wstring,Expander>> m_releaseExpanders;
+    bool m_expandLatestWhenLoaded=false;
     TextBlock m_status{nullptr},m_subtitle{nullptr},m_lastChecked{nullptr},m_gameText{nullptr},m_installed{nullptr},m_progressText{nullptr};
     Button m_installButton{nullptr},m_checkButton{nullptr};
     HyperlinkButton m_releaseLink{nullptr};
@@ -187,33 +198,11 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         StartupTrace("Window-create-ok");
         m_window.Title(L"SCP: SL 日本語化インストーラー");
         m_window.SystemBackdrop(MicaBackdrop());
-        m_nav=NavigationView();
-        m_nav.PaneDisplayMode(NavigationViewPaneDisplayMode::Left);
-        m_nav.IsPaneOpen(true);
-        m_nav.IsPaneToggleButtonVisible(false);
-        m_nav.IsSettingsVisible(false);
-        m_nav.OpenPaneLength(285);
-        m_nav.CompactPaneLength(55);
-        m_nav.PaneHeader(BuildProfile());
-        m_updateItem=MakeNavItem(L"日本語訳アップデート",L"\uE895");
-        m_historyItem=MakeNavItem(L"更新履歴",L"\uE81C");
-        m_folderItem=MakeNavItem(L"インストール先",L"\uE8B7");
-        m_aboutItem=MakeNavItem(L"このアプリについて",L"\uE946");
-        m_nav.MenuItems().Append(m_updateItem);
-        m_nav.MenuItems().Append(m_historyItem);
-        m_nav.MenuItems().Append(m_folderItem);
-        m_nav.MenuItems().Append(m_aboutItem);
-        m_nav.Content(BuildContent());
+        StartupTrace("Shell-create-enter");
+        auto root=BuildShell();
         StartupTrace("Content-ready");
-        m_nav.SelectionChanged([this](auto const&,NavigationViewSelectionChangedEventArgs const& args) {
-            auto selection=args.SelectedItem();
-            if(selection == m_updateItem) SwitchPage(0);
-            else if(selection == m_historyItem) SwitchPage(1);
-            else if(selection == m_folderItem) SwitchPage(2);
-            else if(selection == m_aboutItem) SwitchPage(3);
-        });
-        m_window.Content(m_nav);
-        m_nav.SelectedItem(m_updateItem);
+        m_window.Content(root);
+        StartupTrace("Shell-created");
         StartupTrace("Window-activate-enter");
         m_window.Activate();
         StartupTrace("Window-activated");
@@ -228,59 +217,142 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         LoadHistory();
     }
 
-    NavigationViewItem MakeNavItem(hstring const& label,wchar_t const* glyph) {
-        NavigationViewItem item;
-        item.Content(box_value(label));
-        item.Icon(MakeIcon(glyph));
+    // Windows Settings-like navigation is independent from content.
+    // No NavigationView ContentGrid => no giant rounded top/content border.
+    ListViewItem MakeNavItem(hstring const& label,wchar_t const* glyph) {
+        ListViewItem item;
+        item.MinHeight(48);
+        item.HorizontalContentAlignment(HorizontalAlignment::Stretch);
+        StackPanel row;
+        row.Orientation(Orientation::Horizontal);
+        row.Spacing(14);
+        auto icon=MakeIcon(glyph,19);
+        icon.VerticalAlignment(VerticalAlignment::Center);
+        row.Children().Append(icon);
+        auto name=MakeText(label,13.5);
+        name.VerticalAlignment(VerticalAlignment::Center);
+        row.Children().Append(name);
+        item.Content(row);
         return item;
+    }
+
+    Grid BuildShell(){
+        Grid root;
+        ColumnDefinition sidebarWidth;
+        sidebarWidth.Width(GridLength{315,GridUnitType::Pixel});
+        ColumnDefinition mainWidth;
+        mainWidth.Width(GridLength{1,GridUnitType::Star});
+        root.ColumnDefinitions().Append(sidebarWidth);
+        root.ColumnDefinitions().Append(mainWidth);
+
+        StackPanel sidebar;
+        sidebar.Padding(Thickness{14,20,11,10});
+        sidebar.Spacing(14);
+        auto top=StackPanel();
+        top.Orientation(Orientation::Horizontal);
+        top.Spacing(8);
+        auto back=Button();
+        back.Content(MakeIcon(L"\uE72B",16));
+        back.MinWidth(35);back.MinHeight(32);
+        back.Click([this](auto const&,auto const&){m_nav.SelectedIndex(0);});
+        top.Children().Append(back);
+        auto settings=MakeText(L"設定",14);
+        settings.VerticalAlignment(VerticalAlignment::Center);
+        top.Children().Append(settings);
+        sidebar.Children().Append(top);
+        sidebar.Children().Append(BuildProfile());
+
+        m_nav=ListView();
+        m_nav.BorderThickness(Thickness{0});
+        m_nav.Background(SolidColorBrush(Windows::UI::Colors::Transparent()));
+        m_nav.SelectionMode(ListViewSelectionMode::Single);
+        m_nav.HorizontalAlignment(HorizontalAlignment::Stretch);
+        m_updateItem=MakeNavItem(L"日本語訳アップデート",L"\uE895");
+        m_historyItem=MakeNavItem(L"更新履歴",L"\uE81C");
+        m_folderItem=MakeNavItem(L"インストール先",L"\uE8B7");
+        m_aboutItem=MakeNavItem(L"このアプリについて",L"\uE946");
+        m_nav.Items().Append(m_updateItem);
+        m_nav.Items().Append(m_historyItem);
+        m_nav.Items().Append(m_folderItem);
+        m_nav.Items().Append(m_aboutItem);
+        m_nav.SelectionChanged([this](auto const&,auto const&){
+            int index=m_nav.SelectedIndex();
+            if(index>=0 && index<4)SwitchPage(index);
+        });
+        sidebar.Children().Append(m_nav);
+        root.Children().Append(sidebar);
+        auto content=BuildContent();
+        Grid::SetColumn(content,1);
+        root.Children().Append(content);
+        m_nav.SelectedIndex(0);
+        return root;
     }
 
     StackPanel BuildProfile(){
         StackPanel wrapper;
         wrapper.Spacing(9);
-        wrapper.Padding(Thickness{4,22,8,20});
+        wrapper.Padding(Thickness{3,17,4,14});
         StackPanel row;
         row.Orientation(Orientation::Horizontal);
         row.Spacing(12);
         Microsoft::UI::Xaml::Shapes::Ellipse avatar;
-        avatar.Width(62);
-        avatar.Height(62);
+        avatar.Width(64);avatar.Height(64);
         try {
-            auto imagePath=BundledPath(L"researcher.jpg");
-            std::replace(imagePath.begin(),imagePath.end(),L'\\',L'/');
+            auto path=BundledPath(L"researcher.jpg");
+            std::replace(path.begin(),path.end(),L'\\',L'/');
             auto brush=ImageBrush();
-            brush.ImageSource(BitmapImage(Uri(L"file:///"+imagePath)));
+            brush.ImageSource(BitmapImage(Uri(L"file:///"+path)));
             brush.Stretch(Stretch::UniformToFill);
             avatar.Fill(brush);
-        } catch(...) {}
+        }catch(...){}
         row.Children().Append(avatar);
         StackPanel account;
-        account.Spacing(4);
+        account.Spacing(3);
         account.VerticalAlignment(VerticalAlignment::Center);
-        account.Children().Append(MakeText(L"SCP Foundation",14));
+        auto name=MakeText(L"研究員",14);
+        name.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        account.Children().Append(name);
         auto email=MakeText(L"researcher@scp-foundation.jp",11);
+        email.Opacity(0.75);
         account.Children().Append(email);
         row.Children().Append(account);
         wrapper.Children().Append(row);
+
+        // Windows Accounts > Access work or school shows "<organization>による管理".
         StackPanel managed;
         managed.Orientation(Orientation::Horizontal);
-        managed.Spacing(6);
-        managed.Children().Append(MakeIcon(L"\uE80F",13));
-        managed.Children().Append(MakeText(L"組織によって管理されています",11));
+        managed.Spacing(7);
+        managed.Margin(Thickness{2,5,0,0});
+        try {
+            auto path=BundledPath(L"scp-emblem.png");
+            std::replace(path.begin(),path.end(),L'\\',L'/');
+            BitmapIcon logo;
+            logo.UriSource(Uri(L"file:///"+path));
+            logo.ShowAsMonochrome(true);
+            logo.Width(16);logo.Height(16);
+            managed.Children().Append(logo);
+        }catch(...){
+            managed.Children().Append(MakeIcon(L"\uE821",16));
+        }
+        auto label=MakeText(L"SCP Foundation による管理",11);
+        label.Opacity(0.75);
+        managed.Children().Append(label);
         wrapper.Children().Append(managed);
         return wrapper;
     }
 
     ScrollViewer MakePage(StackPanel content) {
-        content.Padding(Thickness{30,30,36,50});
-        content.Spacing(19);
+        content.Padding(Thickness{37,30,33,56});
+        content.Spacing(15);
         ScrollViewer scroll;
         scroll.Content(content);
         return scroll;
     }
 
     TextBlock Title(hstring const& label) {
-        auto t=MakeText(label,30);
+        auto t=MakeText(label,29);
+        t.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        t.Margin(Thickness{0,0,0,16});
         return t;
     }
 
@@ -298,113 +370,300 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         return root;
     }
 
+    Brush ThemeBrush(wchar_t const* key){
+        try{
+            auto value=Application::Current().Resources().Lookup(box_value(hstring(key)));
+            if(value)return value.as<Brush>();
+        }catch(...){}
+        return SolidColorBrush(Windows::UI::Colors::Transparent());
+    }
+    Border SettingsCard(UIElement const& content){
+        Border card;
+        card.BorderThickness(Thickness{1});
+        card.BorderBrush(ThemeBrush(L"CardStrokeColorDefaultBrush"));
+        card.Background(ThemeBrush(L"CardBackgroundFillColorDefaultBrush"));
+        card.CornerRadius(CornerRadius{8});
+        card.Child(content);
+        return card;
+    }
+    Button AccentButton(hstring const& caption){
+        auto button=MakeButton(caption);
+        try{
+            auto style=Application::Current().Resources().Lookup(box_value(L"AccentButtonStyle"));
+            if(style)button.Style(style.as<Style>());
+        }catch(...){}
+        return button;
+    }
+    Border SettingsRow(hstring const& header,hstring const& description,
+                       wchar_t const* glyph,std::function<void()> action){
+        auto btn=MakeButton(L"");
+        btn.HorizontalAlignment(HorizontalAlignment::Stretch);
+        btn.HorizontalContentAlignment(HorizontalAlignment::Stretch);
+        btn.BorderThickness(Thickness{0});
+        btn.Background(SolidColorBrush(Windows::UI::Colors::Transparent()));
+        btn.Padding(Thickness{18,17,18,17});
+        Grid row;
+        row.ColumnSpacing(17);
+        ColumnDefinition icon;icon.Width(GridLength{32,GridUnitType::Pixel});
+        ColumnDefinition content;content.Width(GridLength{1,GridUnitType::Star});
+        ColumnDefinition tail;tail.Width(GridLength{24,GridUnitType::Pixel});
+        row.ColumnDefinitions().Append(icon);
+        row.ColumnDefinitions().Append(content);
+        row.ColumnDefinitions().Append(tail);
+        auto ico=MakeIcon(glyph,22);
+        ico.VerticalAlignment(VerticalAlignment::Center);
+        row.Children().Append(ico);
+        StackPanel desc;
+        desc.Spacing(5);
+        auto title=MakeText(header,13);
+        title.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        desc.Children().Append(title);
+        auto detail=MakeText(description,12);
+        detail.Opacity(0.72);
+        desc.Children().Append(detail);
+        Grid::SetColumn(desc,1);
+        row.Children().Append(desc);
+        auto arrow=MakeIcon(L"\uE76C",14);
+        arrow.VerticalAlignment(VerticalAlignment::Center);
+        Grid::SetColumn(arrow,2);
+        row.Children().Append(arrow);
+        btn.Content(row);
+        btn.Click([action](auto const&,auto const&){action();});
+        return SettingsCard(btn);
+    }
+
     ScrollViewer BuildUpdate() {
         StackPanel page;
         page.Children().Append(Title(L"日本語訳アップデート"));
-        StackPanel statusRow;
-        statusRow.Orientation(Orientation::Horizontal);
-        statusRow.Spacing(20);
-        statusRow.VerticalAlignment(VerticalAlignment::Center);
-        statusRow.Children().Append(MakeIcon(L"\uE895",68));
-        StackPanel middle;
-        middle.Spacing(8);
-        middle.VerticalAlignment(VerticalAlignment::Center);
+
+        Grid overview;
+        overview.MinHeight(122);
+        overview.ColumnSpacing(19);
+        ColumnDefinition ico;ico.Width(GridLength{96,GridUnitType::Pixel});
+        ColumnDefinition center;center.Width(GridLength{1,GridUnitType::Star});
+        ColumnDefinition right;right.Width(GridLength{0,GridUnitType::Auto});
+        overview.ColumnDefinitions().Append(ico);
+        overview.ColumnDefinitions().Append(center);
+        overview.ColumnDefinitions().Append(right);
+        m_statusIcon=MakeIcon(L"\uE895",74);
+        m_statusIcon.HorizontalAlignment(HorizontalAlignment::Center);
+        m_statusIcon.VerticalAlignment(VerticalAlignment::Center);
+        m_statusIcon.Foreground(ThemeBrush(L"AccentTextFillColorPrimaryBrush"));
+        overview.Children().Append(m_statusIcon);
+        StackPanel status;
+        status.Spacing(7);
+        status.VerticalAlignment(VerticalAlignment::Center);
         m_status=MakeText(L"更新プログラムを確認しています",20);
+        m_status.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        status.Children().Append(m_status);
         m_subtitle=MakeText(L"GitHub Releasesから更新情報を取得しています",13);
-        m_lastChecked=MakeText(L"最終チェック: 未実施",12);
-        middle.Children().Append(m_status);
-        middle.Children().Append(m_subtitle);
-        middle.Children().Append(m_lastChecked);
+        m_subtitle.Opacity(0.75);
+        status.Children().Append(m_subtitle);
+        m_lastChecked=MakeText(L"最終チェック: 未実施",11.5);
+        m_lastChecked.Opacity(0.65);
+        status.Children().Append(m_lastChecked);
         m_releaseLink=HyperlinkButton();
-        m_releaseLink.Content(box_value(L"この更新プログラムの内容を見る"));
+        m_releaseLink.Content(box_value(L"この更新プログラムの詳細を確認"));
+        m_releaseLink.Padding(Thickness{0});
+        m_releaseLink.HorizontalAlignment(HorizontalAlignment::Left);
         m_releaseLink.Visibility(Visibility::Collapsed);
         m_releaseLink.Click([this](auto const&,auto const&){
-            m_nav.SelectedItem(m_historyItem); OpenLatestHistory();
+            m_nav.SelectedIndex(1);OpenLatestHistory();
         });
-        middle.Children().Append(m_releaseLink);
-        statusRow.Children().Append(middle);
-        page.Children().Append(statusRow);
-        m_checkButton=MakeButton(L"更新プログラムのチェック");
-        m_checkButton.Click([this](auto const&,auto const&){ LoadLatest();LoadHistory(); });
-        page.Children().Append(m_checkButton);
-        m_ecoRow=StackPanel();
-        m_ecoRow.Orientation(Orientation::Horizontal);
-        m_ecoRow.Spacing(7);
-        m_ecoRow.Visibility(Visibility::Collapsed);
-        // Segoe Fluent Icons Leaf (U+E8BE): Windows' native icon glyph.
-        m_ecoRow.Children().Append(MakeIcon(L"\uE8BE",15));
-        m_ecoRow.Children().Append(MakeText(L"SCPSL 日本語化インストーラーは二酸化炭素排出量の削減に取り組んでいます",12));
-        auto ecoLink=HyperlinkButton();
-        ecoLink.Content(box_value(L"詳細情報"));
-        ecoLink.Click([](auto const&,auto const&){
-            OpenUri(L"https://support.microsoft.com/ja-jp/windows/deployment/updates-lifecycle/windows-update-is-now-carbon-aware");
-        });
-        m_ecoRow.Children().Append(ecoLink);
-        page.Children().Append(m_ecoRow);
+        status.Children().Append(m_releaseLink);
+        Grid::SetColumn(status,1);
+        overview.Children().Append(status);
+        m_checkButton=AccentButton(L"更新プログラムのチェック");
+        m_checkButton.VerticalAlignment(VerticalAlignment::Center);
+        m_checkButton.Click([this](auto const&,auto const&){LoadLatest();LoadHistory();});
+        Grid::SetColumn(m_checkButton,2);
+        overview.Children().Append(m_checkButton);
+        page.Children().Append(overview);
+
+        // Available updates match the Windows Settings card/row hierarchy.
         m_installArea=StackPanel();
-        m_installArea.Spacing(9);
-        m_installArea.Visibility(Visibility::Collapsed);
-        m_installArea.Children().Append(MakeText(L"利用可能な更新プログラム",16));
-        m_installButton=MakeButton(L"ダウンロードしてインストール");
-        m_installButton.Click([this](auto const&,auto const&){ InstallTranslation(); });
-        m_installArea.Children().Append(m_installButton);
-        page.Children().Append(m_installArea);
+        m_installArea.Spacing(0);
+        StackPanel header;
+        header.Padding(Thickness{18,17,18,15});
+        auto heading=MakeText(L"利用可能な更新プログラム",14);
+        heading.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        header.Children().Append(heading);
+        m_installArea.Children().Append(header);
+        Grid available;
+        available.Padding(Thickness{18,15,18,18});
+        available.ColumnSpacing(13);
+        ColumnDefinition a1;a1.Width(GridLength{30,GridUnitType::Pixel});
+        ColumnDefinition a2;a2.Width(GridLength{1,GridUnitType::Star});
+        ColumnDefinition a3;a3.Width(GridLength{0,GridUnitType::Auto});
+        available.ColumnDefinitions().Append(a1);
+        available.ColumnDefinitions().Append(a2);
+        available.ColumnDefinitions().Append(a3);
+        auto updateIcon=MakeIcon(L"\uE946",22);
+        updateIcon.VerticalAlignment(VerticalAlignment::Center);
+        available.Children().Append(updateIcon);
+        StackPanel availableText;
+        availableText.Spacing(7);
+        m_availableVersion=MakeText(L"SCP: SL 日本語翻訳",13);
+        m_availableVersion.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        availableText.Children().Append(m_availableVersion);
+        auto more=HyperlinkButton();
+        more.Content(box_value(L"この更新プログラムの詳細を確認"));
+        more.Padding(Thickness{0});
+        more.HorizontalAlignment(HorizontalAlignment::Left);
+        more.Click([this](auto const&,auto const&){m_nav.SelectedIndex(1);OpenLatestHistory();});
+        availableText.Children().Append(more);
+        Grid::SetColumn(availableText,1);
+        available.Children().Append(availableText);
+        m_installButton=AccentButton(L"ダウンロードしてインストール");
+        m_installButton.VerticalAlignment(VerticalAlignment::Center);
+        m_installButton.Click([this](auto const&,auto const&){InstallTranslation();});
+        Grid::SetColumn(m_installButton,2);
+        available.Children().Append(m_installButton);
+        m_installArea.Children().Append(available);
+        m_availableCard=SettingsCard(m_installArea);
+        m_availableCard.Visibility(Visibility::Collapsed);
+        page.Children().Append(m_availableCard);
+
         m_progress=ProgressBar();
-        m_progress.Minimum(0);
-        m_progress.Maximum(100);
+        m_progress.Minimum(0);m_progress.Maximum(100);
         m_progress.Visibility(Visibility::Collapsed);
         page.Children().Append(m_progress);
         m_progressText=MakeText(L"",12);
         page.Children().Append(m_progressText);
-        page.Children().Append(MakeText(L"その他のオプション",17));
-        auto location=MakeButton(L"インストール先を変更");
-        location.Click([this](auto const&,auto const&){m_nav.SelectedItem(m_folderItem);});
-        page.Children().Append(location);
-        m_gameText=MakeText(L"Steamのゲームを検出しています",12);
+
+        auto moreTitle=MakeText(L"その他のオプション",17);
+        moreTitle.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        moreTitle.Margin(Thickness{0,14,0,1});
+        page.Children().Append(moreTitle);
+        page.Children().Append(SettingsRow(L"ゲームのインストール先",
+            L"Steamライブラリからゲームの保存先を選択",L"\uE8B7",
+            [this](){m_nav.SelectedIndex(2);}));
+        page.Children().Append(SettingsRow(L"更新履歴",
+            L"これまでに公開された日本語翻訳の変更内容",L"\uE81C",
+            [this](){m_nav.SelectedIndex(1);}));
+        m_gameText=MakeText(L"Steamのゲームを検出しています",11.5);
+        m_gameText.Opacity(0.70);
         page.Children().Append(m_gameText);
-        m_installed=MakeText(L"インストール済み: 確認中",12);
+        m_installed=MakeText(L"インストール済み: 確認中",11.5);
+        m_installed.Opacity(0.70);
         page.Children().Append(m_installed);
+
+        m_ecoRow=StackPanel();
+        m_ecoRow.Orientation(Orientation::Horizontal);
+        m_ecoRow.Spacing(7);
+        m_ecoRow.Margin(Thickness{0,20,0,5});
+        m_ecoRow.Visibility(Visibility::Collapsed);
+        auto leaf=MakeIcon(L"\uE8BE",16);
+        leaf.VerticalAlignment(VerticalAlignment::Center);
+        leaf.Foreground(SolidColorBrush(Windows::UI::Color{255,43,161,73}));
+        m_ecoRow.Children().Append(leaf);
+        auto carbon=MakeText(
+            L"SCPSL 日本語化インストーラーは二酸化炭素排出量の削減に取り組んでいます",12);
+        carbon.TextWrapping(TextWrapping::NoWrap);
+        carbon.VerticalAlignment(VerticalAlignment::Center);
+        m_ecoRow.Children().Append(carbon);
+        auto carbonLink=HyperlinkButton();
+        carbonLink.Content(box_value(L"詳細情報"));
+        carbonLink.Padding(Thickness{2,0,0,0});
+        carbonLink.Click([](auto const&,auto const&){
+            OpenUri(L"https://support.microsoft.com/ja-jp/windows/deployment/updates-lifecycle/windows-update-is-now-carbon-aware");
+        });
+        m_ecoRow.Children().Append(carbonLink);
+        page.Children().Append(m_ecoRow);
         return MakePage(page);
     }
 
-    ScrollViewer BuildHistory() {
+    ScrollViewer BuildHistory(){
         StackPanel page;
         page.Children().Append(Title(L"更新履歴"));
-        page.Children().Append(MakeText(L"GitHub Releasesから最新の更新内容を取得します",12));
+        auto desc=MakeText(L"GitHub Releasesに公開された日本語訳の更新内容を表示します",12);
+        desc.Opacity(0.75);
+        page.Children().Append(desc);
+        Grid tools;
+        ColumnDefinition left;left.Width(GridLength{1,GridUnitType::Star});
+        ColumnDefinition right;right.Width(GridLength{0,GridUnitType::Auto});
+        tools.ColumnDefinitions().Append(left);
+        tools.ColumnDefinitions().Append(right);
+        m_historyStatus=MakeText(L"更新履歴を読み込んでいます",12);
+        m_historyStatus.Opacity(0.73);
+        m_historyStatus.VerticalAlignment(VerticalAlignment::Center);
+        tools.Children().Append(m_historyStatus);
         auto refresh=MakeButton(L"更新履歴を再取得");
         refresh.Click([this](auto const&,auto const&){LoadHistory();});
-        page.Children().Append(refresh);
+        Grid::SetColumn(refresh,1);
+        tools.Children().Append(refresh);
+        page.Children().Append(tools);
         m_historyList=StackPanel();
         m_historyList.Spacing(8);
         page.Children().Append(m_historyList);
         return MakePage(page);
     }
 
-    ScrollViewer BuildFolders() {
+    ScrollViewer BuildFolders(){
         StackPanel page;
         page.Children().Append(Title(L"インストール先"));
-        page.Children().Append(MakeText(L"SCP: Secret Laboratory の保存先を選択してください",12));
-        m_folderList=StackPanel();
-        m_folderList.Spacing(7);
-        page.Children().Append(m_folderList);
+        auto desc=MakeText(L"SCP: Secret Laboratoryの保存先を選択してください",12);
+        desc.Opacity(0.75);
+        page.Children().Append(desc);
+        StackPanel card;
+        card.Spacing(0);
+        auto heading=MakeText(L"検出されたゲーム",15);
+        heading.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        heading.Margin(Thickness{18,18,18,12});
+        card.Children().Append(heading);
+        m_folderList=ListView();
+        m_folderList.MinHeight(75);
+        m_folderList.MaxHeight(385);
+        m_folderList.SelectionMode(ListViewSelectionMode::Single);
+        m_folderList.BorderThickness(Thickness{0});
+        m_folderList.Background(SolidColorBrush(Windows::UI::Colors::Transparent()));
+        m_folderList.SelectionChanged([this](auto const&,auto const&){
+            int index=m_folderList.SelectedIndex();
+            if(index>=0 && index<static_cast<int>(m_detectedPaths.size())){
+                auto selected=m_detectedPaths[static_cast<size_t>(index)];
+                if(m_gamePath!=selected){
+                    m_gamePath=selected;
+                    RefreshInstalled();UpdatePresentation();
+                }
+            }
+        });
+        card.Children().Append(m_folderList);
+        StackPanel actions;
+        actions.Orientation(Orientation::Horizontal);
+        actions.HorizontalAlignment(HorizontalAlignment::Right);
+        actions.Margin(Thickness{12,16,16,18});
+        actions.Spacing(9);
+        auto rescan=MakeButton(L"再スキャン");
+        rescan.Click([this](auto const&,auto const&){LoadGames();});
+        actions.Children().Append(rescan);
         auto browse=MakeButton(L"フォルダーを参照...");
-        browse.Click([this](auto const&,auto const&){ BrowseFolder(); });
-        page.Children().Append(browse);
-        auto refresh=MakeButton(L"再スキャン");
-        refresh.Click([this](auto const&,auto const&){ LoadGames(); });
-        page.Children().Append(refresh);
+        browse.Click([this](auto const&,auto const&){BrowseFolder();});
+        actions.Children().Append(browse);
+        card.Children().Append(actions);
+        page.Children().Append(SettingsCard(card));
         return MakePage(page);
     }
 
-    ScrollViewer BuildAbout() {
+    ScrollViewer BuildAbout(){
         StackPanel page;
         page.Children().Append(Title(L"このアプリについて"));
-        page.Children().Append(MakeText(L"SCPSL 日本語化インストーラー",17));
-        page.Children().Append(MakeText(L"Steamのゲームを検出し、翻訳プロジェクトのGitHub Releasesから日本語訳を取得します",13));
-        auto git=HyperlinkButton();
-        git.Content(box_value(L"GitHubリポジトリを開く"));
-        git.Click([](auto const&,auto const&){OpenUri(L"https://github.com/hayabusa255/SCPSLTranslationJP");});
-        page.Children().Append(git);
+        StackPanel card;
+        card.Padding(Thickness{22});
+        card.Spacing(14);
+        auto title=MakeText(L"SCPSL 日本語化インストーラー",18);
+        title.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+        card.Children().Append(title);
+        card.Children().Append(MakeText(
+            L"Steamのゲームを検出し、翻訳プロジェクトのGitHub Releasesから日本語訳を取得します",13));
+        auto link=HyperlinkButton();
+        link.Content(box_value(L"GitHubリポジトリを開く"));
+        link.HorizontalAlignment(HorizontalAlignment::Left);
+        link.Padding(Thickness{0});
+        link.Click([](auto const&,auto const&){
+            OpenUri(L"https://github.com/hayabusa255/SCPSLTranslationJP");
+        });
+        card.Children().Append(link);
+        page.Children().Append(SettingsCard(card));
         return MakePage(page);
     }
 
@@ -457,29 +716,39 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         return std::nullopt;
     }
 
-    void UpdatePresentation() {
+    void UpdatePresentation(){
         bool current=!m_latestTag.empty() &&
             std::find(m_versions.begin(),m_versions.end(),m_latestTag)!=m_versions.end();
         if(!m_status)return;
-        if(m_gamePath.empty()){
+        if(m_latestTag.empty()){
+            m_status.Text(L"更新プログラムを確認できませんでした");
+            m_subtitle.Text(L"GitHubへの接続を確認してもう一度お試しください");
+        }else if(m_gamePath.empty()){
             m_status.Text(L"インストール先を選択してください");
-            m_subtitle.Text(L"SCP: Secret Laboratory の保存先を指定してください");
+            m_subtitle.Text(L"SCP: Secret Laboratoryの保存先を指定してください");
         }else if(current){
             m_status.Text(L"最新の状態です");
             m_subtitle.Text(L"日本語翻訳は最新の状態です");
-        }else if(!m_latestTag.empty()) {
+        }else {
             m_status.Text(L"更新プログラムを利用できます");
-            m_subtitle.Text(L"日本語翻訳の新しいバージョンをダウンロードできます");
+            m_subtitle.Text(L"新しい日本語翻訳をダウンロードできます");
         }
-        m_gameText.Text(m_gamePath.empty()?L"ゲームが見つかっていません":hstring(m_gamePath));
+        if(m_gameText) {
+            std::wstring shown=m_gamePath;
+            if(shown.rfind(L"\\\\?\\",0)==0)shown=shown.substr(4);
+            m_gameText.Text(shown.empty()?L"ゲームの保存先が見つかりません":hstring(shown));
+        }
         std::wstring installed=L"インストール済み: ";
-        if(m_versions.empty()) installed+=L"未インストール";
+        if(m_versions.empty())installed+=L"未インストール";
         else for(auto const& v:m_versions)installed+=v+L" ";
         m_installed.Text(installed);
+        if(m_availableVersion)m_availableVersion.Text(
+            hstring(L"SCP: SL 日本語翻訳 "+m_latestTag));
+        bool available=!m_gamePath.empty() && !current && !m_latestTag.empty();
         m_ecoRow.Visibility(current?Visibility::Visible:Visibility::Collapsed);
-        m_installArea.Visibility(!m_gamePath.empty()&&!current&&!m_latestTag.empty()
-            ?Visibility::Visible:Visibility::Collapsed);
+        m_availableCard.Visibility(available?Visibility::Visible:Visibility::Collapsed);
         m_releaseLink.Visibility(m_latestTag.empty()?Visibility::Collapsed:Visibility::Visible);
+        m_checkButton.IsEnabled(!m_busy);
     }
 
     void LoadLatest(){
@@ -515,67 +784,136 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         });
     }
 
-    void LoadGames() {
-        RunEngine(L"detect",L"",[this](auto const& r){
-            m_folderList.Children().Clear();
-            if(auto value=ReadData(r)){
-                try{
-                    auto a=value->GetArray();
-                    for(auto const& item:a){
-                        auto object=item.GetObject();
+    void LoadGames(){
+        RunEngine(L"detect",L"",[this](auto const& response){
+            m_folderList.Items().Clear();
+            m_detectedPaths.clear();
+            if(auto value=ReadData(response)){
+                try {
+                    auto entries=value->GetArray();
+                    for(auto const& entry:entries){
+                        auto object=entry.GetObject();
                         auto path=object.GetNamedString(L"path",L"");
                         auto source=object.GetNamedString(L"source",L"Steam");
-                        auto button=MakeButton(source+L"    "+path);
-                        button.HorizontalAlignment(HorizontalAlignment::Stretch);
-                        std::wstring selected=path.c_str();
-                        button.Click([this,selected](auto const&,auto const&){
-                            m_gamePath=selected;RefreshInstalled();UpdatePresentation();
-                        });
-                        m_folderList.Children().Append(button);
-                        if(m_gamePath.empty())m_gamePath=path.c_str();
+                        if(path.empty())continue;
+                        std::wstring real=path.c_str();
+                        m_detectedPaths.push_back(real);
+                        StackPanel lines;
+                        lines.Spacing(5);
+                        auto origin=MakeText(source,13);
+                        origin.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+                        lines.Children().Append(origin);
+                        std::wstring friendly=real;
+                        if(friendly.rfind(L"\\\\?\\",0)==0)friendly=friendly.substr(4);
+                        auto folder=MakeText(hstring(friendly),11.5);
+                        folder.Opacity(0.7);
+                        lines.Children().Append(folder);
+                        ListViewItem item;
+                        item.MinHeight(74);
+                        item.Padding(Thickness{18,13,18,13});
+                        item.HorizontalContentAlignment(HorizontalAlignment::Stretch);
+                        item.Content(lines);
+                        m_folderList.Items().Append(item);
+                        if(m_gamePath.empty())m_gamePath=real;
                     }
                 }catch(...) {}
+            }
+            if(m_detectedPaths.empty()) {
+                auto empty=ListViewItem();
+                empty.Content(MakeText(L"SteamからSCP: Secret Laboratoryを検出できませんでした",12));
+                empty.IsEnabled(false);
+                m_folderList.Items().Append(empty);
+            }else {
+                auto it=std::find(m_detectedPaths.begin(),m_detectedPaths.end(),m_gamePath);
+                int index=it==m_detectedPaths.end()?0:static_cast<int>(it-m_detectedPaths.begin());
+                m_folderList.SelectedIndex(index);
             }
             UpdatePresentation();
             RefreshInstalled();
         });
     }
 
-    void LoadHistory() {
-        RunEngine(L"history",L"",[this](auto const& r){
+    void LoadHistory(){
+        if(m_historyStatus)m_historyStatus.Text(L"GitHubから更新履歴を取得しています");
+        RunEngine(L"history",L"",[this](auto const& response){
             m_historyList.Children().Clear();
-            if(auto v=ReadData(r)){
+            m_releaseExpanders.clear();
+            size_t count=0;
+            if(auto result=ReadData(response)){
                 try{
-                    auto entries=v->GetArray();
-                    for(auto const& item:entries){
-                        auto x=item.GetObject();
-                        auto title=x.GetNamedString(L"title",L"");
-                        auto notes=x.GetNamedString(L"notes",L"");
-                        auto tag=x.GetNamedString(L"tag",L"");
-                        auto summary=x.GetNamedString(L"summary",L"");
+                    auto entries=result->GetArray();
+                    for(auto const& entry:entries){
+                        auto object=entry.GetObject();
+                        auto tag=object.GetNamedString(L"tag",L"");
+                        auto title=object.GetNamedString(L"title",L"");
+                        auto summary=object.GetNamedString(L"summary",L"");
+                        auto notes=object.GetNamedString(L"notes",L"");
+                        auto published=object.GetNamedString(L"publishedAt",L"");
                         auto ex=Expander();
-                        StackPanel header;header.Spacing(4);
-                        header.Children().Append(MakeText(title,15));
-                        header.Children().Append(MakeText(summary,12));
+                        ex.HorizontalAlignment(HorizontalAlignment::Stretch);
+                        ex.BorderThickness(Thickness{1});
+                        ex.BorderBrush(ThemeBrush(L"CardStrokeColorDefaultBrush"));
+                        ex.Background(ThemeBrush(L"CardBackgroundFillColorDefaultBrush"));
+                        StackPanel header;
+                        header.Spacing(6);
+                        auto name=MakeText(title.empty()?tag:title,14);
+                        name.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+                        header.Children().Append(name);
+                        auto digest=MakeText(summary,12);
+                        digest.Opacity(0.78);
+                        header.Children().Append(digest);
+                        std::wstring date=published.c_str();
+                        if(date.size()>=10)
+                            date=date.substr(0,4)+L"年"+date.substr(5,2)+L"月"+date.substr(8,2)+L"日";
+                        auto meta=MakeText(hstring(std::wstring(tag.c_str())+L"  ·  "+date),11);
+                        meta.Opacity(0.65);
+                        header.Children().Append(meta);
                         ex.Header(header);
-                        StackPanel details;details.Spacing(10);
-                        details.Children().Append(MakeText(notes,12));
-                        auto link=HyperlinkButton();
-                        link.Content(box_value(L"GitHubでこのリリースを見る"));
+                        StackPanel details;
+                        details.Spacing(13);
+                        details.Padding(Thickness{20,16,20,23});
+                        auto label=MakeText(L"この更新プログラムの内容",14);
+                        label.FontWeight(Windows::UI::Text::FontWeights::SemiBold());
+                        details.Children().Append(label);
+                        details.Children().Append(scpsl::RenderMarkdown(notes.c_str()));
+                        auto external=HyperlinkButton();
+                        external.Content(box_value(L"GitHubでこのリリースを表示"));
+                        external.Padding(Thickness{0});
+                        external.HorizontalAlignment(HorizontalAlignment::Left);
                         std::wstring url=L"https://github.com/hayabusa255/SCPSLTranslationJP/releases/tag/";
                         url+=tag.c_str();
-                        link.Click([url](auto const&,auto const&){OpenUri(url.c_str());});
-                        details.Children().Append(link);
+                        external.Click([url](auto const&,auto const&){OpenUri(url.c_str());});
+                        details.Children().Append(external);
                         ex.Content(details);
                         m_historyList.Children().Append(ex);
+                        m_releaseExpanders.emplace_back(std::wstring(tag.c_str()),ex);
+                        count++;
                     }
                 }catch(...) {}
+            }
+            if(count==0) {
+                m_historyList.Children().Append(MakeText(L"更新履歴を取得できませんでした",13));
+                if(m_historyStatus)m_historyStatus.Text(L"通信状態をご確認ください");
+            }else {
+                if(m_historyStatus)m_historyStatus.Text(hstring(
+                    L"GitHubから"+std::to_wstring(count)+L"件の更新履歴を取得しました"));
+            }
+            if(m_expandLatestWhenLoaded) {
+                m_expandLatestWhenLoaded=false;
+                OpenLatestHistory();
             }
         });
     }
 
     void OpenLatestHistory(){
-        m_nav.SelectedItem(m_historyItem);
+        m_nav.SelectedIndex(1);
+        for(auto const& entry:m_releaseExpanders){
+            if(entry.first==m_latestTag) {
+                entry.second.IsExpanded(true);
+                return;
+            }
+        }
+        m_expandLatestWhenLoaded=true;
     }
 
     void BrowseFolder() {
@@ -595,6 +933,16 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
                     RunEngine(L"validate",folder,[this,folder](auto const& r){
                         if(auto data=ReadData(r)){
                             m_gamePath=folder;
+                            if(std::find(m_detectedPaths.begin(),m_detectedPaths.end(),folder)
+                               ==m_detectedPaths.end()) {
+                                m_detectedPaths.push_back(folder);
+                                auto item=ListViewItem();
+                                item.Content(MakeText(hstring(folder),12));
+                                item.MinHeight(62);
+                                m_folderList.Items().Append(item);
+                            }
+                            auto it=std::find(m_detectedPaths.begin(),m_detectedPaths.end(),folder);
+                            m_folderList.SelectedIndex(static_cast<int>(it-m_detectedPaths.begin()));
                             RefreshInstalled();
                             UpdatePresentation();
                         }
