@@ -1,0 +1,6 @@
+NativeCore/target/
+WinUI/bin/
+WinUI/obj/
+.vs/
+*.user
+*.suo

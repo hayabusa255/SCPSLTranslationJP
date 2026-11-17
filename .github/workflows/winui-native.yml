@@ -1,0 +1,65 @@
+name: Build native WinUI 3 installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "winui-native/**"
+    paths:
+      - "WinUI/**"
+      - "NativeCore/**"
+      - ".github/workflows/winui-native.yml"
+
+jobs:
+  windows:
+    runs-on: windows-2025
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Setup Rust for Windows x64
+        shell: pwsh
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add x86_64-pc-windows-msvc
+
+      - name: Build and test Rust native engine
+        shell: pwsh
+        run: |
+          cargo test --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          cargo build --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          New-Item -ItemType Directory -Force NativeCore/bin/win-x64 | Out-Null
+          Copy-Item NativeCore/target/x86_64-pc-windows-msvc/release/scpsl-native-core.exe NativeCore/bin/win-x64/ -Force
+
+      - name: Build genuine WinUI 3 UI (no Tauri or WebView)
+        shell: pwsh
+        run: |
+          dotnet restore WinUI/SCPSL.WinUI.csproj -p:Platform=x64
+          dotnet build WinUI/SCPSL.WinUI.csproj --no-restore -c Release -p:Platform=x64
+
+      - name: Collect unpackaged native app
+        shell: pwsh
+        run: |
+          $gui = Get-ChildItem -Path WinUI/bin -Recurse -Filter SCPSL.WinUI.exe | Select-Object -First 1
+          if (-not $gui) { throw "WinUI executable not found" }
+          $dir = $gui.Directory.FullName
+          Copy-Item NativeCore/bin/win-x64/scpsl-native-core.exe $dir -Force
+          New-Item -ItemType Directory -Force native-release | Out-Null
+          Copy-Item "$dir/*" native-release/ -Recurse -Force
+          Compress-Archive -Path native-release/* -DestinationPath SCPSL-Native-WinUI.zip -Force
+
+      - name: Upload Windows build
+        uses: actions/upload-artifact@v4
+        with:
+          name: SCPSL-Native-WinUI
+          path: SCPSL-Native-WinUI.zip
+          if-no-files-found: error
+          retention-days: 14
