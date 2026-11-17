@@ -9,6 +9,7 @@
 #include <optional>
 #include <memory>
 #include <algorithm>
+#include <cstring>
 
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -37,6 +38,19 @@ using namespace Microsoft::UI::Xaml::Controls;
 using namespace Microsoft::UI::Xaml::Media;
 using namespace Microsoft::UI::Xaml::Media::Imaging;
 using namespace Microsoft::UI::Xaml::Shapes;
+
+static void StartupTrace(char const* marker) noexcept {
+    wchar_t dir[MAX_PATH]{};
+    if (!GetTempPathW(MAX_PATH,dir)) return;
+    std::wstring path=std::wstring(dir)+L"scpsl-cpp-startup.log";
+    HANDLE f=CreateFileW(path.c_str(),FILE_APPEND_DATA,
+        FILE_SHARE_READ|FILE_SHARE_WRITE,nullptr,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,nullptr);
+    if (f==INVALID_HANDLE_VALUE)return;
+    DWORD written=0;
+    WriteFile(f,marker,static_cast<DWORD>(strlen(marker)),&written,nullptr);
+    WriteFile(f,"\r\n",2,&written,nullptr);
+    CloseHandle(f);
+}
 
 static std::wstring ExecutableFolder() {
     wchar_t buffer[32768]{};
@@ -164,7 +178,10 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
     bool m_busy=false;
 
     void OnLaunched(LaunchActivatedEventArgs const&) {
+        StartupTrace("OnLaunched-enter");
+        StartupTrace("Window-create-enter");
         m_window=Window();
+        StartupTrace("Window-create-ok");
         m_window.Title(L"SCP: SL 日本語化インストーラー");
         m_window.SystemBackdrop(MicaBackdrop());
         m_nav=NavigationView();
@@ -193,7 +210,9 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         });
         m_window.Content(m_nav);
         m_nav.SelectedItem(m_updateItem);
+        StartupTrace("Window-activate-enter");
         m_window.Activate();
+        StartupTrace("Window-activated");
         m_timer=DispatcherTimer();
         m_timer.Interval(std::chrono::minutes(30));
         m_timer.Tick([this](auto const&,auto const&) {
@@ -605,21 +624,29 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
 };
 
 int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
+    StartupTrace("wWinMain-enter");
     try {
         init_apartment(apartment_type::single_threaded);
+        StartupTrace("Apartment-initialized");
         PACKAGE_VERSION minVersion{};
+        StartupTrace("Bootstrap-enter");
         HRESULT hr=MddBootstrapInitialize2(0x00010008,L"",minVersion,0);
+        StartupTrace("Bootstrap-returned");
         if(FAILED(hr)){
             MessageBoxW(nullptr,L"Windows App Runtime 1.8が必要です",
                 L"SCP: SL 日本語化インストーラー",MB_ICONERROR);
             return static_cast<int>(hr);
         }
+        StartupTrace("Application-start-enter");
         Application::Start([](auto&&){make<App>();});
+        StartupTrace("Application-start-returned");
         MddBootstrapShutdown();
     }catch(hresult_error const& ex){
+        StartupTrace("HRESULT-exception");
         MessageBoxW(nullptr,ex.message().c_str(),L"WinUI 3の起動に失敗しました",MB_ICONERROR);
         return static_cast<int>(ex.code());
     }catch(std::exception const&){
+        StartupTrace("STD-exception");
         MessageBoxW(nullptr,L"予期しないエラー",L"WinUI 3",MB_ICONERROR);
         return 1;
     }
