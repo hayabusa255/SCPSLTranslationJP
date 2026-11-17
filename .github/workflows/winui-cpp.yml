@@ -1,4 +1,4 @@
-name: Build native C++ WinUI (no .NET dependency)
+name: Build single EXE native C++ WinUI (no .NET)
 on:
   workflow_dispatch:
   push:
@@ -28,26 +28,31 @@ jobs:
           cargo build --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
           New-Item -ItemType Directory -Force NativeCore/bin/win-x64 | Out-Null
           Copy-Item NativeCore/target/x86_64-pc-windows-msvc/release/scpsl-native-core.exe NativeCore/bin/win-x64/ -Force
-      - name: Configure C++ WinUI with CMake and Microsoft WinApp CLI
+      - name: Configure C++/WinRT including embedded PE resources
         shell: pwsh
         run: |
           cmake -S NativeCppWinUI -B NativeCppWinUI/build -A x64
-      - name: Compile WinUI C++/WinRT (not C# or WebView)
+          Write-Host 'WinApp SDK bootstrap is embedded in the EXE'
+      - name: Compile single EXE (no C#, Tauri, WebView or .NET)
         shell: pwsh
         run: |
           cmake --build NativeCppWinUI/build --config Release --parallel 2
-      - name: Verify native executable and gather package
+      - name: Verify EXE contains embedded Rust / bootstrap resources
         shell: pwsh
         run: |
-          $dir = "NativeCppWinUI/build/Release"
-          if (!(Test-Path "$dir/SCPSLWinUI.exe")) { throw "Native WinUI EXE missing" }
-          if (!(Test-Path "$dir/scpsl-native-core.exe")) { throw "Native Rust core missing" }
-          New-Item -ItemType Directory -Force -Path "dist" | Out-Null
-          Copy-Item "$dir/*" "dist/" -Recurse -Force
-          Compress-Archive -Path "dist/*" -DestinationPath "SCPSL-Native-CppWinUI.zip" -Force
+          $exe = "NativeCppWinUI/build/Release/SCPSLWinUI.exe"
+          if (!(Test-Path $exe)) { throw "Native WinUI EXE missing" }
+          $length = (Get-Item $exe).Length
+          Write-Host "Single EXE size: $length bytes"
+          if ($length -lt 2000000) { throw "Embedded Rust engine appears to be missing" }
+          if (Test-Path "NativeCppWinUI/build/Release/scpsl-native-core.exe") { throw "Unexpected separately deployed Rust engine" }
+          if (Test-Path "NativeCppWinUI/build/Release/Microsoft.WindowsAppRuntime.Bootstrap.dll") { throw "Unexpected separately deployed bootstrap DLL" }
+          # GitHub upload-artifact always creates a ZIP transport, but it has just
+          # one file inside: SCPSLWinUI.exe. Windows does not require a folder.
+          Get-FileHash $exe -Algorithm SHA256 | Format-List
       - uses: actions/upload-artifact@v4
         with:
-          name: SCPSL-Native-CppWinUI
-          path: SCPSL-Native-CppWinUI.zip
+          name: SCPSL-Single-EXE-WinUI
+          path: NativeCppWinUI/build/Release/SCPSLWinUI.exe
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 14

@@ -1,4 +1,5 @@
 #include <windows.h>
+#include "resource_loader.h"
 #include <appmodel.h>
 #include <shellapi.h>
 #include <shobjidl.h>
@@ -24,11 +25,6 @@
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 #include <winrt/Microsoft.UI.Dispatching.h>
 
-extern "C" {
-HRESULT __stdcall MddBootstrapInitialize2(
-    UINT32 majorMinorVersion, PCWSTR versionTag, PACKAGE_VERSION minVersion, UINT32 options) noexcept;
-void __stdcall MddBootstrapShutdown() noexcept;
-}
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -87,7 +83,7 @@ static EngineResponse ExecuteEngine(
     std::function<void(std::string const&)> progress)
 {
     EngineResponse reply;
-    std::wstring exe=ExecutableFolder()+L"\\scpsl-native-core.exe";
+    std::wstring exe=BundledPath(L"scpsl-native-core.exe");
     if (GetFileAttributesW(exe.c_str())==INVALID_FILE_ATTRIBUTES) {
         reply.error=L"scpsl-native-core.exe がありません";
         return reply;
@@ -107,7 +103,7 @@ static EngineResponse ExecuteEngine(
     std::wstring cmd=L"\""+exe+L"\" "+command;
     if (!directory.empty()) cmd+=L" \""+directory+L"\"";
     auto created=CreateProcessW(exe.c_str(),cmd.data(),nullptr,nullptr,TRUE,
-       CREATE_NO_WINDOW,nullptr,ExecutableFolder().c_str(),&start,&proc);
+       CREATE_NO_WINDOW,nullptr,BundledDirectory().c_str(),&start,&proc);
     CloseHandle(writePipe);
     if(!created) {
         CloseHandle(readPipe);
@@ -242,7 +238,7 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         avatar.Width(62);
         avatar.Height(62);
         try {
-            auto imagePath=ExecutableFolder()+L"\\Assets\\researcher.jpg";
+            auto imagePath=BundledPath(L"researcher.jpg");
             std::replace(imagePath.begin(),imagePath.end(),L'\\',L'/');
             auto brush=ImageBrush();
             brush.ImageSource(BitmapImage(Uri(L"file:///"+imagePath)));
@@ -628,25 +624,29 @@ int WINAPI wWinMain(HINSTANCE,HINSTANCE,LPWSTR,int){
     try {
         init_apartment(apartment_type::single_threaded);
         StartupTrace("Apartment-initialized");
-        PACKAGE_VERSION minVersion{};
         StartupTrace("Bootstrap-enter");
-        HRESULT hr=MddBootstrapInitialize2(0x00010008,L"",minVersion,0);
-        StartupTrace("Bootstrap-returned");
-        if(FAILED(hr)){
-            MessageBoxW(nullptr,L"Windows App Runtime 1.8が必要です",
+        HRESULT hr=E_FAIL;
+        std::wstring detail;
+        if(!InitializeBundledRuntime(hr,detail)){
+            StartupTrace("Bootstrap-failed");
+            MessageBoxW(nullptr,detail.c_str(),
                 L"SCP: SL 日本語化インストーラー",MB_ICONERROR);
+            ShutdownBundledRuntime();
             return static_cast<int>(hr);
         }
+        StartupTrace("Bootstrap-returned");
         StartupTrace("Application-start-enter");
         Application::Start([](auto&&){make<App>();});
         StartupTrace("Application-start-returned");
-        MddBootstrapShutdown();
+        ShutdownBundledRuntime();
     }catch(hresult_error const& ex){
         StartupTrace("HRESULT-exception");
+        ShutdownBundledRuntime();
         MessageBoxW(nullptr,ex.message().c_str(),L"WinUI 3の起動に失敗しました",MB_ICONERROR);
         return static_cast<int>(ex.code());
     }catch(std::exception const&){
         StartupTrace("STD-exception");
+        ShutdownBundledRuntime();
         MessageBoxW(nullptr,L"予期しないエラー",L"WinUI 3",MB_ICONERROR);
         return 1;
     }

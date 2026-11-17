@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(SCPSLWinUI LANGUAGES CXX)
+project(SCPSLWinUI LANGUAGES CXX RC)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -17,36 +17,53 @@ if(NOT WINAPP_CLI)
       message(FATAL_ERROR "Unable to download Microsoft WinApp CLI: ${WINAPP_FETCH}")
     endif()
     file(ARCHIVE_EXTRACT INPUT "${CMAKE_CURRENT_BINARY_DIR}/winappcli.zip"
-         DESTINATION "${WINAPP_DIR}")
+      DESTINATION "${WINAPP_DIR}")
   endif()
 endif()
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.winapp/include")
   execute_process(COMMAND "${WINAPP_CLI}" restore
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    RESULT_VARIABLE RESTORE_EXIT)
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}" RESULT_VARIABLE RESTORE_EXIT)
   if(NOT RESTORE_EXIT EQUAL 0)
-    message(FATAL_ERROR "WinApp CLI restore failed with exit code ${RESTORE_EXIT}")
+    message(FATAL_ERROR "WinApp restore failed: ${RESTORE_EXIT}")
   endif()
 endif()
 
-add_executable(SCPSLWinUI WIN32 main.cpp app.manifest)
+set(BOOTSTRAP_DLL "${CMAKE_CURRENT_SOURCE_DIR}/.winapp/bin/x64/Microsoft.WindowsAppRuntime.Bootstrap.dll")
+if(NOT EXISTS "${BOOTSTRAP_DLL}")
+  file(GLOB_RECURSE BOOTSTRAP_CANDIDATES "${CMAKE_CURRENT_SOURCE_DIR}/.winapp/*Microsoft.WindowsAppRuntime.Bootstrap.dll")
+  foreach(candidate IN LISTS BOOTSTRAP_CANDIDATES)
+    if(candidate MATCHES "[/\\\\]x64[/\\\\]")
+      set(BOOTSTRAP_DLL "${candidate}")
+      break()
+    endif()
+  endforeach()
+endif()
+if(NOT EXISTS "${BOOTSTRAP_DLL}")
+  message(FATAL_ERROR "Missing x64 Microsoft.WindowsAppRuntime.Bootstrap.dll from SDK restore")
+endif()
+set(RUST_CORE "${CMAKE_CURRENT_SOURCE_DIR}/../NativeCore/bin/win-x64/scpsl-native-core.exe")
+if(NOT EXISTS "${RUST_CORE}")
+  message(FATAL_ERROR "NativeCore Rust EXE not built")
+endif()
+file(TO_CMAKE_PATH "${BOOTSTRAP_DLL}" BOOTSTRAP_RES)
+file(TO_CMAKE_PATH "${RUST_CORE}" RUST_RES)
+file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Assets/researcher.jpg" RESEARCHER_RES)
+file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Assets/scp-emblem.png" EMBLEM_RES)
+file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Assets/app.ico" ICON_RES)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/resources.rc.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" @ONLY)
+
+add_executable(SCPSLWinUI WIN32 main.cpp resource_loader.cpp "${CMAKE_CURRENT_BINARY_DIR}/resources.rc" app.manifest)
 target_compile_definitions(SCPSLWinUI PRIVATE UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX)
 if(MSVC)
   target_compile_options(SCPSLWinUI PRIVATE /bigobj /EHsc /utf-8)
 endif()
 target_include_directories(SCPSLWinUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/.winapp/include")
 target_link_directories(SCPSLWinUI PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/.winapp/lib/x64")
-target_link_libraries(SCPSLWinUI PRIVATE
-  WindowsApp.lib OneCoreUap.lib
-  Microsoft.WindowsAppRuntime.Bootstrap.lib
+# Bootstrap DLL is loaded dynamically from its embedded RCDATA PE resource.
+target_link_libraries(SCPSLWinUI PRIVATE WindowsApp.lib OneCoreUap.lib
   Shell32.lib Ole32.lib User32.lib Uuid.lib)
 
-add_custom_command(TARGET SCPSLWinUI POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/Assets" "$<TARGET_FILE_DIR:SCPSLWinUI>/Assets")
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../NativeCore/bin/win-x64/scpsl-native-core.exe")
-  add_custom_command(TARGET SCPSLWinUI POST_BUILD
-    COMMAND "${CMAKE_COMMAND}" -E copy_if_different
-      "${CMAKE_CURRENT_SOURCE_DIR}/../NativeCore/bin/win-x64/scpsl-native-core.exe"
-      "$<TARGET_FILE_DIR:SCPSLWinUI>/scpsl-native-core.exe")
-endif()
+message(STATUS "Embedded bootstrap: ${BOOTSTRAP_DLL}")
+message(STATUS "Embedded Rust core: ${RUST_CORE}")
+message(STATUS "One-file distribution: SCPSLWinUI.exe")
