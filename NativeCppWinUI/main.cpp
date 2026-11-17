@@ -254,6 +254,8 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         auto back=Button();
         back.Content(MakeIcon(L"\uE72B",16));
         back.MinWidth(35);back.MinHeight(32);
+        back.Background(SolidColorBrush(Windows::UI::Colors::Transparent()));
+        back.BorderThickness(Thickness{0});
         back.Click([this](auto const&,auto const&){m_nav.SelectedIndex(0);});
         top.Children().Append(back);
         auto settings=MakeText(L"設定",14);
@@ -851,6 +853,7 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
                         auto published=object.GetNamedString(L"publishedAt",L"");
                         auto ex=Expander();
                         ex.HorizontalAlignment(HorizontalAlignment::Stretch);
+                        ex.HorizontalContentAlignment(HorizontalAlignment::Stretch);
                         ex.BorderThickness(Thickness{1});
                         ex.BorderBrush(ThemeBrush(L"CardStrokeColorDefaultBrush"));
                         ex.Background(ThemeBrush(L"CardBackgroundFillColorDefaultBrush"));
@@ -870,6 +873,7 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
                         header.Children().Append(meta);
                         ex.Header(header);
                         StackPanel details;
+                        details.HorizontalAlignment(HorizontalAlignment::Stretch);
                         details.Spacing(13);
                         details.Padding(Thickness{20,16,20,23});
                         auto label=MakeText(L"この更新プログラムの内容",14);

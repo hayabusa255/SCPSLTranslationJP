@@ -97,6 +97,7 @@ StackPanel RenderMarkdown(std::wstring const& raw){
         cursor=end+1;lines++;
         if(line.empty())continue;
         if(line.size()>=3 && line.substr(0,3)==std::wstring(3,wchar_t(96))){code=!code;continue;}
+        if(line==L"変更点-")line=L"## 変更点";
         if(line.find(L"Full Changelog")!=std::wstring::npos){
             auto urlPos=line.find(L"https://");
             if(urlPos!=std::wstring::npos){
