@@ -3,6 +3,7 @@
 #include <shellapi.h>
 #include <cwctype>
 #include <algorithm>
+#include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Documents.h>
@@ -43,7 +44,7 @@ void AppendLink(TextBlock const& block,std::wstring const& label,std::wstring co
     });
     block.Inlines().Append(link);
 }
-void Inline(TextBlock const& block,std::wstring const& source) {
+void AppendMarkdownInlines(TextBlock const& block,std::wstring const& source) {
     size_t i=0;
     while(i<source.size()){
         if(source.compare(i,2,L"**")==0) {
@@ -124,7 +125,7 @@ StackPanel RenderMarkdown(std::wstring const& raw){
             }else if(line.rfind(L"> ",0)==0){
                 line=L"引用: "+Trim(line.substr(2));block.Opacity(0.75);
             }else if(line.rfind(L"---",0)==0)continue;
-            Inline(block,line);
+            AppendMarkdownInlines(block,line);
         }
         stack.Children().Append(block);
     }
