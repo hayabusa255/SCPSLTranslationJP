@@ -18,6 +18,7 @@
 #include <winrt/Windows.UI.Xaml.Interop.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Markup.h>
+#include <winrt/Microsoft.UI.Xaml.XamlTypeInfo.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.h>
 #include <winrt/Microsoft.UI.Xaml.Controls.Primitives.h>
 #include <winrt/Microsoft.UI.Xaml.Media.h>
@@ -155,9 +156,10 @@ static Button MakeButton(hstring const& label) {
 
 struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider>
 {
-    Microsoft::UI::Xaml::Markup::IXamlType GetXamlType(Windows::UI::Xaml::Interop::TypeName const&) {return nullptr;}
-    Microsoft::UI::Xaml::Markup::IXamlType GetXamlType(hstring const&) {return nullptr;}
-    com_array<Microsoft::UI::Xaml::Markup::XmlnsDefinition> GetXmlnsDefinitions(){return {};}
+    Microsoft::UI::Xaml::XamlTypeInfo::XamlControlsXamlMetaDataProvider m_metadata{};
+    Microsoft::UI::Xaml::Markup::IXamlType GetXamlType(Windows::UI::Xaml::Interop::TypeName const& name) {return m_metadata.GetXamlType(name);}
+    Microsoft::UI::Xaml::Markup::IXamlType GetXamlType(hstring const& name) {return m_metadata.GetXamlType(name);}
+    com_array<Microsoft::UI::Xaml::Markup::XmlnsDefinition> GetXmlnsDefinitions(){return m_metadata.GetXmlnsDefinitions();}
 
     Window m_window{nullptr};
     NavigationView m_nav{nullptr};
@@ -175,6 +177,11 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
 
     void OnLaunched(LaunchActivatedEventArgs const&) {
         StartupTrace("OnLaunched-enter");
+        // Default Fluent control templates must be loaded before any WinUI controls.
+        // Without this, NavigationView/Expander may crash in Microsoft.UI.Xaml.dll.
+        StartupTrace("Resources-enter");
+        Resources().MergedDictionaries().Append(XamlControlsResources());
+        StartupTrace("Resources-ready");
         StartupTrace("Window-create-enter");
         m_window=Window();
         StartupTrace("Window-create-ok");
@@ -197,6 +204,7 @@ struct App : ApplicationT<App,Microsoft::UI::Xaml::Markup::IXamlMetadataProvider
         m_nav.MenuItems().Append(m_folderItem);
         m_nav.MenuItems().Append(m_aboutItem);
         m_nav.Content(BuildContent());
+        StartupTrace("Content-ready");
         m_nav.SelectionChanged([this](auto const&,NavigationViewSelectionChangedEventArgs const& args) {
             auto selection=args.SelectedItem();
             if(selection == m_updateItem) SwitchPage(0);
