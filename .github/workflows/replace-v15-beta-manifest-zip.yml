@@ -1,0 +1,92 @@
+name: Replace v15 Private Beta translation ZIP after manifest change
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/replace-v15-beta-manifest-zip.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-JP-Ver15.0Beta-manifest-only
+  cancel-in-progress: false
+
+jobs:
+  update-beta-zip:
+    if: github.repository == 'hayabusa255/SCPSLTranslationJP' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BETA_TAG: JP-Ver15.0Beta
+    steps:
+      - name: Checkout current translations and existing Beta tag
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Require that only manifest.json changed since the Beta tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse -q --verify "refs/tags/$BETA_TAG" >/dev/null
+          changed="$(git diff --name-only "$BETA_TAG" HEAD -- JP/)"
+          echo "Changes since $BETA_TAG:"
+          printf '%s\n' "$changed"
+          test "$changed" = "JP/manifest.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          doc = json.loads(Path('JP/manifest.json').read_text(encoding='utf-8'))
+          assert 'Slaviaaa2' in doc['Authors'], 'New contributor not listed in manifest'
+          assert len(doc['Authors']) == len(set(doc['Authors'])), 'Duplicate author'
+          print('New manifest verified: Authors includes Slaviaaa2')
+          PY
+
+      - name: Snapshot release metadata before replacing ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$BETA_TAG" > beta-before.json
+          jq -e '.prerelease == true and .draft == false' beta-before.json
+          jq -e --arg tag "$BETA_TAG" '.assets | any(.name == ($tag + ".zip"))' beta-before.json
+          jq -e '.assets | any(.name == "SCPSL.exe")' beta-before.json
+          jq -S '{tag_name,name,body,draft,prerelease,installer:(.assets[] | select(.name == "SCPSL.exe") | {id,size,digest})}' beta-before.json > stable-release-metadata-before.json
+
+      - name: Rebuild only the translation ZIP from updated JP folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          ( cd JP && zip -r "../$BETA_TAG.zip" * )
+          unzip -t "$BETA_TAG.zip" | tail -2
+          unzip -p "$BETA_TAG.zip" manifest.json | cmp - JP/manifest.json
+          python3 - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('JP-Ver15.0Beta.zip') as z:
+              names = z.namelist()
+              assert 'manifest.json' in names
+              assert all(not n.startswith('JP/') for n in names)
+              assert sum(n.endswith('.txt') for n in names) >= 70
+              print('Archive layout verified:', len(names), 'members')
+          PY
+          sha256sum "$BETA_TAG.zip"
+
+      - name: Replace only JP-Ver15.0Beta.zip on existing prerelease
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release upload "$BETA_TAG" "$BETA_TAG.zip" --clobber
+
+      - name: Verify replacement and unchanged other release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/releases/tags/$BETA_TAG" > beta-after.json
+          jq -S '{tag_name,name,body,draft,prerelease,installer:(.assets[] | select(.name == "SCPSL.exe") | {id,size,digest})}' beta-after.json > stable-release-metadata-after.json
+          diff -u stable-release-metadata-before.json stable-release-metadata-after.json
+          digest="sha256:$(sha256sum "$BETA_TAG.zip" | cut -d' ' -f1)"
+          jq -e --arg tag "$BETA_TAG" --arg digest "$digest" \
+            '.assets[] | select(.name == ($tag + ".zip")) | .digest == $digest' beta-after.json
+          echo 'Updated Beta translation ZIP; original tag, notes, prerelease status and SCPSL.exe preserved.'
