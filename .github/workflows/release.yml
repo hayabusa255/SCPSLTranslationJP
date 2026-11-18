@@ -101,9 +101,15 @@ jobs:
         shell: bash
         run: |
           title="$(echo "$TAG" | cut -c4-)日本語翻訳"
+          # Never mark Beta translation packages as the latest stable release.
+          if [[ "$TAG" == *Beta* || "$TAG" == *beta* ]]; then
+            release_flags=(--prerelease)
+          else
+            release_flags=(--latest)
+          fi
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$TAG.zip" SCPSL.exe --clobber
-            gh release edit "$TAG" --title "$title" --notes-file notes.md --latest
+            gh release edit "$TAG" --title "$title" --notes-file notes.md "${release_flags[@]}"
           else
-            gh release create "$TAG" "$TAG.zip" SCPSL.exe --title "$title" --notes-file notes.md --verify-tag --latest
+            gh release create "$TAG" "$TAG.zip" SCPSL.exe --title "$title" --notes-file notes.md --verify-tag "${release_flags[@]}"
           fi
