@@ -33,52 +33,23 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
     
     翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
 ## インストーラーを使用するインストール方法
-### Windows
-1. **SCPSL.exeをダウンロード** ：
-![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/6f6a1a08-de22-4e60-ad33-b2af9acf1416)
-2. **SCPSL.exeを実行**：
- SCPSL.exeをダブルクリックします。
-![SCPSL.exe](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/a69c5917-356e-464e-ade4-c4008316bede)
- クリックするとこのような画面が表示されます。詳細情報より、実行を選択して実行します。
 
- Steamフォルダに書き込めないときだけ、次のような管理者権限の確認が表示されます。表示されたら許可（はい）を選択してください。常に管理者として実行する必要はありません。
+### Windows 11 / Windows x64
+リリースページの **`SCPSL.exe`** をダウンロードして起動してください。
 
-![Run as Admin](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/e31991a3-6f39-48d6-8e6f-f9073c95b52c)
+現在のインストーラーは **C++/WinRT（WinUI 3）＋Rust** で作られたネイティブ版です。以前の.NET版と異なり、Windows App Runtime、.NET、WebView2の追加インストールは不要です。単一EXE（約26MB）の中に必要なランタイムが含まれ、初回起動時にアプリ専用フォルダーに展開されます。
 
-3. **ゲーム内設定から言語を変更する**：
-  ![Language Settings](./docs/NowJapanese.png)
+1. [Releases](https://github.com/hayabusa255/SCPSLTranslationJP/releases)から `SCPSL.exe` をダウンロードします。
+2. ゲームを終了してから起動します。SteamのSCP: Secret Laboratory保存先が自動検出されない場合は、手動でゲームフォルダーを選択します。
+3. 「更新履歴とバージョン切り替え」から、**安定版・Beta版**の日本語訳を選択して導入できます。既存版から切り替えるときは確認ダイアログが表示されます。
+4. ゲーム内の言語設定を日本語に変更してください。適用後はゲームの再起動を推奨します。
 
-翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
+> v15.0 Private Beta向けの翻訳はベータ版のため、対応ゲームバージョンをご確認ください。実ゲームへの導入テストは今後も継続します。
 
 ### Linux / Steam Deck
-1. **SCPSL-linux-x64をダウンロード**：
- [リリースページ](https://github.com/hayabusa255/SCPSLTranslationJP/releases)から `SCPSL-linux-x64` をダウンロードします（Steam Deck ではデスクトップモードで操作してください）。
-2. **実行権限を付けて実行**：
- ダウンロードしたフォルダで端末（Steam Deck ではKonsole）を開き、次を実行します。
- ```sh
- chmod +x SCPSL-linux-x64 && ./SCPSL-linux-x64
- ```
- Steam（通常版 / Flatpak / Snap / Steam Deck）のSCPSLは自動で検出されます。見つからないときは、ゲームフォルダのパスを入力できます。
-3. **ゲーム内設定から言語を変更する**：
- 翻訳ファイルを完全に適用するためにゲームを再起動することを推奨します。
+現在の新しいWinUIネイティブインストーラーはWindows専用です。Linux / Steam Deckではリリースの `JP-Ver*.zip` をダウンロードし、解凍したフォルダーをゲームの `Translations` 配下に配置してください。
 
-### インストーラーの主なオプション
-| オプション | 内容 |
-|---|---|
-| `--game-dir <パス>` | ゲームフォルダを指定する |
-| `-y` / `--yes` | 確認を省略する |
-| `--force` | 最新でも再インストールする |
-| `--dry-run` | 書き込まずに内容だけ確認する |
-| `--no-pause` | 終了時に待機しない |
-| `-h` / `--help` | ヘルプを表示する |
-
-古い日本語訳のフォルダが見つかった場合は、確認のうえ削除します。
-
-**※インストーラーは最新版の日本語訳を自動で取得してインストールします。githubで一度でもダウンロードした事がある場合それを再利用しましょう。**
-**更新時も自動で更新してくれます。**
-
-
-
+旧 `SCPSL-linux-x64` の新規配布は終了しています。
 
 ### プロジェクト貢献者一覧
 
