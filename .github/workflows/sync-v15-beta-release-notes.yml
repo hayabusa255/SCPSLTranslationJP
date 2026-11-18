@@ -1,0 +1,47 @@
+name: Synchronize v15 Private Beta release instructions
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/releases/JP-Ver15.0Beta.md'
+      - '.github/workflows/sync-v15-beta-release-notes.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-beta-notes:
+    if: github.repository == 'hayabusa255/SCPSLTranslationJP' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout current release instructions
+        uses: actions/checkout@v4
+
+      - name: Verify Beta release and its existing assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/releases/JP-Ver15.0Beta.md
+          gh release view JP-Ver15.0Beta --json isPrerelease,assets \
+            --jq 'if .isPrerelease and ([.assets[].name] | index("JP-Ver15.0Beta.zip") != null) and ([.assets[].name] | index("SCPSL.exe") != null) then "Beta and both assets verified" else error("Unexpected release/assets; refusing edit") end'
+
+      - name: Update the published prerelease description
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release edit JP-Ver15.0Beta \
+            --notes-file docs/releases/JP-Ver15.0Beta.md \
+            --prerelease
+          gh release view JP-Ver15.0Beta --json body --jq .body > published-notes.md
+          python3 - <<'PY'
+          from pathlib import Path
+          expected = Path('docs/releases/JP-Ver15.0Beta.md').read_text(encoding='utf-8').replace('\r\n','\n').strip()
+          actual = Path('published-notes.md').read_text(encoding='utf-8').replace('\r\n','\n').strip()
+          if expected != actual:
+              raise SystemExit('Published release notes do not match the source instructions')
+          print('GitHub v15 Private Beta prerelease installation instructions synchronized.')
+          PY
