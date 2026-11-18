@@ -1,5 +1,5 @@
 死亡した
-Press {KEYBINDING_INTERACTION} to place the <color=yellow>Weapon Manager Tablet</color>.
-Press {KEYBINDING_INTERACTION} to pick up the <color=yellow>Weapon Manager Tablet</color>.
-This <color=yellow>workstation</color> already has someone else's <color=yellow>Weapon Manager Tablet</color> connected.
-You need a <color=yellow>Weapon Manager Tablet</color> to use this <color=yellow>workstation</color>.
+{KEYBINDING_INTERACTION}を押して<color=yellow>武器管理タブレット</color>を設置する
+{KEYBINDING_INTERACTION}を押して<color=yellow>武器管理タブレット</color>を拾う
+この<color=yellow>ワークステーション</color>には、すでに他の人の<color=yellow>武器管理タブレット</color>が接続されています。
+この<color=yellow>ワークステーション</color>を使うには、<color=yellow>武器管理タブレット</color>が必要です。

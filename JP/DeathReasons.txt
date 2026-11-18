@@ -1,4 +1,4 @@
-<b>[user]</b>の死体 - [user]は[class]だった!\n\n死因: [cause]
+<b>[user]</b>の死体 - [user]は[class]だった！\n\n死因: [cause]
 再収容された
 Alpha Warheadにより蒸発した
 突然の生命徴候の停止、明らかな外傷は認められない

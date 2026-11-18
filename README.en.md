@@ -2,9 +2,9 @@
 
 [日本語](README.md) | [English](README.en.md)
 
-[![SCPSL](https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/700330/capsule_616x353.jpg?t=1717344352)]()
+[![SCPSL](./docs/NewSLImage.png)]()
 
-[![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![Translation License: CC BY 4.0](https://img.shields.io/badge/translation-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/) [![Code License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/hayabusa255/SCPSLTranslationJP)]() [![Translation License: CC BY 4.0](https://img.shields.io/badge/translation-CC%20BY%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/deed.en) [![Code License: MIT](https://img.shields.io/badge/code-MIT-blue.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/blob/main/LICENSE)
 [![Github All Releases](https://img.shields.io/github/downloads/hayabusa255/SCPSLTranslationJP/total.svg)](https://github.com/hayabusa255/SCPSLTranslationJP/releases)
 
 ## Discord Server
@@ -31,11 +31,13 @@ Welcome to the Japanese translation project for SCP: Secret Laboratory (SCPSL). 
     [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/b7a3309b-cee3-44ac-92be-e97165cda390)]()
 
 3. **Change the language in the in-game settings**:
-    [![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)]()
+    [![image](./docs/NowJapanese.png)]()
 
     Restarting the game is recommended to fully apply the translation files.
 
 ## Installer Installation
+
+### Windows
 
 1. **Download `SCPSL.exe`**:
 ![image](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/6f6a1a08-de22-4e60-ad33-b2af9acf1416)
@@ -44,16 +46,41 @@ Welcome to the Japanese translation project for SCP: Secret Laboratory (SCPSL). 
  Double-click `SCPSL.exe`.
 ![SCPSL.exe](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/a69c5917-356e-464e-ade4-c4008316bede)
 
- If Windows SmartScreen appears, choose **More info**, then **Run anyway**.
+ A screen like this appears when you click it. Choose **More info**, then run it.
+
+ The administrator prompt below appears only when the Steam folder is not writable. If it shows up, allow it (Yes). You do not need to run the installer as administrator every time.
 
 ![Run as Admin](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/e31991a3-6f39-48d6-8e6f-f9073c95b52c)
 
- Run it with administrator privileges to complete the installation.
-
 3. **Change the language in the in-game settings**:
-  ![Language Settings](https://github.com/hayabusa255/SCPSLTranslationJP/assets/140249828/5f85438c-641a-4fcc-8641-d13ed887ee12)
+  ![Language Settings](./docs/NowJapanese.png)
 
 Restarting the game is recommended to fully apply the translation files.
+
+### Linux / Steam Deck
+
+1. **Download `SCPSL-linux-x64`** from the [Releases page](https://github.com/hayabusa255/SCPSLTranslationJP/releases) (on Steam Deck, use Desktop Mode).
+2. **Make it executable and run it**:
+ Open a terminal (Konsole on Steam Deck) in the download folder and run:
+ ```sh
+ chmod +x SCPSL-linux-x64 && ./SCPSL-linux-x64
+ ```
+ SCP: Secret Laboratory installed through Steam (native / Flatpak / Snap / Steam Deck) is detected automatically. If it is not found, you can enter the game folder path.
+3. **Change the language in the in-game settings**:
+ Restarting the game is recommended to fully apply the translation files.
+
+### Main installer options
+
+| Option | Description |
+|---|---|
+| `--game-dir <path>` | Specify the game folder |
+| `-y` / `--yes` | Skip confirmations |
+| `--force` | Reinstall even if up to date |
+| `--dry-run` | Show what would be done without writing anything |
+| `--no-pause` | Do not wait for a key press on exit |
+| `-h` / `--help` | Show help |
+
+If an old Japanese translation folder is found, the installer asks before deleting it.
 
 **The installer automatically downloads and installs the latest Japanese translation. If you have already downloaded it from GitHub before, reuse that download.**
 **It will also update the translation automatically.**

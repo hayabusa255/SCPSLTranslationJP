@@ -1,6 +1,6 @@
-財団が異常事象の実験を行うために使用する消耗品。彼らの主要目的は、<color=#F00>SCPs</color>と<color=#0096FF>MTF</color>の目をかいくぐり、施設を脱出することだ。<color=#008F1E>カオスインサージェンシー</color>が脱出を支援する。
+財団が異常事象の実験に使う消耗品。同じ<color=#FF8E00>Dクラス</color>と共に施設から脱出しろ。<color=#008F1E>カオス・インサージェンシー</color>とは協力し、<color=#FFFF7CFF>研究員</color>、<color=#5B6370>施設警備員</color>、<color=#0096FF>機動部隊員</color>、脱走した<color=#F00>SCP</color>は避けること。
 もうすぐリスポーンします。\nすべてが失敗へ向かう状況を楽しみましょう。
-異常物体の調査を任務とする財団職員。彼らの主要目標は、<color=#F00>SCPs</color>と<color=#008F1E>カオスインサージェンシー</color>を避け、施設から脱出することである。<color=#0096FF>MTF</color>が脱出を支援する。
-財団の活動を妨害し、自分たちの利益のためにSCPを利用することを主な目的とする秘密組織の一員。彼らは<color=#FFFF7F>科学者</color>や<color=#0096FF>財団職員</color>を排除し、<color=#FF8E00>Dクラス職員</color>を安全な場所に護送する任務を負っている。
-財団の安全を確保するため、収容違反に対応する精鋭部隊の一員。<color=#F00>SCPs</color>と<color=#008F1E>カオスインサージェンシー</color>を排除し、<color=#FF8E00>Dクラス職員</color>を無力化し、<color=#FFFF7F>科学者</color>を安全な場所に護送することが主な目標。
-施設警備員。<color=#FFFF7F>科学者たち</color>の脱出を助け、迫り来る<color=#F00>SCP</color>の脅威を抑えることを目的としている。<color=#0096FF>MTF</color>と協力し、障壁となるあらゆるものを排除しながら、任務を遂行する。
+異常物体の調査を任務とする財団職員。同じ<color=#FFFF7CFF>研究員</color>と共に施設から脱出しろ。<color=#5B6370>施設警備員</color>や<color=#0096FF>機動部隊員</color>とは協力し、<color=#FF8E00>Dクラス</color>、<color=#008F1E>カオス・インサージェンシー</color>、脱走した<color=#F00>SCP</color>は避けること。
+財団の活動を妨害する秘密組織の一員。<color=#FFFF7CFF>研究員</color>、<color=#5B6370>施設警備員</color>、<color=#0096FF>機動部隊員</color>を含む、すべての財団職員を排除せよ。脱走した<color=#F00>SCP</color>は始末し、脱出した<color=#FF8E00>Dクラス</color>を仲間の<color=#008F1E>カオス・インサージェンシー</color>と協力して安全な場所へ護送せよ。
+収容違反に対応する財団の精鋭部隊の一員。脱走した<color=#F00>SCP</color>、<color=#FF8E00>Dクラス</color>、<color=#008F1E>カオス・インサージェンシー</color>を含む、あらゆる脅威から施設を守れ。他の<color=#0096FF>機動部隊員</color>や残っている<color=#5B6370>施設警備員</color>と協力し、<color=#FFFF7CFF>研究員</color>を安全な場所へ護送せよ。
+施設の警備員。<color=#0096FF>機動部隊</color>が到着するまで、脱走した<color=#F00>SCP</color>と<color=#008F1E>カオス・インサージェンシー</color>から<color=#FFFF7CFF>研究員</color>を守れ。他の<color=#5B6370>施設警備員</color>と協力し、脱出を図る<color=#FF8E00>Dクラス</color>を武装解除するか殺害して制圧せよ。

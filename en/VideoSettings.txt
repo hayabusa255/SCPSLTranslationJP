@@ -6,53 +6,54 @@ Very High
 Ultra
 Enabled
 Disabled
-Shadows
-Shadow Resolution
-Facility Lights
-Resolution
-Aspect Ratio
-Display Mode
-Max Frame Rate
-Anti-aliasing
-V-Sync
-Decals
-Texture Quality
-Brightness
+Dynamic Shadows~Enables or disables all dynamic shadows cast by characters, objects, and light sources.\nDisabling this option may improve performance, but scenes will appear flatter.
+Dynamic Shadow Resolution~Determines the quality and sharpness of dynamic shadows. Lower values can improve performance, but shadows may appear pixelated.
+Facility Lights~Disables most facility lights and replaces them with flat ambient lighting.\nThis can greatly reduce GPU load, but makes the facility look noticeably worse and less atmospheric.
+Resolution~Determines the number of pixels used to render the game on your display.\nLower resolutions can improve performance, but make the image appear less sharp and stretched.
+Aspect Ratio~Adjusts the width-to-height proportion of the displayed image. Select a ratio matching your monitor to avoid stretching or unused screen space.\n<color=#FF2A2E>Aspect ratios narrower than 4:3 or wider than 21:9 are not officially supported. Depending on the deviation, they may cause the game and its UI to appear stretched and, in extreme cases, cause some UI elements to become inaccessible.</color>
+Display Mode~Controls the application window type.\n• Exclusive Fullscreen: The game has full control over the screen.\n• Borderless Window: Creates a full-screen effect by stretching the window to cover the screen. \n• Windowed: Runs the game in a standard window, like other applications.
+Max Frame Rate~Target maximum number of frames rendered per second.
+Anti-aliasing~Smooths jagged edges in the rendered image.\n• FXAA has a lower performance cost but may slightly blur the image.\n• SMAA provides higher-quality edge smoothing.
+V-Sync~Synchronizes the game's frame rate with your display's refresh rate to prevent visible screen tearing on some hardware. Enabling this option may increase input latency, so only use it if you experience such artifacts.
+Aspect ratio not supported
+Texture Quality~Allows to reduce the resolution of textures.\nLower settings reduce VRAM usage, but make surfaces appear blurred. This setting does not significantly affect performance unless your system is running low on available VRAM.
+Brightness~Higher values make dark areas easier to see, while lower values preserve a darker and more atmospheric appearance.
 Screen Settings
 Quality & Performance
-Ragdoll Freezing
-Ragdoll Freeze Time
-FPS Limiter
+Ragdoll Freezing~Disables physics for ragdolls (dead bodies) after a specified time to reduce CPU usage.
+Ragdoll Freeze Time~Determines the number of seconds for freezing to occur after a ragdoll spawn.
+FPS Limiter~Limits the maximum number of frames the game can render per second.\nEnabling this can reduce power usage and hardware load.
 Visual Effects
-Head Bobbing
-Explosion Screen Shake
-Flashbang Dark Mode
+Head Bobbing~Enables camera movement while walking or running to simulate natural head motion.
+Explosion Screen Shake~Controls whether explosions cause the camera to shake.
+Flashbang Dark Mode~Causes the screen to turn black instead of bright white after being affected by a flashbang. This can reduce discomfort caused by sudden intense flashes.
 All
 Other
 1/2 Refresh Rate
 1/3 Refresh Rate
 1/4 Refresh Rate
-Selected aspect ratio is not supported by your monitor
+-
 Exclusive Fullscreen
-Borderless Window - Keep Visible
-Borderless Window - Hide When Unfocused
+Borderless Window
+Borderless Window Behavior~Controls whether the game window should stay visible or automatically minimize when it loses focus (for example: by user selecting another window).
 Windowed
-SMAA Quality Preset
-Ambient Occlusion
-Bloom Quality
-Disables physics for ragdolls (dead bodies) after a specified time to reduce CPU usage.
-Aspect ratio of your current resolution is not supported!\nSome interface elements may not appear correct.
-Bullet Holes
-Blood Decals
-Target Display
-• Exclusive Fullscreen: The game has full control over the screen.\n• Borderless Window: Creates a full-screen effect by stretching the window to cover the screen. Different options control whether the game window should stay visible or automatically minimizes when it loses focus (for example, by user selecting another window).
-Graphics API
-Changes the 3D Graphics Library utilized by the game.\nThis option is experimental, and, as such, we recommend keeping it on Auto —unless you're attempting to resolve a specific rendering or performance issue with poorly supported hardware.
+SMAA Quality Preset~Determines the quality of SMAA edge smoothing when SMAA is selected. Higher presets reduce jagged edges more effectively, but may slightly decrease performance.
+Ambient Occlusion~Adds soft contact shadows where surfaces meet.\nHigher settings improve the quality of this effect and reduce flicker, but directly impact GPU performance.
+Bloom Quality~Determines the quality of glow effects around bright lights and emissive textures.
+Hide When Unfocused
+Keep Visible
+Bullet Holes~Allows bullet hole decals to spawn.\nDisabling this option can improve performance and reduce visual clutter during long rounds, but these decals are useful for providing visual feedback when firing guns or offering clues when entering an area where a fight has occurred.
+Blood Decals~Allows blood splatters to spawn.\nDisabling this option can improve performance and reduce visual clutter during long rounds, but these decals are useful for providing visual feedback when firing guns or offering clues when entering an area where a fight has occurred.
+Target Display~Determines which monitor the game is displayed on when multiple monitors are in use.
+-
+Graphics API~Changes the 3D Graphics Library utilized by the game.\nThis option is experimental, and as such, we recommend keeping it on Auto unless you are attempting to resolve a specific rendering or performance issue with poorly-supported hardware.
+-
 Changes will take place following a game restart.
 Unavailable as a Graphics API was forced through launch parameters.
-Blood Decals Limit
-Bullet Holes Limit
-Show Needles
-SCP-939 Vision Blur
-Animation Quality
-Determines how often human model animations update based on their distance from the player. Lowering the quality can improve performance, but animations of distant models may appear choppy.
+Blood Decal Limit~Determines the maximum number of unique blood splatters that can spawn before the oldest instances are re-used.\nLowering this limit can improve performance and reduce visual clutter during long rounds.
+Bullet Hole Limit~Determines the maximum number of unique bullet hole decals that can spawn before the oldest instances are re-used.\nLowering this limit can improve performance during long rounds.
+Show Needles~Controls whether needles are visually displayed during gameplay.\nDisabling this option can make the game more comfortable for players with a fear of needles.
+SCP-939 Vision Blur~Controls the blur and depth of field effects used while playing as SCP-939. These effects are useful to determine the current vision range of SCP-939, but may be disabled for a cleaner appearance.
+Animation Quality~Determines how often human model animations update based on their distance from the player. Lowering the quality can improve performance, but animations of distant models may appear choppy.
+-
+Pickup Outlines~Shows a coloured outline around the pickup that the cursor is pointing at.

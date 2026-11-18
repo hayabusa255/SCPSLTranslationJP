@@ -22,3 +22,4 @@ Weapon Accuracy Display Mode
 Accurate Range
 Dispersion
 Determines how weapon accuracy is depicted by UI elements. Accurate range displays the distance at which the weapon remains likely to hit a target, while dispersion shows the maximum angular deviation from the target direction.
+Custom DisplayKit Elements~Enables or disables custom user interface elements from modded servers.

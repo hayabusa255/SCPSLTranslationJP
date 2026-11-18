@@ -12,12 +12,12 @@ More information
 SCP-939 uses a mechanic where the last few seconds of your voice chat transmission is temporarily recorded. This can be played back by SCP-939 to lure out targets.\nThe recordings are automatically discarded if you leave the server, if SCP-939 dies, or upon round restart. Turning this feature off will remove all existing recordings of your transmissions.
 Cloud cannot be deployed at this position.
 Minimal Cloud size hasn't been reached. Hold the deploy key for longer.
-SCP-939 is blind, and sees through sound. It capitalizes on mistakes, using its silent steps and frightening speed to set up ambushes and go in for the kill.
-Claw:Click to swipe your claw in a wide arc in front of you, ripping flesh and bone from your chosen victim. Whilst focusing, your primary attack will allow you to lunge at your prey.
-Focus:Devoting your full energy to your senses, you can see prey from farther away, as well as being able to tell what type of prey they are, through the actions they perform.
-Amnestic Cloud:Fill your air sacs with a dangerous neurochemical gas, projecting it in a radius which is determined by the time it was charged. Humans who inhale the gas lose perception of SCP-939, and cannot perform certain actions. Beware though, attacking or being attacked will reveal you for a short time.
-With Many Voices:Humans you kill have a chance at giving you their last words, allowing you to steal their voice and utilize it to deceive others. In addition, SCP-939 can also mimic some basic sounds, such as disguising their footsteps to match humans.
-Ultrasensitive:SCP-939 is able to sense nearby heat sources, represented by a small radius of normal vision. Outside of this however, you must rely on sound in order to track nearby prey. The louder the sound, the further away you can hear it from. The range of your vision is affected by your stamina levels.
+Work together with your <color=#F00>SCP teammates</color>. You are blind and can only see humans in close proximity, but are able to track them through audio blips. Use your abilities to ambush, misdirect, and track your targets.
+Claw:Press [key] to swipe your claws at a nearby human, dealing moderate damage. This damage is mitigated by armor.
+Focus:Hold [key] to enter a prone state. You cannot move while prone, but gain the ability to Lunge forward by pressing LMB. Lunging at a human will deal massive damage, often instantly killing them.
+Amnestic Cloud:Hold [key] to deploy an invisible Amnestic Cloud. Humans that walk into the cloud will be unable to see you until you attack them.
+With Many Voices:You are able to mimic various sounds, including the voices of your victims, via a menu that can be opened by pressing [Tab]. Use this to fool humans and lead them into a trap.
+Ultrasensitive:You are blind and can only see within a short radius of you. However, you can see blips produced by humans when they make sound. Use these blips to locate your targets.
 -
 Place Mimic Point
 Override position of Mimicry's sounds source
@@ -45,3 +45,4 @@ Drag to trim the recording
 Toggle favorite. Recordings marked as favorite are bound to a hotkey.
 Drag to reorganize recordings
 You've stolen your target's voice!
+Sprint:Hold [key] to consume stamina and move at a faster pace. Stamina regenerates when you stop sprinting. Be mindful of its usage!

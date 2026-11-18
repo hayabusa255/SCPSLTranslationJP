@@ -1,27 +1,31 @@
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nHold your aim key while being observed to blink.\nYou resist some damage from gunfire, and have a regenerating shield.</color>
-Escape from the facility.\nCooperate with the <color=#008F1e>Chaos Insurgency.</color>\nAvoid other teams.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nHold and release your aim key while being observed to blink.\n Blink onto humans to kill them.\nWhile unobserved, left click on nearby humans to kill them.</color>
+Escape the facility.\nCooperate with the <color=#008F1e>Chaos Insurgency.</color>\nAvoid other teams.
 You will respawn soon.
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nYou can walk through doors.\nLeft click hurts and TPs enemies to your dimension.\nHold TAB to access your TP abilities.</color>
-Help <color=#FFFF7CFF>scientists</color> escape.\nNeutralize other subjects.\nInstruct your soldiers. \nFollow the orders of your superiors.
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nLeft click to insta-kill enemies with a short cooldown.\nInteract with a recently-dead human to revive them as an ally.</color>
-Escape from the facility.\nCooperate with the <color=#0096FF>MTF.</color>\nAvoid other teams.
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
-Help <color=#FF8E00>Class-D Personnel</color> escape.\nNeutralize other subjects.
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nLeft click to attack with a short windup.</color>
-Help <color=#FFFF7CFF>scientists</color> escape.\nNeutralize other subjects.\nInstruct your soldiers. \nFollow the orders of your captain.
-Help <color=#FFFF7CFF>scientists</color> escape.\nNeutralize other subjects.\nInstruct your soldiers.
-Help <color=#FFFF7CFF>scientists</color> escape.\nNeutralize other subjects.\nFollow the orders of your superiors.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nYou can walk through doors.\nLeft click to attack and pull humans into your dimension.\nPress Shift to sink into the floor and regenerate your shield.</color>
+Take back the facility from hostile forces.\nWork together with <color=#5B6370>Facility Guards</color> and other <color=#0096FF>MTF operatives</color>.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nLeft click to attack humans, causing death in two hits.\nInteract with a fresh corpse to resurrect them as an ally.</color>
+Escape the facility.\nCooperate with  <color=#5B6370>Facility Guards</color> and <color=#0096FF>MTF operatives.</color>\nAvoid other teams.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Capture the facility and eliminate <color=#0096FF>Foundation personnel</color>.\nWork together with other <color=#008F1E>Chaos Insurgents</color>.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color><color=#FFFF00>\nLeft click to attack humans.</color>
+Take back the facility from hostile forces.\nWork together with <color=#5B6370>Facility Guards</color> and other <color=#0096FF>MTF operatives</color>.
+Take back the facility from hostile forces.\nWork together with <color=#5B6370>Facility Guards</color> and other <color=#0096FF>MTF operatives</color>.
+Take back the facility from hostile forces.\nWork together with <color=#5B6370>Facility Guards</color> and other <color=#0096FF>MTF operatives</color>.
 Follow the tasks to complete your objective.
-Help <color=#FFFF7CFF>scientists</color> to escape\nCooperate with <color=#0096FF>MTF</color>\nNeutralize other subjects
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
-Help <color=#FF8E00>Class-D Personnel</color> escape.\nNeutralize other subjects.
-Help <color=#FF8E00>Class-D Personnel</color> escape.\nNeutralize other subjects.
-Help <color=#FF8E00>Class-D Personnel</color> escape.\nNeutralize other subjects.
+Take back the facility from hostile forces.\nWork together with <color=#0096FF>MTF operatives</color> and other <color=#5B6370>Facility Guards</color>.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Capture the facility and eliminate <color=#0096FF>Foundation personnel</color>.\nWork together with other <color=#008F1E>Chaos Insurgents</color>.
+Capture the facility and eliminate <color=#0096FF>Foundation personnel</color>.\nWork together with other <color=#008F1E>Chaos Insurgents</color>.
+Capture the facility and eliminate <color=#0096FF>Foundation personnel</color>.\nWork together with other <color=#008F1E>Chaos Insurgents</color>.
 -
 -
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+-
 Kill everything.\nTrack down targets.\nCooperate with your <color=#FF59CA>flock.</color>
 Kill everything.\nTrack down targets.\nCooperate with your <color=#FF59CA>flock.</color>
-Kill everyone.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>
+Take back the facility from hostile forces.\nWork together with <color=#5B6370>Facility Guards</color> and other <color=#0096FF>MTF operatives</color>.
+Capture the facility and eliminate <color=#0096FF>Foundation personnel</color>.\nWork together with other <color=#008F1E>Chaos Insurgents</color>.
+Kill all humans.\nPrevent escape.\nCooperate with other <color=#F00>SCPs.</color>

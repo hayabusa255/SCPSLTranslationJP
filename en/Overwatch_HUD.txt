@@ -10,3 +10,11 @@ SCP-1576
 <i>Spatial Audio</i>
 <i>Handles spatial audio in proximity. If disabled, anyone will be heard without taking distance or radios into account.</i>
 <i>Used by every player when the round ends.</i>
+Menu Select
+Voice Chat
+Player Info
+Hitreg Log
+Debug Traces
+Hit Register Log:\n<size=11>New entries will appear from the right</size>
+Lobby
+SCP-1507

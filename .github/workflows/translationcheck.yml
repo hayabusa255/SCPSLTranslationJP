@@ -2,12 +2,6 @@ name: Translation Checker
 
 on:
   workflow_dispatch:
-    inputs:
-      run_ai_check:
-        description: 'Enable time-consuming AI nuance check?'
-        required: true
-        type: boolean
-        default: false 
 
 jobs:
   check-translations:
@@ -22,26 +16,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Build translation checker
+        run: dotnet build src/TranslationChecker -c Release
+
       - name: Run translation checker
         id: check
-        working-directory: ./translationchecker
         run: |
           $env:PYTHONIOENCODING="utf-8"
           [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-          ./translationchecker.exe | Out-File -FilePath report.md -Encoding UTF8
+          dotnet run --project src/TranslationChecker -c Release --no-build -- . | Out-File -FilePath report.md -Encoding UTF8
           $report = Get-Content report.md -Raw -Encoding UTF8
           $escaped_report = $report -replace '%', '%25' -replace "`n", '%0A' -replace "`r", '%0D'
           echo "report=$escaped_report" >> $env:GITHUB_OUTPUT
         shell: powershell
+
+      # Reuse the open report issue if there is one; close it to start a fresh one next run.
+      - name: Find existing report issue
+        id: existing
+        if: always()
+        shell: powershell
         env:
-          GEMINI_API_KEY: ${{ github.event.inputs.run_ai_check == 'true' && secrets.GEMINI_API_KEY || '' }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $number = gh issue list --repo "${{ github.repository }}" --label manual-report --state open --limit 1 --json number --jq '.[0].number'
+          echo "number=$number" >> $env:GITHUB_OUTPUT
 
-
-      - name: Create issue with report
-
+      - name: Create or update issue with report
         if: always()
         uses: peter-evans/create-issue-from-file@v4
         with:
+          issue-number: ${{ steps.existing.outputs.number }}
           title: "Manual Translation Status Report"
-          content-filepath: ./translationchecker/report.md
+          content-filepath: ./report.md
           labels: translation, manual-report
