@@ -33,6 +33,11 @@ set_property(TARGET SCPSLWinUI PROPERTY
 target_compile_definitions(SCPSLWinUI PRIVATE UNICODE _UNICODE
     WIN32_LEAN_AND_MEAN NOMINMAX)
 if(MSVC)
+    # The registration-free manifest is already embedded as RT_MANIFEST id 1
+    # via resources.rc; do not let LINK generate a second RT_MANIFEST id 1.
+    target_link_options(SCPSLWinUI PRIVATE /MANIFEST:NO)
+endif()
+if(MSVC)
     target_compile_options(SCPSLWinUI PRIVATE /bigobj /EHsc /utf-8)
 endif()
 target_include_directories(SCPSLWinUI PRIVATE
