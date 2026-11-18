@@ -1,0 +1,32 @@
+name: Native SCP:SL installer CI (self-contained WinUI 3)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - "installer/**"
+      - "winui-native/**"
+    paths:
+      - "NativeCppWinUI/**"
+      - "NativeCore/**"
+      - "NativeSelfContained/**"
+      - ".github/workflows/build-native-installer.yml"
+      - ".github/workflows/winui-cpp.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "NativeCppWinUI/**"
+      - "NativeCore/**"
+      - "NativeSelfContained/**"
+      - ".github/workflows/build-native-installer.yml"
+      - ".github/workflows/winui-cpp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-native:
+    uses: ./.github/workflows/build-native-installer.yml
+    with:
+      native_ref: ${{ github.sha }}
