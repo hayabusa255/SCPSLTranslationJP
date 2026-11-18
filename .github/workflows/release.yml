@@ -1,4 +1,4 @@
-name: Release
+name: Release translations and self-contained native Windows installer
 
 on:
   push:
@@ -18,54 +18,92 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
-    runs-on: ubuntu-latest
+  native-installer:
+    # Build the maintained native source on main, not outdated translation tag.
+    uses: ./.github/workflows/build-native-installer.yml
+    with:
+      native_ref: main
 
+  release:
+    needs: native-installer
+    runs-on: ubuntu-latest
     env:
       TAG: ${{ github.event.inputs.tag || github.ref_name }}
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
     steps:
-      - name: Check out tag
+      - name: Check out exact translation release tag
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.tag || github.ref_name }}
           fetch-depth: 0
 
-      - name: Setup .NET
+      - name: Validate translation release tag
+        shell: bash
+        run: |
+          if [[ ! "$TAG" =~ ^JP-[A-Za-z0-9._-]+$ ]]; then
+            echo 'Invalid translation release tag' >&2
+            exit 1
+          fi
+
+      - name: Set up .NET for translation tests only
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
 
-      - name: Test
+      - name: Test translations
         run: dotnet test SCPSLTranslationJP.slnx -c Release
 
       - name: Create translation ZIP
         run: |
           cd JP
-          zip -r "../${TAG}.zip" *
+          zip -r "../$TAG.zip" *
 
-      - name: Publish installer (Windows)
-        run: dotnet publish "src/SCPSL日本語化インストーラー" -c Release -r win-x64 -p:InstallerRepository=${{ github.repository }} -o out/win
+      - name: Download native Windows installer
+        uses: actions/download-artifact@v4
+        with:
+          name: SCPSL-SelfContained-Windows-x64
+          path: .
 
-      - name: Publish installer (Linux)
-        run: dotnet publish "src/SCPSL日本語化インストーラー" -c Release -r linux-x64 -p:InstallerRepository=${{ github.repository }} -o out/linux
-
-      - name: Prepare release assets
+      - name: Verify self-contained SCPSL.exe
+        shell: bash
         run: |
-          cp out/win/SCPSL.exe SCPSL.exe
-          cp out/linux/SCPSL SCPSL-linux-x64
+          test -f SCPSL.exe
+          size=$(stat -c%s SCPSL.exe)
+          echo "Self-contained native installer: $size bytes"
+          test "$size" -gt 20000000
+          test "$size" -lt 50000000
+          sha256sum SCPSL.exe
 
-      - name: Write release notes
+      - name: Generate release notes with new native installer instructions
+        shell: bash
         run: |
-          TAG="$TAG" REPO="${{ github.repository }}" bash .github/scripts/release-notes.sh > notes.md
+          TAG="$TAG" REPO="${{ github.repository }}" bash .github/scripts/release-notes.sh > base-notes.md
+          python3 - <<'PY'
+          from pathlib import Path
+          notes=Path("base-notes.md").read_text(encoding="utf-8")
+          marker="## インストーラーを使用するインストール方法"
+          if marker in notes:
+              notes=notes.split(marker,1)[0].rstrip()
+          native="""
+          ## Windows ネイティブ日本語化インストーラー
+          - **SCPSL.exe** をダウンロードして実行してください。
+          - C++/WinRT + Rust のWindows x64ネイティブ版です。
+          - Windows App Runtime/.NET/WebView2を別途インストールする必要はありません。
+          - Windows App SDK 1.8の必要なDLLは単一EXEに含まれ、初回実行時にアプリ専用領域へ展開されます。
+          - Steamからゲームフォルダーを自動検出できます。日本語訳の安定版/Beta版を選んでインストールできます。
+          - SCP:SLを終了してから翻訳をインストールしてください。
+          - Linux版インストーラーはこのWinUI版では提供していません。Linuxでは翻訳ZIPを手動で適用してください。
+          """
+          Path("notes.md").write_text(notes+"\n\n"+native.strip()+"\n",encoding="utf-8")
+          PY
 
-      - name: Create or update release
+      - name: Publish translation ZIP and replace Windows installer release asset
+        shell: bash
         run: |
-          title="${TAG#JP-}日本語翻訳"
+          title="$(echo "$TAG" | cut -c4-)日本語翻訳"
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "${TAG}.zip" SCPSL.exe SCPSL-linux-x64 --clobber
+            gh release upload "$TAG" "$TAG.zip" SCPSL.exe --clobber
             gh release edit "$TAG" --title "$title" --notes-file notes.md --latest
           else
-            gh release create "$TAG" "${TAG}.zip" SCPSL.exe SCPSL-linux-x64 --title "$title" --notes-file notes.md --verify-tag --latest
+            gh release create "$TAG" "$TAG.zip" SCPSL.exe --title "$title" --notes-file notes.md --verify-tag --latest
           fi

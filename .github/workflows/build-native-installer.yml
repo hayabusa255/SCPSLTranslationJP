@@ -1,0 +1,107 @@
+name: Build self-contained native Windows installer
+
+on:
+  workflow_call:
+    inputs:
+      native_ref:
+        description: Git ref containing installer sources
+        type: string
+        required: false
+        default: main
+  workflow_dispatch:
+    inputs:
+      native_ref:
+        description: Git ref containing installer sources
+        type: string
+        required: false
+        default: main
+
+permissions:
+  contents: read
+
+jobs:
+  native-win-x64:
+    name: WinUI 3 and Rust / self-contained SCPSL.exe
+    runs-on: windows-2025
+    steps:
+      - name: Checkout native installer sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.native_ref }}
+          persist-credentials: false
+
+      - name: Configure Rust Windows x64
+        shell: pwsh
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add x86_64-pc-windows-msvc
+
+      - name: Test and build native Rust engine
+        shell: pwsh
+        run: |
+          cargo test --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          cargo build --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          New-Item -ItemType Directory -Force NativeCore/bin/win-x64 | Out-Null
+          Copy-Item NativeCore/target/x86_64-pc-windows-msvc/release/scpsl-native-core.exe NativeCore/bin/win-x64/ -Force
+
+      - name: Configure Windows App SDK native C++/WinRT headers
+        shell: pwsh
+        run: |
+          cmake -S NativeCppWinUI -B NativeCppWinUI/build -A x64
+          if (!(Test-Path NativeCppWinUI/.winapp/include)) {
+            throw 'Microsoft WinApp SDK C++/WinRT headers not restored'
+          }
+
+      - name: Set up Python for pinned Microsoft runtime assets
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Prepare app-local WinUI DLLs, manifest and resources.pri
+        shell: pwsh
+        run: |
+          python NativeSelfContained/generate-runtime.py --cache "$env:RUNNER_TEMP/scpsl-winappsdk-nuget" --output NativeSelfContained/build
+          if (!(Test-Path NativeSelfContained/build/runtime/resources.pri)) {
+            throw 'WinUI resources.pri missing'
+          }
+
+      - name: Build self-contained native WinUI 3 GUI
+        shell: pwsh
+        run: |
+          cmake -S NativeSelfContained/InnerWinUI -B NativeSelfContained/build/inner-cmake -A x64
+          cmake --build NativeSelfContained/build/inner-cmake --config Release --parallel 2
+          Copy-Item NativeSelfContained/build/inner-cmake/Release/SCPSLWinUI.exe NativeSelfContained/build/runtime/SCPSLWinUI.exe -Force
+
+      - name: Compress native WinUI 3 and Rust application runtime
+        shell: pwsh
+        run: |
+          python NativeSelfContained/generate-runtime.py --cache "$env:RUNNER_TEMP/scpsl-winappsdk-nuget" --output NativeSelfContained/build --pack-only
+          if (!(Test-Path NativeSelfContained/build/SCPSL-WinUI-1.8-selfcontained-bundle.zip)) {
+            throw 'Self-contained WinUI bundle missing'
+          }
+
+      - name: Build self-extracting native Win32 launcher
+        shell: pwsh
+        run: |
+          cmake -S NativeSelfContained/Launcher -B NativeSelfContained/build/launcher-cmake -A x64
+          cmake --build NativeSelfContained/build/launcher-cmake --config Release --parallel 2
+          Copy-Item NativeSelfContained/build/launcher-cmake/Release/SCPSL.exe SCPSL.exe -Force
+
+      - name: Verify one-file release asset
+        shell: pwsh
+        run: |
+          $exe = Get-Item SCPSL.exe
+          Write-Host "SCPSL.exe size: $($exe.Length) bytes"
+          if ($exe.Length -lt 20000000 -or $exe.Length -gt 50000000) {
+            throw 'Unexpected EXE size; embedded runtime may be missing'
+          }
+          Get-FileHash SCPSL.exe -Algorithm SHA256 | Format-List
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: SCPSL-SelfContained-Windows-x64
+          path: SCPSL.exe
+          if-no-files-found: error
+          retention-days: 30
