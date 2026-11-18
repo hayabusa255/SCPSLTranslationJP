@@ -1,0 +1,166 @@
+name: Upgrade previous release installers and publish v15 Private Beta
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rebuild-and-backfill.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scpsl-installer-release-backfill
+  cancel-in-progress: false
+
+jobs:
+  build-native:
+    if: github.repository == 'hayabusa255/SCPSLTranslationJP' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-native-installer.yml
+    with:
+      native_ref: ${{ github.sha }}
+
+  beta-translation-tests:
+    if: github.repository == 'hayabusa255/SCPSLTranslationJP' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout v15 Private Beta translation data
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up .NET translation test tools
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - name: Test translation projects
+        run: dotnet test SCPSLTranslationJP.slnx -c Release
+      - name: Verify Beta translation source is present
+        shell: bash
+        run: |
+          test -s JP/manifest.json
+          count=$(find JP -maxdepth 1 -name '*.txt' -type f | wc -l)
+          echo "Found $count translated .txt files for v15 Private Beta"
+          test "$count" -gt 50
+
+  publish-all:
+    if: github.repository == 'hayabusa255/SCPSLTranslationJP' && github.ref == 'refs/heads/main'
+    needs: [build-native, beta-translation-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      BETA_TAG: JP-Ver15.0Beta
+    steps:
+      - name: Checkout tested main revision
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Obtain the native self-contained Windows installer
+        uses: actions/download-artifact@v4
+        with:
+          name: SCPSL-SelfContained-Windows-x64
+          path: .
+
+      - name: Ensure only the expected self-contained Windows asset is being published
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f SCPSL.exe
+          actual=$(stat -c%s SCPSL.exe)
+          echo "Native WinUI x64 installer size: $actual bytes"
+          test "$actual" -gt 20000000
+          test "$actual" -lt 50000000
+          file SCPSL.exe | grep -Ei 'PE32\+.*x86-64|PE32\+.*Intel'
+          sha256sum SCPSL.exe
+
+      - name: Backfill native installer into all 10 existing translation releases
+        shell: bash
+        run: |
+          set -euo pipefail
+          tags=(
+            JP-Ver14.2Fix
+            JP-Ver14.2
+            JP-Ver14.1.4
+            JP-Ver14.1.1
+            JP-Ver14.1Beta
+            JP-Ver14.0Beta
+            JP-Ver13.6.9
+            JP-Ver13.5.1
+            JP-Ver13.5fix
+            JP-Ver13.5
+          )
+          # Validate all assets before overwriting anything.
+          for tag in "${tags[@]}"; do
+            echo "Checking $tag"
+            gh release view "$tag" >/dev/null
+            gh release view "$tag" --json assets --jq '.assets[].name' | grep -Fx "$tag.zip"
+          done
+          for tag in "${tags[@]}"; do
+            echo "Replacing legacy SCPSL.exe in $tag (translation ZIP unchanged)"
+            gh release upload "$tag" SCPSL.exe --clobber
+            size=$(gh release view "$tag" --json assets --jq '.assets[] | select(.name=="SCPSL.exe") | .size')
+            echo "Updated installer size for $tag: $size bytes"
+            test "$size" -gt 20000000
+            test "$size" -lt 50000000
+          done
+
+      - name: Tag v15.0 Private Beta from merged translation main
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git rev-parse -q --verify "refs/tags/$BETA_TAG" >/dev/null; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' tag -a "$BETA_TAG" -m 'SCP:SL v15.0 Private Beta Japanese translation'
+            git push origin "refs/tags/$BETA_TAG"
+          fi
+          git rev-parse "refs/tags/$BETA_TAG"
+
+      - name: Package v15.0 Private Beta translation ZIP
+        shell: bash
+        run: |
+          set -euo pipefail
+          (cd JP && zip -r "../$BETA_TAG.zip" *)
+          test -s "$BETA_TAG.zip"
+          unzip -t "$BETA_TAG.zip" | tail -2
+          sha256sum "$BETA_TAG.zip"
+
+      - name: Prepare v15 Beta release notes
+        shell: bash
+        run: |
+          cat > beta-notes.md <<'EOF'
+          ## SCP: Secret Laboratory v15.0 Private Beta 日本語翻訳
+
+          PR #36 で取り込んだ v15.0 Private Beta 対応翻訳をベータ版として公開します。
+          変更点には新しいゲームUIへの翻訳対応、表記ゆれの修正、翻訳ツールの整理などが含まれます。
+
+          **ベータ版のため、実際のv15 Private Betaクライアントでの最終確認は完了していません。**
+          問題があればGitHub IssuesかDiscordでお知らせください。
+
+          - \`JP-Ver15.0Beta.zip\`: 手動インストール用の日本語翻訳データ
+          - \`SCPSL.exe\`: Windows x64のネイティブ自己完結インストーラー（C++/WinUI 3 + Rust）
+          - Windows App Runtime/.NET/WebView2の事前インストール不要
+          - 翻訳の安定版/Beta版の選択・切り替えに対応
+          - インストール前にゲームを終了してください。
+
+          Linux / Steam Deckでは翻訳ZIPを手動で配置してください。
+          EOF
+
+      - name: Publish new v15.0 Beta prerelease with native installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$BETA_TAG" >/dev/null 2>&1; then
+            gh release upload "$BETA_TAG" "$BETA_TAG.zip" SCPSL.exe --clobber
+            gh release edit "$BETA_TAG" --title 'Ver15.0 Private Beta 日本語翻訳' --notes-file beta-notes.md --prerelease
+          else
+            gh release create "$BETA_TAG" "$BETA_TAG.zip" SCPSL.exe \
+              --title 'Ver15.0 Private Beta 日本語翻訳' \
+              --notes-file beta-notes.md --prerelease --verify-tag
+          fi
+          gh release view "$BETA_TAG" --json isPrerelease,assets,url --jq '{isPrerelease,assets:[.assets[]|{name,size}],url}'
