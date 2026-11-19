@@ -105,6 +105,8 @@ jobs:
           $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject 'CN=SCPSLTranslationJP Dev' -CertStoreLocation 'Cert:\CurrentUser\My' -KeyExportPolicy NonExportable -NotAfter (Get-Date).AddDays(7)
           Export-Certificate -Cert $cert -FilePath NativeStoreMSIX/build/SCPSLTranslationJP-DEV.cer | Out-Null
           Import-Certificate -FilePath NativeStoreMSIX/build/SCPSLTranslationJP-DEV.cer -CertStoreLocation 'Cert:\CurrentUser\TrustedPeople' | Out-Null
+          # Signtool /pa requires the temporary self-signed development issuer to be trusted as a root on this disposable CI runner.
+          Import-Certificate -FilePath NativeStoreMSIX/build/SCPSLTranslationJP-DEV.cer -CertStoreLocation 'Cert:\CurrentUser\Root' | Out-Null
           & "$env:SIGNTOOL" sign /fd SHA256 /sha1 $cert.Thumbprint /s My /v NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix
           if ($LASTEXITCODE -ne 0) { throw 'Development MSIX signing failed' }
           & "$env:SIGNTOOL" verify /pa /v NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix
