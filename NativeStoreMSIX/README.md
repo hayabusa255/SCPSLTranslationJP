@@ -10,7 +10,7 @@ This is a separate **Store-only** packaging pipeline for the native C++/WinUI 3 
    - **Package/Identity Name** (may have a numeric prefix);
    - **Publisher** (complete CN=... identity, not the friendly company name);
    - **Publisher display name**.
-4. Run [Build Microsoft Store MSIX](../../actions/workflows/build-store-msix.yml) using **Run workflow** and supply those three values and a four-part version, e.g. 1.0.0.0. For subsequent updates, increase the version.
+4. Run [Build Microsoft Store MSIX](https://github.com/hayabusa255/SCPSLTranslationJP/actions/workflows/build-store-msix.yml) using **Run workflow** and supply those three values and a four-part version, e.g. 1.0.0.0. For subsequent updates, increase the version.
 5. Download the SCPSL-MSIX-STORE-SUBMISSION-UNSIGNED Actions artifact and upload the contained MSIX to the Partner Center package submission. The Store will re-sign it after successful certification.
 
 **Do not guess the identity values.** A manifest with the wrong Publisher or Name cannot be submitted for your reserved Store product.
@@ -29,7 +29,7 @@ This build has a separate SCPSLTranslationJP.Dev identity and **cannot** be uplo
 - The MSIX contains SCPSLWinUI.exe, scpsl-native-core.exe, application image assets, and pinned Windows App SDK 1.8 native runtime.
 - Unlike the standalone EXE, the Store version **does not extract and execute an unsigned Rust engine from Temp**. Both executables live in the installed MSIX package directory and run with normal user rights.
 - The application uses the runFullTrust capability and mediumIL. It can access user-writable Steam game directories, but it does not bypass Windows ACLs, UAC or antivirus policies.
-- The package targets Windows 11 x64; no .NET runtime is needed.
+- The package targets Windows 11 x64; no .NET runtime is needed. Unlike the GitHub standalone EXE, the Store package is framework-dependent, which is the recommended MSIX deployment model.
 - The Store manages MSIX installation, uninstall, package integrity, and application updates. Translation ZIPs are still fetched from GitHub Releases.
 
 ## Required pre-publication checks

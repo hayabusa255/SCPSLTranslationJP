@@ -21,6 +21,11 @@ class ManifestTests(unittest.TestCase):
         self.assertEqual(app.attrib[f"{{{UAP10}}}TrustLevel"], "mediumIL")
         cap = root.find(f"{{{FOUNDATION}}}Capabilities/{{{RESCAP}}}Capability")
         self.assertEqual(cap.attrib["Name"], "runFullTrust")
+        dependencies = root.findall(f"{{{FOUNDATION}}}Dependencies/{{{FOUNDATION}}}PackageDependency")
+        self.assertEqual(
+            {d.attrib["Name"] for d in dependencies},
+            {"Microsoft.WindowsAppRuntime.1.8", "Microsoft.VCLibs.140.00.UWPDesktop"},
+        )
 
     def test_partner_identity_is_not_invented(self):
         with self.assertRaises(ValueError):

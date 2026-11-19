@@ -114,12 +114,14 @@ jobs:
         run: |
           & "$env:MAKEAPPX" unpack /p NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix /d NativeStoreMSIX/build/unpacked-dev /o
           if ($LASTEXITCODE -ne 0) { throw 'MSIX unpack failed' }
-          foreach ($file in @('AppxManifest.xml', 'SCPSLWinUI.exe', 'scpsl-native-core.exe', 'Microsoft.UI.Xaml.dll', 'Microsoft.WindowsAppRuntime.dll', 'resources.pri', 'researcher.jpg', 'scp-emblem.png')) {
+          foreach ($file in @('AppxManifest.xml', 'SCPSLWinUI.exe', 'scpsl-native-core.exe', 'researcher.jpg', 'scp-emblem.png')) {
             if (!(Test-Path "NativeStoreMSIX/build/unpacked-dev/$file")) { throw "Missing MSIX payload: $file" }
           }
           $manifest = [xml](Get-Content NativeStoreMSIX/build/unpacked-dev/AppxManifest.xml -Raw)
           if ($manifest.Package.Applications.Application.Executable -ne 'SCPSLWinUI.exe') { throw 'Wrong MSIX entry point' }
-          Write-Host 'MSIX payload and entry point validated'
+          if ($manifest.Package.Dependencies.PackageDependency.Count -lt 2) { throw 'Missing WinAppSDK or VCLibs framework dependency' }
+          if (Test-Path NativeStoreMSIX/build/unpacked-dev/Microsoft.WindowsAppRuntime.dll) { throw 'Unexpected unpackaged runtime in Store MSIX' }
+          Write-Host 'MSIX payload, framework dependencies and entry point validated'
 
       - name: Upload local-test package (NOT for public distribution)
         uses: actions/upload-artifact@v4

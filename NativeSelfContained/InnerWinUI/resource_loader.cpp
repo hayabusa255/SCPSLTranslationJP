@@ -55,6 +55,12 @@ bool InitializeBundledRuntime(HRESULT& hr,std::wstring& detail){
             return false;
         }
     }
+    // MSIX framework-dependent apps get WinUI 3 from the package graph.
+    // The Store installs the Microsoft-signed Windows App SDK framework.
+    // Do not load app-local DLLs or use unpackaged bootstrap logic here.
+    hr=S_OK;
+    s_initialized=true;
+    return true;
 #else
     wchar_t dir[32768]{};
     if(!GetTempPathW(32768,dir)){detail=L"Tempが取得できません";return false;}
@@ -74,7 +80,6 @@ bool InitializeBundledRuntime(HRESULT& hr,std::wstring& detail){
     auto slash=local.find_last_of(L"\\/");
     if(slash==std::wstring::npos){detail=L"実行先ディレクトリがありません";return false;}
     local=local.substr(0,slash);
-#endif
     SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY",local.c_str());
     local+=L"\\Microsoft.WindowsAppRuntime.dll";
     s_runtime=LoadLibraryExW(local.c_str(),nullptr,
@@ -86,6 +91,7 @@ bool InitializeBundledRuntime(HRESULT& hr,std::wstring& detail){
     hr=ensure();
     if(FAILED(hr)){detail=L"WinApp SDKのローカル初期化に失敗";return false;}
     s_initialized=true;return true;
+#endif
 }
 void ShutdownBundledRuntime() noexcept{
     s_initialized=false;

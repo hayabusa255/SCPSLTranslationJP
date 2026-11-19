@@ -50,6 +50,15 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
     ET.SubElement(props, f"{{{FOUNDATION}}}PublisherDisplayName").text = display_publisher
     ET.SubElement(props, f"{{{FOUNDATION}}}Logo").text = r"Assets\StoreLogo.png"
     deps = ET.SubElement(root, f"{{{FOUNDATION}}}Dependencies")
+    for package_name, minimum in (
+        ("Microsoft.WindowsAppRuntime.1.8", "8000.0.0.0"),
+        ("Microsoft.VCLibs.140.00.UWPDesktop", "14.0.30704.0"),
+    ):
+        ET.SubElement(deps, f"{{{FOUNDATION}}}PackageDependency", {
+            "Name": package_name,
+            "Publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
+            "MinVersion": minimum,
+        })
     ET.SubElement(deps, f"{{{FOUNDATION}}}TargetDeviceFamily", {
         "Name": "Windows.Desktop", "MinVersion": "10.0.22000.0",
         "MaxVersionTested": "10.0.26100.0"
@@ -79,16 +88,17 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
 
 def build_stage(runtime: Path, core: Path, assets: Path, stage: Path,
                 name: str, publisher: str, publisher_display: str, version: str) -> None:
-    required = ("SCPSLWinUI.exe", "Microsoft.UI.Xaml.dll",
-                "Microsoft.WindowsAppRuntime.dll", "resources.pri")
-    for filename in required:
-        if not (runtime / filename).is_file():
-            raise FileNotFoundError(f"Missing runtime file: {runtime / filename}")
+    gui = runtime / "SCPSLWinUI.exe"
+    if not gui.is_file():
+        raise FileNotFoundError(f"Missing compiled WinUI executable: {gui}")
     if not core.is_file():
         raise FileNotFoundError(f"Missing Rust engine: {core}")
     if stage.exists():
         shutil.rmtree(stage)
-    shutil.copytree(runtime, stage, symlinks=False)
+    stage.mkdir(parents=True)
+    # Store MSIX uses the Microsoft-signed Windows App SDK framework package.
+    # Do not ship the unpackaged self-contained WinUI runtime in WindowsApps.
+    shutil.copy2(gui, stage / "SCPSLWinUI.exe")
     shutil.copy2(core, stage / "scpsl-native-core.exe")
     for filename in ("researcher.jpg", "scp-emblem.png"):
         shutil.copy2(assets / filename, stage / filename)
