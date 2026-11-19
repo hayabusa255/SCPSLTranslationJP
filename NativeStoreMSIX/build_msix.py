@@ -50,6 +50,11 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
     ET.SubElement(props, f"{{{FOUNDATION}}}PublisherDisplayName").text = display_publisher
     ET.SubElement(props, f"{{{FOUNDATION}}}Logo").text = r"Assets\StoreLogo.png"
     deps = ET.SubElement(root, f"{{{FOUNDATION}}}Dependencies")
+    # MSIX schema requires TargetDeviceFamily before framework PackageDependency.
+    ET.SubElement(deps, f"{{{FOUNDATION}}}TargetDeviceFamily", {
+        "Name": "Windows.Desktop", "MinVersion": "10.0.22000.0",
+        "MaxVersionTested": "10.0.26100.0"
+    })
     for package_name, minimum in (
         ("Microsoft.WindowsAppRuntime.1.8", "8000.0.0.0"),
         ("Microsoft.VCLibs.140.00.UWPDesktop", "14.0.30704.0"),
@@ -59,10 +64,6 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
             "Publisher": "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US",
             "MinVersion": minimum,
         })
-    ET.SubElement(deps, f"{{{FOUNDATION}}}TargetDeviceFamily", {
-        "Name": "Windows.Desktop", "MinVersion": "10.0.22000.0",
-        "MaxVersionTested": "10.0.26100.0"
-    })
     resources = ET.SubElement(root, f"{{{FOUNDATION}}}Resources")
     for lang in ("ja-JP", "en-US"):
         ET.SubElement(resources, f"{{{FOUNDATION}}}Resource", {"Language": lang})
