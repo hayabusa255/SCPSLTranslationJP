@@ -1,0 +1,166 @@
+name: Build Microsoft Store MSIX
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'NativeStoreMSIX/**'
+      - 'NativeSelfContained/InnerWinUI/**'
+      - '.github/workflows/build-store-msix.yml'
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Partner Center Product identity > Package/Identity Name (blank = dev only)'
+        required: false
+        type: string
+      publisher:
+        description: 'Partner Center Publisher ID, complete CN=... value (blank = dev only)'
+        required: false
+        type: string
+      publisher_display_name:
+        description: 'Partner Center Publisher display name (blank = dev only)'
+        required: false
+        type: string
+      version:
+        description: 'Four-part MSIX version, revision must be zero'
+        required: false
+        default: '1.0.0.0'
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  msix-win-x64:
+    name: Store WinUI 3 and Rust / MSIX x64
+    runs-on: windows-2025
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure Rust
+        shell: pwsh
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          rustup target add x86_64-pc-windows-msvc
+
+      - name: Test and build native Rust engine
+        shell: pwsh
+        run: |
+          cargo test --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          cargo build --release --manifest-path NativeCore/Cargo.toml --target x86_64-pc-windows-msvc
+          New-Item -ItemType Directory -Force NativeCore/bin/win-x64 | Out-Null
+          Copy-Item NativeCore/target/x86_64-pc-windows-msvc/release/scpsl-native-core.exe NativeCore/bin/win-x64/ -Force
+
+      - name: Restore WinUI 3 SDK headers
+        shell: pwsh
+        run: |
+          cmake -S NativeCppWinUI -B NativeCppWinUI/build -A x64
+          if (!(Test-Path NativeCppWinUI/.winapp/include)) { throw 'WinApp SDK headers missing' }
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Prepare pinned Windows App SDK 1.8 runtime
+        shell: pwsh
+        run: |
+          python -m pip install --disable-pip-version-check Pillow==11.3.0
+          python -m unittest discover -s NativeStoreMSIX/tests -v
+          python NativeSelfContained/generate-runtime.py --cache "$env:RUNNER_TEMP/scpsl-winappsdk-nuget" --output NativeSelfContained/build
+          if (!(Test-Path NativeSelfContained/build/runtime/resources.pri)) { throw 'WinUI PRI missing' }
+
+      - name: Compile MSIX-specific WinUI frontend
+        shell: pwsh
+        run: |
+          cmake -S NativeSelfContained/InnerWinUI -B NativeSelfContained/build/store-inner-cmake -A x64 -DSCPSL_STORE_PACKAGE=ON
+          cmake --build NativeSelfContained/build/store-inner-cmake --config Release --parallel 2
+          Copy-Item NativeSelfContained/build/store-inner-cmake/Release/SCPSLWinUI.exe NativeSelfContained/build/runtime/SCPSLWinUI.exe -Force
+
+      - name: Locate Windows SDK packaging tools
+        shell: pwsh
+        run: |
+          $sdk = Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Windows Kits\10\bin'
+          $makeappx = Get-ChildItem "$sdk\*\x64\makeappx.exe" -ErrorAction Stop | Sort-Object FullName -Descending | Select-Object -First 1
+          $signtool = Get-ChildItem "$sdk\*\x64\signtool.exe" -ErrorAction Stop | Sort-Object FullName -Descending | Select-Object -First 1
+          if (!$makeappx -or !$signtool) { throw 'Windows SDK packaging tools missing' }
+          "MAKEAPPX=$($makeappx.FullName)" >> $env:GITHUB_ENV
+          "SIGNTOOL=$($signtool.FullName)" >> $env:GITHUB_ENV
+
+      - name: Build development MSIX with non-Store identity
+        shell: pwsh
+        run: |
+          $version = '${{ inputs.version }}'
+          if (!$version) { $version = '1.0.0.0' }
+          python NativeStoreMSIX/build_msix.py --runtime NativeSelfContained/build/runtime --core NativeCore/bin/win-x64/scpsl-native-core.exe --assets NativeCppWinUI/Assets --stage NativeStoreMSIX/build/stage-dev --output NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix --name SCPSLTranslationJP.Dev --publisher 'CN=SCPSLTranslationJP Dev' --publisher-display 'SCPSLTranslationJP Developers' --version $version --makeappx "$env:MAKEAPPX"
+          if ($LASTEXITCODE -ne 0) { throw 'Development MSIX build failed' }
+
+      - name: Sign development package with temporary test-only certificate
+        shell: pwsh
+        run: |
+          $cert = New-SelfSignedCertificate -Type CodeSigningCert -Subject 'CN=SCPSLTranslationJP Dev' -CertStoreLocation 'Cert:\CurrentUser\My' -KeyExportPolicy NonExportable -NotAfter (Get-Date).AddDays(7)
+          Export-Certificate -Cert $cert -FilePath NativeStoreMSIX/build/SCPSLTranslationJP-DEV.cer | Out-Null
+          Import-Certificate -FilePath NativeStoreMSIX/build/SCPSLTranslationJP-DEV.cer -CertStoreLocation 'Cert:\CurrentUser\TrustedPeople' | Out-Null
+          & "$env:SIGNTOOL" sign /fd SHA256 /sha1 $cert.Thumbprint /s My /v NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix
+          if ($LASTEXITCODE -ne 0) { throw 'Development MSIX signing failed' }
+          & "$env:SIGNTOOL" verify /pa /v NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix
+          if ($LASTEXITCODE -ne 0) { throw 'Development MSIX signature verification failed' }
+
+      - name: Validate development package contents
+        shell: pwsh
+        run: |
+          & "$env:MAKEAPPX" unpack /p NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix /d NativeStoreMSIX/build/unpacked-dev /o
+          if ($LASTEXITCODE -ne 0) { throw 'MSIX unpack failed' }
+          foreach ($file in @('AppxManifest.xml', 'SCPSLWinUI.exe', 'scpsl-native-core.exe', 'Microsoft.UI.Xaml.dll', 'Microsoft.WindowsAppRuntime.dll', 'resources.pri', 'researcher.jpg', 'scp-emblem.png')) {
+            if (!(Test-Path "NativeStoreMSIX/build/unpacked-dev/$file")) { throw "Missing MSIX payload: $file" }
+          }
+          $manifest = [xml](Get-Content NativeStoreMSIX/build/unpacked-dev/AppxManifest.xml -Raw)
+          if ($manifest.Package.Applications.Application.Executable -ne 'SCPSLWinUI.exe') { throw 'Wrong MSIX entry point' }
+          Write-Host 'MSIX payload and entry point validated'
+
+      - name: Upload local-test package (NOT for public distribution)
+        uses: actions/upload-artifact@v4
+        with:
+          name: SCPSL-MSIX-DEV-TEST-ONLY
+          path: |
+            NativeStoreMSIX/build/SCPSLTranslationJP-DEV-x64.msix
+            NativeStoreMSIX/build/SCPSLTranslationJP-DEV.cer
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Validate Partner Center inputs
+        if: github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        env:
+          PACKAGE_NAME: '${{ inputs.package_name }}'
+          PUBLISHER: '${{ inputs.publisher }}'
+          PUBLISHER_DISPLAY: '${{ inputs.publisher_display_name }}'
+        run: |
+          $values = @($env:PACKAGE_NAME, $env:PUBLISHER, $env:PUBLISHER_DISPLAY)
+          $supplied = @($values | Where-Object { $_.Trim() -ne '' }).Count
+          if ($supplied -ne 0 -and $supplied -ne 3) { throw 'All three Partner Center identity values are required for Store submission' }
+
+      - name: Build unsigned MSIX for Microsoft Store submission
+        if: github.event_name == 'workflow_dispatch' && inputs.package_name != '' && inputs.publisher != '' && inputs.publisher_display_name != ''
+        shell: pwsh
+        env:
+          PACKAGE_NAME: '${{ inputs.package_name }}'
+          PUBLISHER: '${{ inputs.publisher }}'
+          PUBLISHER_DISPLAY: '${{ inputs.publisher_display_name }}'
+          PACKAGE_VERSION: '${{ inputs.version }}'
+        run: |
+          python NativeStoreMSIX/build_msix.py --runtime NativeSelfContained/build/runtime --core NativeCore/bin/win-x64/scpsl-native-core.exe --assets NativeCppWinUI/Assets --stage NativeStoreMSIX/build/stage-store --output NativeStoreMSIX/build/SCPSLTranslationJP-Store-Unsigned-x64.msix --name "$env:PACKAGE_NAME" --publisher "$env:PUBLISHER" --publisher-display "$env:PUBLISHER_DISPLAY" --version "$env:PACKAGE_VERSION" --makeappx "$env:MAKEAPPX"
+          if ($LASTEXITCODE -ne 0) { throw 'Store MSIX build failed' }
+
+      - name: Upload MSIX for Partner Center (Store will sign it)
+        if: github.event_name == 'workflow_dispatch' && inputs.package_name != '' && inputs.publisher != '' && inputs.publisher_display_name != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: SCPSL-MSIX-STORE-SUBMISSION-UNSIGNED
+          path: NativeStoreMSIX/build/SCPSLTranslationJP-Store-Unsigned-x64.msix
+          if-no-files-found: error
+          retention-days: 30
