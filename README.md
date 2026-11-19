@@ -99,3 +99,11 @@ SCP: Secret Laboratory (SCPSL) の日本語翻訳プロジェクトへようこ�
 インストーラーなどのソースコードは MIT ライセンスの下で提供されます。詳細は `LICENSE` ファイルを参照してください。
 
 SCP: Secret Laboratory、原文、名称、関連アセットの権利は各権利者に帰属します。
+
+## Downloads and Code signing policy
+
+- [Windows installer and manual translation downloads](docs/DOWNLOADS.md)
+- [Code signing policy](docs/CODE_SIGNING_POLICY.md)
+- [Privacy policy](docs/PRIVACY_POLICY.md)
+
+**Code-signing status:** The current Windows executables are unsigned. We are preparing an application for the SignPath Foundation open-source signing program; signing is not active yet. If approved, future signed releases will credit: "Free code signing provided by SignPath.io, certificate by SignPath Foundation."
