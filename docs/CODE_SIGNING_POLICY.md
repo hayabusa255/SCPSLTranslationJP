@@ -1,6 +1,6 @@
 # Code signing policy — SCPSLTranslationJP
 
-Status on 2026-11-19: **SignPath Foundation application preparation; current Windows downloads are unsigned**. The project must not claim that current binaries have a SignPath signature or that SignPath Foundation has approved it.
+Status on 2026-11-19: **SignPath Foundation signing is not active; current standalone Windows downloads are unsigned. A Microsoft Store MSIX build is in development, but not yet certified.** The project must not claim that current binaries have a SignPath signature or that SignPath Foundation has approved it.
 
 ## Intended code-signing attribution
 If the application is approved and code signing is activated, the following required attribution will apply to signed releases:
@@ -29,3 +29,7 @@ Installer code is licensed under MIT; translation files are licensed separately 
 - The application is portable and does not require a system-wide installer. To remove it, delete SCPSL.exe, the app-specific LOCALAPPDATA runtime cache, and any language folders the user chooses to remove. See the privacy policy for details.
 
 Any future signed release will clearly identify its signing status and publish a checksum. Existing unsigned releases remain unsigned unless they are rebuilt and signed under the approved policy.
+
+## Microsoft Store distribution
+
+The separate [Store MSIX build](../NativeStoreMSIX/README.md) is intended for Microsoft Store certification. If accepted, the Store signs the MSIX package; it does not sign or replace the existing standalone GitHub EXE. The Store package is not yet published.

@@ -16,8 +16,12 @@ The Windows installer is a single self-contained x64 executable. It detects Stea
 Extract the ZIP into a folder named after the release tag (for example JP-Ver15.0Beta), place that folder in SCP Secret Laboratory/Translations, select Japanese in the game's language settings, and restart the game. Exit the game before replacing translation files. To uninstall, switch the game to another language and delete only the corresponding JP-Ver* translation folder.
 
 ## Code signing policy
-Current status (2026-11-19): **Windows executables are not yet signed**. We are preparing an application to the SignPath Foundation open-source signing program. If approved and integrated, we plan to use the following attribution for signed builds: **Free code signing provided by SignPath.io, certificate by SignPath Foundation.** Signing has not been activated and we do not represent unsigned downloads as signed.
+Current status (2026-11-19): **Windows executables are not yet signed**. SignPath Foundation signing is not active. A separate Microsoft Store MSIX build is being developed, but has not yet been certified or published. If SignPath Foundation signing is approved in the future, signed builds will use the following attribution: **Free code signing provided by SignPath.io, certificate by SignPath Foundation.** Signing has not been activated and we do not represent unsigned downloads as signed.
 
 See the full [Code signing policy](CODE_SIGNING_POLICY.md) and [Privacy policy](PRIVACY_POLICY.md). Unsigned executables may be restricted by Windows Smart App Control; users should not disable operating-system protection just to run the installer. The manual translation ZIP is an alternative.
 
 Project repository: https://github.com/hayabusa255/SCPSLTranslationJP
+
+## Microsoft Store MSIX (in development)
+
+A separate Store MSIX build is being tested. Microsoft Store signs submitted MSIX packages after certification; this does **not** sign the standalone GitHub SCPSL.exe. There is currently no published Microsoft Store listing. See [Store MSIX build instructions](../NativeStoreMSIX/README.md).

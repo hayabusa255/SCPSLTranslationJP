@@ -106,4 +106,4 @@ SCP: Secret Laboratory、原文、名称、関連アセットの権利は各権�
 - [Code signing policy](docs/CODE_SIGNING_POLICY.md)
 - [Privacy policy](docs/PRIVACY_POLICY.md)
 
-**Code-signing status:** The current Windows executables are unsigned. We are preparing an application for the SignPath Foundation open-source signing program; signing is not active yet. If approved, future signed releases will credit: "Free code signing provided by SignPath.io, certificate by SignPath Foundation."
+**Code-signing status:** The standalone GitHub Windows EXE is currently unsigned. A separate Microsoft Store MSIX build is in development; it has **not yet been published or certified** by Microsoft. SignPath Foundation signing is not active. See the [Store MSIX build instructions](NativeStoreMSIX/README.md).
