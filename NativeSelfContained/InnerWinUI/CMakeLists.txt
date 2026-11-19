@@ -19,9 +19,15 @@ endforeach()
 file(TO_CMAKE_PATH "${WINUI_ROOT}/Assets/app.ico" ICON_RES)
 file(TO_CMAKE_PATH "${WINUI_ROOT}/Assets/researcher.jpg" RESEARCHER_RES)
 file(TO_CMAKE_PATH "${WINUI_ROOT}/Assets/scp-emblem.png" EMBLEM_RES)
+option(SCPSL_STORE_PACKAGE "Build a Microsoft Store MSIX-ready native GUI" OFF)
+if(SCPSL_STORE_PACKAGE)
+    set(SCPSL_RESOURCES_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/store-resources.rc.in")
+else()
+    set(SCPSL_RESOURCES_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/inner-resources.rc.in")
+endif()
 file(TO_CMAKE_PATH "${RUST_CORE}" RUST_RES)
 file(TO_CMAKE_PATH "${ACTIVATION_MANIFEST}" MANIFEST_RES)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/inner-resources.rc.in"
+configure_file("${SCPSL_RESOURCES_TEMPLATE}"
                "${CMAKE_CURRENT_BINARY_DIR}/inner-resources.rc" @ONLY)
 add_executable(SCPSLWinUI WIN32
     "${WINUI_ROOT}/main.cpp"
@@ -32,6 +38,9 @@ set_property(TARGET SCPSLWinUI PROPERTY
     MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 target_compile_definitions(SCPSLWinUI PRIVATE UNICODE _UNICODE
     WIN32_LEAN_AND_MEAN NOMINMAX)
+if(SCPSL_STORE_PACKAGE)
+    target_compile_definitions(SCPSLWinUI PRIVATE SCPSL_STORE_PACKAGE=1)
+endif()
 if(MSVC)
     # The registration-free manifest is already embedded as RT_MANIFEST id 1
     # via resources.rc; do not let LINK generate a second RT_MANIFEST id 1.

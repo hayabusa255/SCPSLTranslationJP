@@ -34,6 +34,28 @@ std::wstring BundledDirectory(){return s_directory;}
 bool InitializeBundledRuntime(HRESULT& hr,std::wstring& detail){
     hr=E_FAIL;
     detail.clear();
+#ifdef SCPSL_STORE_PACKAGE
+    // Store MSIX runs the GUI and Rust engine directly from the package.
+    // Do not extract or launch an unsigned EXE from the user's Temp folder.
+    UINT32 packageLength=0;
+    if(GetCurrentPackageFullName(&packageLength,nullptr)!=ERROR_INSUFFICIENT_BUFFER){
+        detail=L"Microsoft Store パッケージとして起動してください";
+        return false;
+    }
+    wchar_t exe[32768]{};
+    DWORD n=GetModuleFileNameW(nullptr,exe,32768);
+    if(!n || n>=32768){detail=L"EXEのパスが不正です";return false;}
+    std::wstring local(exe);
+    auto slash=local.find_last_of(L"\\/");
+    if(slash==std::wstring::npos){detail=L"アプリの保存先がありません";return false;}
+    s_directory=local.substr(0,slash);
+    for(auto name:{L"scpsl-native-core.exe",L"researcher.jpg",L"scp-emblem.png"}){
+        if(GetFileAttributesW(BundledPath(name).c_str())==INVALID_FILE_ATTRIBUTES){
+            detail=L"Store パッケージのファイルが不足しています";
+            return false;
+        }
+    }
+#else
     wchar_t dir[32768]{};
     if(!GetTempPathW(32768,dir)){detail=L"Tempが取得できません";return false;}
     std::wstring top=std::wstring(dir)+L"SCPSLJP-Native";
@@ -52,6 +74,7 @@ bool InitializeBundledRuntime(HRESULT& hr,std::wstring& detail){
     auto slash=local.find_last_of(L"\\/");
     if(slash==std::wstring::npos){detail=L"実行先ディレクトリがありません";return false;}
     local=local.substr(0,slash);
+#endif
     SetEnvironmentVariableW(L"MICROSOFT_WINDOWSAPPRUNTIME_BASE_DIRECTORY",local.c_str());
     local+=L"\\Microsoft.WindowsAppRuntime.dll";
     s_runtime=LoadLibraryExW(local.c_str(),nullptr,
@@ -67,8 +90,11 @@ bool InitializeBundledRuntime(HRESULT& hr,std::wstring& detail){
 void ShutdownBundledRuntime() noexcept{
     s_initialized=false;
     if(s_runtime){FreeLibrary(s_runtime);s_runtime=nullptr;}
+#ifndef SCPSL_STORE_PACKAGE
     for(auto f:{L"scpsl-native-core.exe",L"researcher.jpg",L"scp-emblem.png"}){
        DeleteFileW(BundledPath(f).c_str());
     }
-    if(!s_directory.empty()){RemoveDirectoryW(s_directory.c_str());s_directory.clear();}
+    if(!s_directory.empty())RemoveDirectoryW(s_directory.c_str());
+#endif
+    s_directory.clear();
 }
