@@ -81,6 +81,23 @@ jobs:
           cmake --build NativeSelfContained/build/store-inner-cmake --config Release --parallel 2
           Copy-Item NativeSelfContained/build/store-inner-cmake/Release/SCPSLWinUI.exe NativeSelfContained/build/runtime/SCPSLWinUI.exe -Force
 
+      - name: Verify embedded Per-Monitor V2 DPI manifest in Store WinUI
+        shell: pwsh
+        run: |
+          $sdk = Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Windows Kits\10\bin'
+          $mt = Get-ChildItem "$sdk\*\x64\mt.exe" -ErrorAction Stop | Sort-Object FullName -Descending | Select-Object -First 1
+          if (!$mt) { throw 'Windows SDK mt.exe missing' }
+          $exe = (Resolve-Path 'NativeSelfContained/build/store-inner-cmake/Release/SCPSLWinUI.exe').Path
+          $output = Join-Path $env:RUNNER_TEMP 'SCPSLWinUI-embedded-manifest.xml'
+          & $mt.FullName "-inputresource:$exe;#1" "-out:$output"
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to read embedded EXE manifest' }
+          [xml]$manifest = Get-Content $output -Raw
+          $dpi = $manifest.SelectSingleNode('//*[local-name()="dpiAwareness"]')
+          if ($null -eq $dpi -or $dpi.InnerText.Trim() -ne 'PerMonitorV2') {
+            throw 'Store WinUI EXE lacks embedded PerMonitorV2 DPI declaration'
+          }
+          Write-Host 'Verified Store WinUI PerMonitorV2 DPI awareness'
+
       - name: Locate Windows SDK packaging tools
         shell: pwsh
         run: |

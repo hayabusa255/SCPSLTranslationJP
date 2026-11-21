@@ -22,6 +22,8 @@ file(TO_CMAKE_PATH "${WINUI_ROOT}/Assets/scp-emblem.png" EMBLEM_RES)
 option(SCPSL_STORE_PACKAGE "Build a Microsoft Store MSIX-ready native GUI" OFF)
 if(SCPSL_STORE_PACKAGE)
     set(SCPSL_RESOURCES_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/store-resources.rc.in")
+    # Store builds need their own DPI-aware Win32 manifest (not the reg-free EXE manifest).
+    file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/store.manifest" STORE_MANIFEST_RES)
 else()
     set(SCPSL_RESOURCES_TEMPLATE "${CMAKE_CURRENT_SOURCE_DIR}/inner-resources.rc.in")
 endif()
