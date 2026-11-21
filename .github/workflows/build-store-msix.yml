@@ -10,15 +10,18 @@ on:
   workflow_dispatch:
     inputs:
       package_name:
-        description: 'Partner Center Product identity > Package/Identity Name (blank = dev only)'
+        description: 'Partner Center Package/Identity Name (defaults to registered Store app)'
+        default: 'hayabusa255.SCPSL'
         required: false
         type: string
       publisher:
-        description: 'Partner Center Publisher ID, complete CN=... value (blank = dev only)'
+        description: 'Partner Center Publisher, complete CN=... value'
+        default: 'CN=C5BD7D37-EA76-4E8B-945B-21C94438526C'
         required: false
         type: string
       publisher_display_name:
-        description: 'Partner Center Publisher display name (blank = dev only)'
+        description: 'Partner Center Publisher display name'
+        default: 'hayabusa255'
         required: false
         type: string
       version:
@@ -163,19 +166,39 @@ jobs:
           if ($supplied -ne 0 -and $supplied -ne 3) { throw 'All three Partner Center identity values are required for Store submission' }
 
       - name: Build unsigned MSIX for Microsoft Store submission
-        if: github.event_name == 'workflow_dispatch' && inputs.package_name != '' && inputs.publisher != '' && inputs.publisher_display_name != ''
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         shell: pwsh
         env:
-          PACKAGE_NAME: '${{ inputs.package_name }}'
-          PUBLISHER: '${{ inputs.publisher }}'
-          PUBLISHER_DISPLAY: '${{ inputs.publisher_display_name }}'
-          PACKAGE_VERSION: '${{ inputs.version }}'
+          PACKAGE_NAME: "${{ inputs.package_name || 'hayabusa255.SCPSL' }}"
+          PUBLISHER: "${{ inputs.publisher || 'CN=C5BD7D37-EA76-4E8B-945B-21C94438526C' }}"
+          PUBLISHER_DISPLAY: "${{ inputs.publisher_display_name || 'hayabusa255' }}"
+          PACKAGE_VERSION: "${{ inputs.version || '1.0.0.0' }}"
         run: |
           python NativeStoreMSIX/build_msix.py --runtime NativeSelfContained/build/runtime --core NativeCore/bin/win-x64/scpsl-native-core.exe --assets NativeCppWinUI/Assets --stage NativeStoreMSIX/build/stage-store --output NativeStoreMSIX/build/SCPSLTranslationJP-Store-Unsigned-x64.msix --name "$env:PACKAGE_NAME" --publisher "$env:PUBLISHER" --publisher-display "$env:PUBLISHER_DISPLAY" --version "$env:PACKAGE_VERSION" --makeappx "$env:MAKEAPPX"
           if ($LASTEXITCODE -ne 0) { throw 'Store MSIX build failed' }
 
+      - name: Verify Store package identity before submission artifact
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        shell: pwsh
+        env:
+          PACKAGE_NAME: "${{ inputs.package_name || 'hayabusa255.SCPSL' }}"
+          PUBLISHER: "${{ inputs.publisher || 'CN=C5BD7D37-EA76-4E8B-945B-21C94438526C' }}"
+          PACKAGE_VERSION: "${{ inputs.version || '1.0.0.0' }}"
+        run: |
+          $package = 'NativeStoreMSIX/build/SCPSLTranslationJP-Store-Unsigned-x64.msix'
+          & "$env:MAKEAPPX" unpack /p $package /d NativeStoreMSIX/build/unpacked-store /o
+          if ($LASTEXITCODE -ne 0) { throw 'Failed to unpack Store submission MSIX' }
+          [xml]$manifest = Get-Content NativeStoreMSIX/build/unpacked-store/AppxManifest.xml -Raw
+          $identity = $manifest.Package.Identity
+          if ($identity.Name -cne $env:PACKAGE_NAME) { throw "Wrong Store Package Name: $($identity.Name)" }
+          if ($identity.Publisher -cne $env:PUBLISHER) { throw "Wrong Store Publisher: $($identity.Publisher)" }
+          if ($identity.Version -cne $env:PACKAGE_VERSION) { throw "Wrong Store Package Version: $($identity.Version)" }
+          if ($identity.ProcessorArchitecture -ne 'x64') { throw 'Wrong Store architecture' }
+          if ($manifest.Package.Applications.Application.Executable -ne 'SCPSLWinUI.exe') { throw 'Wrong Store entry point' }
+          Write-Host "Validated Store MSIX: $($identity.Name), $($identity.Publisher), $($identity.Version), x64"
+
       - name: Upload MSIX for Partner Center (Store will sign it)
-        if: github.event_name == 'workflow_dispatch' && inputs.package_name != '' && inputs.publisher != '' && inputs.publisher_display_name != ''
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: SCPSL-MSIX-STORE-SUBMISSION-UNSIGNED
