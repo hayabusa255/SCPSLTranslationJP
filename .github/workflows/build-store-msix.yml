@@ -174,7 +174,7 @@ jobs:
           PUBLISHER_DISPLAY: "${{ inputs.publisher_display_name || 'hayabusa255' }}"
           PACKAGE_VERSION: "${{ inputs.version || '1.0.0.0' }}"
         run: |
-          python NativeStoreMSIX/build_msix.py --runtime NativeSelfContained/build/runtime --core NativeCore/bin/win-x64/scpsl-native-core.exe --assets NativeCppWinUI/Assets --stage NativeStoreMSIX/build/stage-store --output NativeStoreMSIX/build/SCPSLTranslationJP-Store-Unsigned-x64.msix --name "$env:PACKAGE_NAME" --publisher "$env:PUBLISHER" --publisher-display "$env:PUBLISHER_DISPLAY" --version "$env:PACKAGE_VERSION" --makeappx "$env:MAKEAPPX"
+          python NativeStoreMSIX/build_msix.py --runtime NativeSelfContained/build/runtime --core NativeCore/bin/win-x64/scpsl-native-core.exe --assets NativeCppWinUI/Assets --stage NativeStoreMSIX/build/stage-store --output NativeStoreMSIX/build/SCPSLTranslationJP-Store-Unsigned-x64.msix --name "$env:PACKAGE_NAME" --publisher "$env:PUBLISHER" --publisher-display "$env:PUBLISHER_DISPLAY" --display-name "SCPSL日本語翻訳インストーラ" --version "$env:PACKAGE_VERSION" --makeappx "$env:MAKEAPPX"
           if ($LASTEXITCODE -ne 0) { throw 'Store MSIX build failed' }
 
       - name: Verify Store package identity before submission artifact
@@ -194,6 +194,8 @@ jobs:
           if ($identity.Publisher -cne $env:PUBLISHER) { throw "Wrong Store Publisher: $($identity.Publisher)" }
           if ($identity.Version -cne $env:PACKAGE_VERSION) { throw "Wrong Store Package Version: $($identity.Version)" }
           if ($identity.ProcessorArchitecture -ne 'x64') { throw 'Wrong Store architecture' }
+          if ($manifest.Package.Properties.DisplayName -cne 'SCPSL日本語翻訳インストーラ') { throw 'Store display name does not match reserved product name' }
+          if ($manifest.Package.Properties.PublisherDisplayName -cne 'hayabusa255') { throw 'Wrong Store publisher display name' }
           if ($manifest.Package.Applications.Application.Executable -ne 'SCPSLWinUI.exe') { throw 'Wrong Store entry point' }
           Write-Host "Validated Store MSIX: $($identity.Name), $($identity.Publisher), $($identity.Version), x64"
 

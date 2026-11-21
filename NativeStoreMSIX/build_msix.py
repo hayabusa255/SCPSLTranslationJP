@@ -37,7 +37,8 @@ def validate_identity(name: str, publisher: str, version: str) -> None:
         raise ValueError("For Store distribution, the fourth version component must be 0")
 
 
-def manifest(name: str, publisher: str, display_publisher: str, version: str) -> ET.ElementTree:
+def manifest(name: str, publisher: str, display_publisher: str, version: str,
+             display_name: str = "SCPSLTranslationJP") -> ET.ElementTree:
     validate_identity(name, publisher, version)
     if not display_publisher.strip():
         raise ValueError("PublisherDisplayName must match Partner Center")
@@ -46,7 +47,7 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
         "Name": name, "Publisher": publisher, "Version": version, "ProcessorArchitecture": "x64"
     })
     props = ET.SubElement(root, f"{{{FOUNDATION}}}Properties")
-    ET.SubElement(props, f"{{{FOUNDATION}}}DisplayName").text = "SCPSLTranslationJP"
+    ET.SubElement(props, f"{{{FOUNDATION}}}DisplayName").text = display_name
     ET.SubElement(props, f"{{{FOUNDATION}}}PublisherDisplayName").text = display_publisher
     ET.SubElement(props, f"{{{FOUNDATION}}}Logo").text = r"Assets\StoreLogo.png"
     deps = ET.SubElement(root, f"{{{FOUNDATION}}}Dependencies")
@@ -75,7 +76,7 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
         f"{{{UAP10}}}TrustLevel": "mediumIL"
     })
     ET.SubElement(app, f"{{{UAP}}}VisualElements", {
-        "DisplayName": "SCPSLTranslationJP",
+        "DisplayName": display_name,
         "Description": "Japanese translation installer for SCP: Secret Laboratory",
         "Square150x150Logo": r"Assets\Square150x150Logo.png",
         "Square44x44Logo": r"Assets\Square44x44Logo.png",
@@ -88,7 +89,8 @@ def manifest(name: str, publisher: str, display_publisher: str, version: str) ->
 
 
 def build_stage(runtime: Path, core: Path, assets: Path, stage: Path,
-                name: str, publisher: str, publisher_display: str, version: str) -> None:
+                name: str, publisher: str, publisher_display: str, version: str,
+                display_name: str = "SCPSLTranslationJP") -> None:
     gui = runtime / "SCPSLWinUI.exe"
     if not gui.is_file():
         raise FileNotFoundError(f"Missing compiled WinUI executable: {gui}")
@@ -111,7 +113,7 @@ def build_stage(runtime: Path, core: Path, assets: Path, stage: Path,
                                ("Square150x150Logo.png", (150, 150)),
                                ("StoreLogo.png", (50, 50))):
             icon.resize(size, Image.Resampling.LANCZOS).save(images / filename)
-    manifest(name, publisher, publisher_display, version).write(
+    manifest(name, publisher, publisher_display, version, display_name).write(
         stage / "AppxManifest.xml", encoding="utf-8", xml_declaration=True
     )
     # The app runs in medium IL and accesses user-writable Steam libraries
@@ -129,13 +131,15 @@ def main() -> None:
     p.add_argument("--name", required=True)
     p.add_argument("--publisher", required=True)
     p.add_argument("--publisher-display", required=True)
+    p.add_argument("--display-name", default="SCPSLTranslationJP")
     p.add_argument("--version", default="1.0.0.0")
     p.add_argument("--makeappx", type=Path, required=True)
     args = p.parse_args()
     if not args.makeappx.is_file():
         raise FileNotFoundError(f"Windows SDK MakeAppx not found: {args.makeappx}")
     build_stage(args.runtime, args.core, args.assets, args.stage,
-                args.name, args.publisher, args.publisher_display, args.version)
+                args.name, args.publisher, args.publisher_display, args.version,
+                args.display_name)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run([str(args.makeappx), "pack", "/d", str(args.stage),
                     "/p", str(args.output), "/o", "/v"], check=True)
