@@ -104,7 +104,7 @@ jobs:
           set -euo pipefail
           gh api "repos/${GITHUB_REPOSITORY}/contents/docs/releases/JP-Ver15.0Beta.md?ref=main" --jq '.content' | base64 -d > notes.md
           test -s notes.md
-          grep -q '## インストール手順' notes.md
+          grep -Fqx '## インストール方法' notes.md
 
       - name: Publish translation ZIP and replace Windows installer release asset
         shell: bash
