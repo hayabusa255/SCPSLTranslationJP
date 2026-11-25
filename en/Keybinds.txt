@@ -37,3 +37,5 @@ Blackout
 Lockdown
 Ping
 Breach Scanner
+Disguise Menu
+Dismiss Dialog

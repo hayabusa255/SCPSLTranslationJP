@@ -1,0 +1,13 @@
+Hide Empty
+Hide Full
+Servers
+Players
+Badges
+Location
+Direct Connect
+Reconnect
+Create Server
+Create Local Server?
+This is a development tool intended for testing. Many features <b>will not</b> work correctly.\n\nVisit <u><link="https://link.scpslgame.com/hosting-a-server">link.scpslgame.com/hosting-a-server</link></u> to learn how to set up a server for proper gameplay.
+Create Anyway
+Connect

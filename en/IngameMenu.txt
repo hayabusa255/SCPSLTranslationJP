@@ -1,0 +1,5 @@
+Resume
+Server Info
+Disconnect
+Leave Game?
+Are you sure you want to disconnect from the server? You will be returned to the main menu.
